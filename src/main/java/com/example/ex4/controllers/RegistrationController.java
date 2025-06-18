@@ -26,7 +26,7 @@ public class RegistrationController {
         return "register";
     }
 
-    @PostMapping
+    /*@PostMapping
     public String registerUser(@Valid @ModelAttribute("user") AppUser appUser,
                              BindingResult result,
                              RedirectAttributes redirectAttributes) {
@@ -53,5 +53,5 @@ public class RegistrationController {
         redirectAttributes.addFlashAttribute("successMessage", "ההרשמה הושלמה בהצלחה! אנא התחבר למערכת.");
         
         return "redirect:/login";
-    }
+    }*/
 } 
