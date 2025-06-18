@@ -44,7 +44,6 @@
                 <div class="col-12 text-center">
                     <h2 class="display-5 fw-bold text-dark mb-5 position-relative">
                         למה לבחור בצו גיוס?
-                        <div class="position-absolute bottom-0 start-50 translate-middle-x bg-primary rounded" style="width: 80px; height: 4px;"></div>
                     </h2>
                 </div>
             </div>
@@ -102,13 +101,12 @@
                 <div class="col-12 text-center">
                     <h2 class="display-5 fw-bold mb-5 position-relative">
                         למי מיועד האתר?
-                        <div class="position-absolute bottom-0 start-50 translate-middle-x bg-white rounded" style="width: 80px; height: 4px;"></div>
                     </h2>
                 </div>
             </div>
 
             <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
+                <div class="col-md-6">
                     <div class="card bg-white bg-opacity-10 h-100 text-center text-white p-4 border border-white border-opacity-20 backdrop-blur">
                         <div class="card-body">
                             <div class="fs-1 mb-3">
@@ -118,14 +116,11 @@
                             <p class="card-text">
                                 מחפשים להתנדב ולתרום? מצאו תפקידים המתאימים לכישורים והניסיון שלכם
                             </p>
-                            <a href="#" th:href="@{/register?type=soldier}" class="btn btn-outline-light rounded-pill px-4">
-                                הרשמה כחייל
-                            </a>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-6">
+                <div class="col-md-6">
                     <div class="card bg-white bg-opacity-10 h-100 text-center text-white p-4 border border-white border-opacity-20 backdrop-blur">
                         <div class="card-body">
                             <div class="fs-1 mb-3">
@@ -135,14 +130,11 @@
                             <p class="card-text">
                                 פרסמו משרות פתוחות, נהלו מועמדויות וקבעו ראיונות עם המועמדים המתאימים ביותר
                             </p>
-                            <a href="#" th:href="@{/register?type=commander}" class="btn btn-outline-light rounded-pill px-4">
-                                הרשמה כמפקד
-                            </a>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-6">
+                <!--<div class="col-lg-4 col-md-6">
                     <div class="card bg-white bg-opacity-10 h-100 text-center text-white p-4 border border-white border-opacity-20 backdrop-blur">
                         <div class="card-body">
                             <div class="fs-1 mb-3">
@@ -152,13 +144,11 @@
                             <p class="card-text">
                                 ניהול מלא של המערכת, אישור הרשמות וניהול כל התקנים הפתוחים במערכת
                             </p>
-                            <a href="#" th:href="@{/admin/login}" class="btn btn-outline-light rounded-pill px-4">
-                                כניסה למנהלים
-                            </a>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
+
         </div>
     </section>
 
@@ -193,7 +183,7 @@
                 <div class="col-lg-8">
                     <h2 class="display-5 fw-bold mb-4">מוכנים להצטרף?</h2>
                     <p class="lead mb-4">
-                        מדינת ישראל וצה"ל זקוקים לך, בואו להגן על המולדת. בואו נמשיך לשרת יחד.
+                        מדינת ישראל וצה"ל זקוקים לך, בואו להן על המולדת. בואו נמשיך לשרת יחד.
                     </p>
                     <a href="#" th:href="@{/register}" class="btn btn-primary btn-lg rounded-pill px-4 py-2 shadow">
                         <i class="bi bi-person-plus me-2"></i>
@@ -206,6 +196,5 @@
 
     <!-- Footer -->
     <footer th:replace="fragments/footer :: footer"></footer>
-    <script th:replace="fragments/footer :: scripts"></script>
 </body>
 </html>
