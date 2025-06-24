@@ -1,21 +1,17 @@
-package com.example.ex4.models;
+package com.example.ex4.dto;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
 
-@Entity
-public class AppUser {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+// DTO for registration form
+public class RegistrationForm {
 
     @NotBlank(message = "שם משתמש הוא שדה חובה")
     @Size(min = 3, max = 20, message = "שם המשתמש חייב להיות בין 3 ל-20 תווים")
-    @Column(name = "user_name")
     private String username;
 
     @NotBlank(message = "סיסמה היא שדה חובה")
@@ -26,24 +22,11 @@ public class AppUser {
     @Email(message = "אנא הכנס כתובת אימייל תקינה")
     private String email;
 
-    @NotNull(message = "חובה להעלות תעודת משרת מילואים!")
-    @Lob
-    @Column(name = "military_id_doc")
-    private byte[] militaryIdDoc;
-    
-    private Boolean isApproved = false;
+    private boolean commander;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    private Role role = Role.RESERVIST;
+    private MultipartFile militaryIdDoc;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;
@@ -69,27 +52,19 @@ public class AppUser {
         this.email = email;
     }
 
-    public Role getRole() {
-        return role;
+    public boolean isCommander() {
+        return commander;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setCommander(boolean commander) {
+        this.commander = commander;
     }
 
-    public byte[] getMilitaryIdDoc() {
+    public MultipartFile getMilitaryIdDoc() {
         return militaryIdDoc;
     }
 
-    public void setMilitaryIdDoc(byte[] militaryIdDoc) {
+    public void setMilitaryIdDoc(MultipartFile militaryIdDoc) {
         this.militaryIdDoc = militaryIdDoc;
     }
-
-    public Boolean getIsApproved() {
-        return isApproved;
-    }
-
-    public void setIsApproved(Boolean isApproved) {
-        this.isApproved = isApproved;
-    }
-} 
+}

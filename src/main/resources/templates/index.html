@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header"></head>
+<head th:replace="~{fragments/header :: header}"></head>
 <body>
     <!-- Navigation -->
-    <nav th:replace="fragments/header :: navigation"></nav>
+    <nav th:replace="~{fragments/header :: navigation}"></nav>
 
     <!-- Hero Section -->
     <section class="bg-gradient bg-primary text-white py-5 mt-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
@@ -195,6 +195,6 @@
     </section>
 
     <!-- Footer -->
-    <footer th:replace="fragments/footer :: footer"></footer>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

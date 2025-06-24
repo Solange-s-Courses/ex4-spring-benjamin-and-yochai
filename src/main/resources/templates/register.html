@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header"></head>
+<head th:replace="~{fragments/header :: header}"></head>
 <body>
 <!-- Navigation -->
-<nav th:replace="fragments/header :: navigation"></nav>
+<nav th:replace="~{fragments/header :: navigation}"></nav>
 
 <!-- Registration Form Section -->
 <section class="py-5 mt-5">
@@ -43,10 +43,16 @@
                             <div class="mb-4">
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <i class="bi bi-file-earmark-arrow-up text-primary fs-5"></i>
-                                    <label for="reserveCertificate" class="form-label mb-0">תעודת משרת מילואים פעיל</label>
+                                    <label for="militaryIdDoc" class="form-label mb-0">תעודת משרת מילואים פעיל - עד 10MB</label>
                                 </div>
-                                <input type="file" class="form-control rounded-3" id="reserveCertificate" name="reserveCertificate" accept="application/pdf,image/*" required>
-                                <!--<div class="text-danger" th:if="${#fields.hasErrors('reserveCertificate')}" th:errors="*{reserveCertificate}"></div> -->
+                                <input type="file" class="form-control rounded-3" id="militaryIdDoc" name="militaryIdDoc" accept="application/pdf,image/*" required>
+                                <!--<div class="text-danger" th:if="${#fields.hasErrors('militaryIdDoc')}" th:errors="*{militaryIdDoc}"></div> -->
+                            </div>
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="commander" name="commander" th:field="*{commander}">
+                                    <label class="form-check-label" for="commander">אני מפקד שמעוניין לפרסם תפקיד</label>
+                                </div>
                             </div>
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">
@@ -62,6 +68,6 @@
 </section>
 
 <!-- Footer -->
-<footer th:replace="fragments/footer :: footer"></footer>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

@@ -1,7 +1,7 @@
 package com.example.ex4.controllers;
 
-import com.example.ex4.models.AppUser;
-import com.example.ex4.repositories.AppUserRepository;
+import com.example.ex4.dto.RegistrationForm;
+import com.example.ex4.services.AppUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,41 +17,59 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/register")
 public class RegistrationController {
 
+    private final AppUserService appUserService;
+
     @Autowired
-    private AppUserRepository appUserRepository;
+    public RegistrationController(AppUserService appUserService) {
+        this.appUserService = appUserService;
+    }
 
     @GetMapping
     public String showRegistrationForm(Model model) {
-        model.addAttribute("user", new AppUser());
+        model.addAttribute("user", new RegistrationForm());
         return "register";
     }
 
-    /*@PostMapping
-    public String registerUser(@Valid @ModelAttribute("user") AppUser appUser,
-                             BindingResult result,
-                             RedirectAttributes redirectAttributes) {
+    @PostMapping
+    public String registerUser(@Valid @ModelAttribute("user") RegistrationForm form, BindingResult result,
+                               RedirectAttributes redirectAttributes){
         if (result.hasErrors()) {
+            return "register"; //maybe error page?
+        }
+
+        if (appUserService.existsByUsername(form.getUsername())) {
+            result.rejectValue("username", "error.appUser", "שם המשתמש כבר קיים");
             return "register";
         }
 
-        // Check if username already exists
-        if (appUserRepository.existsByUsername(appUser.getUsername())) {
-            result.rejectValue("username", "error.user", "שם המשתמש כבר קיים במערכת");
+        if (appUserService.existsByEmail(form.getEmail())) {
+            result.rejectValue("email", "error.appUser", "האימייל כבר קיים");
             return "register";
         }
+        try{
+            /*AppUser appUser = new AppUser();
+            appUser.setUsername(form.getUsername());
+            appUser.setPassword(form.getPassword());
+            appUser.setEmail(form.getEmail());
 
-        // Check if email already exists
-        if (appUserRepository.existsByEmail(appUser.getEmail())) {
-            result.rejectValue("email", "error.user", "כתובת האימייל כבר קיימת במערכת");
-            return "register";
+            if (form.isCommander()) {
+                appUser.setRole(Role.COMMANDER);
+            } else {
+                appUser.setRole(Role.RESERVIST);
+            }
+
+            MultipartFile file = form.getMilitaryIdDoc();
+            if (file != null && !file.isEmpty()) {
+                appUser.setMilitaryIdDoc(file.getBytes());
+            }*/
+
+            appUserService.saveUser(form);
+            redirectAttributes.addFlashAttribute("successMessage", "נרשמת בהצלחה!");
+            //return "redirect:/login";
+            return "redirect:/register";
+        } catch (Exception e){
+            redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך ההרשמה");
+            return "redirect:/register"; //error page? why not return "register"?
         }
-
-        // Save the user
-        appUserRepository.save(appUser);
-
-        // Add success message
-        redirectAttributes.addFlashAttribute("successMessage", "ההרשמה הושלמה בהצלחה! אנא התחבר למערכת.");
-        
-        return "redirect:/login";
-    }*/
+    }
 } 
