@@ -1,39 +1,63 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" dir="rtl">
-<head th:replace="fragments/header :: header"></head>
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
 <body>
+<!-- Navigation -->
+<nav th:replace="~{fragments/header :: navigation}"></nav>
 
-    <nav th:replace="fragments/header :: navigation"></nav>
-
-    <div class="container mt-5 ">
+<!-- Registration Form Section -->
+<section class="py-5 mt-5">
+    <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-6 align-items-center">
-                <div class="card m-5">
-                    <div class="card-header">
+            <div class="col-md-6">
+                <div class="card shadow rounded-4">
+                    <div class="card-header bg-white rounded-top-4 border-bottom-0">
                         <h3 class="text-center">הרשמה</h3>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/register}" th:object="${user}" method="post">
-                            <div class="mb-3">
-                                <label for="username" class="form-label">שם משתמש</label>
-                                <input type="text" class="form-control" id="username" th:field="*{username}" required>
+                        <form th:action="@{/register}" th:object="${user}" method="post" enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-person text-primary fs-5"></i>
+                                    <label for="username" class="form-label mb-0">שם משתמש</label>
+                                </div>
+                                <input type="text" class="form-control rounded-3" id="username" th:field="*{username}">
                                 <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label for="email" class="form-label">אימייל</label>
-                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-envelope text-primary fs-5"></i>
+                                    <label for="email" class="form-label mb-0">אימייל</label>
+                                </div>
+                                <input type="text" class="form-control rounded-3" id="email" th:field="*{email}">
                                 <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label for="password" class="form-label">סיסמה</label>
-                                <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-lock text-primary fs-5"></i>
+                                    <label for="password" class="form-label mb-0">סיסמה</label>
+                                </div>
+                                <input type="password" class="form-control rounded-3" id="password" th:field="*{password}">
                                 <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                             </div>
-                            
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-file-earmark-arrow-up text-primary fs-5"></i>
+                                    <label for="militaryIdDoc" class="form-label mb-0">תעודת משרת מילואים פעיל - עד 1MB</label>
+                                </div>
+                                <input type="file" class="form-control rounded-3" id="militaryIdDoc" name="militaryIdDoc" accept="application/pdf,image/*" >
+                                <div class="text-danger" th:if="${#fields.hasErrors('militaryIdDoc')}" th:errors="*{militaryIdDoc}"></div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="commander" name="commander" th:field="*{commander}">
+                                    <label class="form-check-label" for="commander">אני מפקד שמעוניין לפרסם תפקיד</label>
+                                </div>
+                            </div>
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">הרשמה</button>
+                                <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">
+                                    הרשמה <i class="bi bi-box-arrow-in-right ms-2"></i>
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -41,7 +65,9 @@
             </div>
         </div>
     </div>
-    <footer th:replace="fragments/footer :: footer"></footer>
-    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
-</html> 
+</html>
