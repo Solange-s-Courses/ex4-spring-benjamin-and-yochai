@@ -23,11 +23,11 @@
                                     <label for="jobTitle" class="form-label mb-0">תפקיד</label>
                                 </div>
                                 <select class="form-select rounded-3" id="jobTitle" name="jobTitle" th:field="*{jobTitle}">
-                                    <option value="" disabled selected>בחר תפקיד</option>
-                                    <!-- Example: <option th:each="title : ${jobTitles}" th:value="${title}" th:text="${title}"></option> -->
+                                    <option value="" selected>בחר תפקיד</option>
+                                    <option th:each="title : ${jobTitles}" th:value="${title}" th:text="${title}"></option>
+                                    <option value="אחר">אחר</option>
                                 </select>
-                                <input type="text" class="form-control rounded-3 mt-2" id="otherJobTitleInput" name="otherJobTitle" placeholder="הזן תפקיד אחר (אם בחרת 'אחר')">
-                                <small class="text-muted">אם בחרת 'אחר' מהרשימה, מלא כאן תפקיד חדש</small>
+                                <input type="text" class="form-control rounded-3 mt-2" id="otherJobTitleInput" name="otherJobTitle" placeholder="הזן תפקיד אחר (אם בחרת 'אחר')" style="display: none;">
                             </div>
 
                             <!-- Location Selection -->
@@ -37,7 +37,7 @@
                                     <label for="location" class="form-label mb-0">מיקום בארץ</label>
                                 </div>
                                 <select class="form-select rounded-3" id="location" name="location" th:field="*{location}" required>
-                                    <option value="" disabled selected>בחר אזור</option>
+                                    <option value="" selected>בחר אזור</option>
                                     <option th:each="region : ${T(com.example.ex4.models.LocationRegion).values()}" th:value="${region}" th:text="${region}"></option>
                                 </select>
                             </div>
@@ -89,6 +89,7 @@
     </div>
 </section>
 
+<script th:src="@{/js/positionForm.js}"></script>
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
