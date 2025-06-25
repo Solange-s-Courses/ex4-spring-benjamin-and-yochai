@@ -31,8 +31,9 @@ public class AppUser {
     @Column(name = "is_approved")
     private Boolean isApproved = false;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
+    @Column(name = "role", columnDefinition = "enum('ADMIN', 'COMMANDER', 'RESERVIST') DEFAULT 'RESERVIST'")
     private Role role = Role.RESERVIST;
 
     public Long getId() {

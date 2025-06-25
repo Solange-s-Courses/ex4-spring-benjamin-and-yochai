@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{fragments/header :: header}"></head>
 <body>
 <!-- Navigation -->
@@ -15,14 +16,15 @@
                         <h3 class="text-center">הרשמה</h3>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/register}" th:object="${user}" method="post" enctype="multipart/form-data">
+                        <form th:id="registrationForm" th:action="@{/register}" th:object="${user}" method="post" enctype="multipart/form-data">
                             <div class="mb-4">
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <i class="bi bi-person text-primary fs-5"></i>
                                     <label for="username" class="form-label mb-0">שם משתמש</label>
                                 </div>
                                 <input type="text" class="form-control rounded-3" id="username" th:field="*{username}">
-                                <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                                <div class="text-danger server-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                                <div class="text-danger client-error" data-error="username"></div>
                             </div>
                             <div class="mb-4">
                                 <div class="d-flex align-items-center gap-2 mb-1">
@@ -30,7 +32,8 @@
                                     <label for="email" class="form-label mb-0">אימייל</label>
                                 </div>
                                 <input type="text" class="form-control rounded-3" id="email" th:field="*{email}">
-                                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                <div class="text-danger server-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                <div class="text-danger client-error" data-error="email"></div>
                             </div>
                             <div class="mb-4">
                                 <div class="d-flex align-items-center gap-2 mb-1">
@@ -38,7 +41,8 @@
                                     <label for="password" class="form-label mb-0">סיסמה</label>
                                 </div>
                                 <input type="password" class="form-control rounded-3" id="password" th:field="*{password}">
-                                <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                                <div class="text-danger server-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                                <div class="text-danger client-error" data-error="password"></div>
                             </div>
                             <div class="mb-4">
                                 <div class="d-flex align-items-center gap-2 mb-1">
@@ -46,7 +50,8 @@
                                     <label for="militaryIdDoc" class="form-label mb-0">תעודת משרת מילואים פעיל - עד 1MB</label>
                                 </div>
                                 <input type="file" class="form-control rounded-3" id="militaryIdDoc" name="militaryIdDoc" accept="application/pdf,image/*" >
-                                <div class="text-danger" th:if="${#fields.hasErrors('militaryIdDoc')}" th:errors="*{militaryIdDoc}"></div>
+                                <div class="text-danger server-error" th:if="${#fields.hasErrors('militaryIdDoc')}" th:errors="*{militaryIdDoc}" ></div>
+                                <div class="text-danger client-error" data-error="militaryIdDoc"></div>
                             </div>
                             <div class="mb-4">
                                 <div class="form-check">
@@ -69,5 +74,7 @@
 
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:src="@{/js/registrationForm.js}"></script>
 </body>
 </html>
