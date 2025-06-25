@@ -1,10 +1,7 @@
 package com.example.ex4.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 @Entity
 public class AppUser {
@@ -28,9 +25,10 @@ public class AppUser {
 
     @NotNull(message = "חובה להעלות תעודת משרת מילואים!")
     @Lob
-    @Column(name = "military_id_doc")
+    @Column(name = "military_id_doc", columnDefinition = "MEDIUMBLOB")
     private byte[] militaryIdDoc;
-    
+
+    @Column(name = "is_approved")
     private Boolean isApproved = false;
 
     @Enumerated(EnumType.STRING)

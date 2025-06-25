@@ -33,6 +33,11 @@ public class RegistrationController {
     @PostMapping
     public String registerUser(@Valid @ModelAttribute("user") RegistrationForm form, BindingResult result,
                                RedirectAttributes redirectAttributes){
+
+        if (form.getMilitaryIdDoc() == null || form.getMilitaryIdDoc().isEmpty()) {
+            result.rejectValue("militaryIdDoc", "error.militaryIdDoc", "חובה להעלות תעודת משרת מילואים!");
+        }
+
         if (result.hasErrors()) {
             return "register"; //maybe error page?
         }
@@ -46,23 +51,8 @@ public class RegistrationController {
             result.rejectValue("email", "error.appUser", "האימייל כבר קיים");
             return "register";
         }
+
         try{
-            /*AppUser appUser = new AppUser();
-            appUser.setUsername(form.getUsername());
-            appUser.setPassword(form.getPassword());
-            appUser.setEmail(form.getEmail());
-
-            if (form.isCommander()) {
-                appUser.setRole(Role.COMMANDER);
-            } else {
-                appUser.setRole(Role.RESERVIST);
-            }
-
-            MultipartFile file = form.getMilitaryIdDoc();
-            if (file != null && !file.isEmpty()) {
-                appUser.setMilitaryIdDoc(file.getBytes());
-            }*/
-
             appUserService.saveUser(form);
             redirectAttributes.addFlashAttribute("successMessage", "נרשמת בהצלחה!");
             //return "redirect:/login";

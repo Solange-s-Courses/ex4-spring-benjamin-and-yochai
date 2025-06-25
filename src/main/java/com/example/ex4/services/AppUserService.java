@@ -50,9 +50,9 @@ public class AppUserService {
     public void saveUser(RegistrationForm form) throws IOException {
 
         AppUser appUser = new AppUser();
-        appUser.setUsername(form.getUsername());
+        appUser.setUsername(form.getUsername().trim());
         appUser.setPassword(form.getPassword());
-        appUser.setEmail(form.getEmail());
+        appUser.setEmail(form.getEmail().trim());
 
         if (form.isCommander()) {
             appUser.setRole(Role.COMMANDER);

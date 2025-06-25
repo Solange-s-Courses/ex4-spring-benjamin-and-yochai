@@ -2,12 +2,9 @@ package com.example.ex4.dto;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
 
-// DTO for registration form
 public class RegistrationForm {
 
     @NotBlank(message = "שם משתמש הוא שדה חובה")
@@ -24,9 +21,8 @@ public class RegistrationForm {
 
     private boolean commander;
 
-    @Enumerated(EnumType.STRING)
+    @NotNull(message = "חובה להעלות תעודת משרת מילואים!")
     private MultipartFile militaryIdDoc;
-
 
     public String getUsername() {
         return username;
