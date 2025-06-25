@@ -24,13 +24,13 @@ public class RegistrationController {
         this.appUserService = appUserService;
     }
 
-    @GetMapping
+    @GetMapping("/")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new RegistrationForm());
         return "register";
     }
 
-    @PostMapping
+    @PostMapping("/")
     public String registerUser(@Valid @ModelAttribute("user") RegistrationForm form, BindingResult result,
                                RedirectAttributes redirectAttributes){
 

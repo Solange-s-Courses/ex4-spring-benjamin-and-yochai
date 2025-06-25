@@ -8,11 +8,11 @@ public class AppUser {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
     @NotBlank(message = "שם משתמש הוא שדה חובה")
     @Size(min = 3, max = 20, message = "שם המשתמש חייב להיות בין 3 ל-20 תווים")
-    @Column(name = "user_name")
+    //@Column(name = "user_name")
     private String username;
 
     @NotBlank(message = "סיסמה היא שדה חובה")
@@ -25,23 +25,23 @@ public class AppUser {
 
     @NotNull(message = "חובה להעלות תעודת משרת מילואים!")
     @Lob
-    @Column(name = "military_id_doc", columnDefinition = "MEDIUMBLOB")
+    @Column(/*name = "military_id_doc",*/ columnDefinition = "MEDIUMBLOB", nullable = false)
     private byte[] militaryIdDoc;
 
-    @Column(name = "is_approved")
+    //@Column(name = "is_approved")
     private Boolean isApproved = false;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", columnDefinition = "enum('ADMIN', 'COMMANDER', 'RESERVIST') DEFAULT 'RESERVIST'")
+    @Column(columnDefinition = "enum('ADMIN', 'COMMANDER', 'RESERVIST') DEFAULT 'RESERVIST'")
     private Role role = Role.RESERVIST;
 
     public Long getId() {
-        return id;
+        return userId;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.userId = id;
     }
 
     public String getUsername() {
