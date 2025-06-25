@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+<!-- Navigation -->
+<nav th:replace="~{fragments/header :: navigation}"></nav>
+
+<!-- Add Position Form Section -->
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+                <div class="card shadow rounded-4">
+                    <div class="card-header bg-white rounded-top-4 border-bottom-0">
+                        <h3 class="text-center">פרסום תפקיד חדש</h3>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/positions/add}" th:object="${positionForm}" method="post">
+                            <!-- Job Title Selection -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-briefcase text-primary fs-5"></i>
+                                    <label for="jobTitle" class="form-label mb-0">תפקיד</label>
+                                </div>
+                                <select class="form-select rounded-3" id="jobTitle" name="jobTitle" th:field="*{jobTitle}">
+                                    <option value="" disabled selected>בחר תפקיד</option>
+                                    <!-- Example: <option th:each="title : ${jobTitles}" th:value="${title}" th:text="${title}"></option> -->
+                                </select>
+                                <input type="text" class="form-control rounded-3 mt-2" id="otherJobTitleInput" name="otherJobTitle" placeholder="הזן תפקיד אחר (אם בחרת 'אחר')">
+                                <small class="text-muted">אם בחרת 'אחר' מהרשימה, מלא כאן תפקיד חדש</small>
+                            </div>
+
+                            <!-- Location Selection -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-geo-alt text-primary fs-5"></i>
+                                    <label for="location" class="form-label mb-0">מיקום בארץ</label>
+                                </div>
+                                <select class="form-select rounded-3" id="location" name="location" th:field="*{location}" required>
+                                    <option value="" disabled selected>בחר אזור</option>
+                                    <option th:each="region : ${T(com.example.ex4.models.LocationRegion).values()}" th:value="${region}" th:text="${region}"></option>
+                                </select>
+                            </div>
+
+                            <!-- Assignment Type -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-toggle-on text-primary fs-5"></i>
+                                    <label class="form-label mb-0">סוג שיבוץ</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="assignmentType" id="attachment" value="סיפוח" th:field="*{assignmentType}" required>
+                                    <label class="form-check-label" for="attachment">סיפוח</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="assignmentType" id="placement" value="הצבה" th:field="*{assignmentType}">
+                                    <label class="form-check-label" for="placement">הצבה</label>
+                                </div>
+                            </div>
+
+                            <!-- Job Description -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-card-text text-primary fs-5"></i>
+                                    <label for="description" class="form-label mb-0">תיאור תפקיד</label>
+                                </div>
+                                <textarea class="form-control rounded-3" id="description" name="description" th:field="*{description}" rows="3" placeholder="פרט על התפקיד..." required></textarea>
+                            </div>
+
+                            <!-- Minimum Requirements -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-list-check text-primary fs-5"></i>
+                                    <label for="requirements" class="form-label mb-0">דרישות מינימום</label>
+                                </div>
+                                <textarea class="form-control rounded-3" id="requirements" name="requirements" th:field="*{requirements}" rows="3" placeholder="כתוב כל דרישה בשורה נפרדת..." required></textarea>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">
+                                    פרסם משרה <i class="bi bi-megaphone ms-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html> 

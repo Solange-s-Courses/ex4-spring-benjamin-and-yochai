@@ -25,7 +25,7 @@ public class AppUser {
 
     @NotNull(message = "חובה להעלות תעודת משרת מילואים!")
     @Lob
-    @Column(name = "military_id_doc", columnDefinition = "MEDIUMBLOB")
+    @Column(name = "military_id_doc", columnDefinition = "MEDIUMBLOB", nullable = false)
     private byte[] militaryIdDoc;
 
     @Column(name = "is_approved")
