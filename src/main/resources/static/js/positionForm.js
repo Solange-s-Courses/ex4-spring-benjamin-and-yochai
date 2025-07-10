@@ -5,11 +5,11 @@ function positionDom(){
 
         function toggleOtherInput() {
             if (jobTitleSelect.value === "אחר") {
-                otherJobTitleInput.style.display = "block";
+                otherJobTitleInput.classList.remove("d-none");
                 otherJobTitleInput.value = "";
             } else {
                 otherJobTitleInput.value = "";
-                otherJobTitleInput.style.display = "none";
+                otherJobTitleInput.classList.add("d-none");
             }
         }
 
@@ -21,7 +21,11 @@ function positionDom(){
             const rows = document.querySelectorAll('#requirementsContainer .input-group');
             rows.forEach(row => {
                 const btn = row.querySelector('.remove-requirement');
-                btn.style.display = (rows.length > 1) ? 'inline-block' : 'none';
+                if (rows.length > 1) {
+                    btn.classList.remove('d-none');
+                } else {
+                    btn.classList.add('d-none');
+                }
             });
         }
 
@@ -30,8 +34,8 @@ function positionDom(){
             const row = document.createElement('div');
             row.className = 'input-group mb-2';
             row.innerHTML = `
-                <input type="text" name="requirements" placeholder="הכנס  דרישת מינימום לתפקיד (לדוגמא - רובאי 03)" class="form-control rounded-3" required>
-                <button type="button" class="btn btn-outline-danger remove-requirement">
+                <input type="text" name="requirements" placeholder="הכנס דרישת מינימום לתפקיד (לדוגמא - רובאי 03)" class="form-control rounded-3" required>
+                <button type="button" class="btn btn-outline-danger remove-requirement d-none">
                     <i class="bi bi-trash"></i>
                 </button>
             `;
