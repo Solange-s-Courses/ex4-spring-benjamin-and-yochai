@@ -8,8 +8,11 @@
 
 <!-- Main Content -->
 <section class="container py-5 mt-4">
-    <div class="mb-4 text-right">
-        <h2 class="fw-bold">שלום <span th:text="${user.username}"></span>!</h2>
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold mb-0">שלום <span th:text="${user.username}"></span>!</h2>
+        <a href="/positions/add" class="btn btn-primary rounded-3 mt-3">
+            הוסף משרה <i class="bi bi-plus-circle ms-1"></i>
+        </a>
     </div>
 
     <!-- Filters and Sorting -->
@@ -19,8 +22,15 @@
         <form class="row g-3 align-items-end" th:action="@{/jobs}" method="get">
             <div class="col-md-4">
                 <label for="location" class="form-label">מיקום</label>
-                <input type="text" id="location" name="location" class="form-control rounded-3" th:value="${filters.location}">
+                <select id="location" name="location" class="form-select rounded-3">
+                    <option value="" selected>הכל</option>
+                    <option th:each="region : ${T(com.example.ex4.models.LocationRegion).values()}"
+                            th:value="${region}"
+                            th:text="${region}">
+                    </option>
+                </select>
             </div>
+
             <div class="col-md-4">
                 <label for="serviceType" class="form-label">סוג שירות</label>
                 <select id="serviceType" name="serviceType" class="form-select rounded-3">
@@ -41,6 +51,11 @@
                 <button class="btn btn-primary px-4 rounded-3">חפש</button>
             </div>
         </form>
+    </div>
+
+
+    <div th:if="${#lists.isEmpty(jobs)}" class="alert alert-warning text-center rounded-3 shadow-sm">
+        אין משרות זמינות להצגה.
     </div>
 
     <!-- Job Cards -->

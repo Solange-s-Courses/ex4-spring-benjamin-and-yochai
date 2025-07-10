@@ -1,6 +1,7 @@
 package com.example.ex4.controllers;
 
 import com.example.ex4.dto.PositionForm;
+import com.example.ex4.models.AppUser;
 import com.example.ex4.models.Position;
 import com.example.ex4.services.PositionService;
 import jakarta.validation.Valid;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.List;
+
+import java.util.*;
 
 @Controller
 @RequestMapping("/positions")
@@ -23,6 +24,14 @@ public class PositionController {
 
     @Autowired
     private PositionService positionService;
+
+    @GetMapping("/")
+    public String positionsPage(Model model) {
+        AppUser mockUser = new AppUser();
+        mockUser.setUsername("משתמש");
+        model.addAttribute("user", mockUser);
+        return positionService.getPositions(model);
+    }
 
     @GetMapping("/add")
     public String showAddPositionForm(Model model) {

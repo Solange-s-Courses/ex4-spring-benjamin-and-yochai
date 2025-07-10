@@ -1,12 +1,14 @@
 package com.example.ex4.services;
 
+import com.example.ex4.models.AppUser;
+import org.springframework.ui.Model;
+import com.example.ex4.models.LocationRegion;
 import com.example.ex4.models.Position;
 import com.example.ex4.repositories.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Arrays;
+import java.util.*;
 
 @Service
 public class PositionService {
@@ -37,5 +39,12 @@ public class PositionService {
                 .filter(req -> req != null && !req.trim().isEmpty())
                 .toArray(String[]::new)
         );
+    }
+
+    public String getPositions(Model model) {
+        List<Position> jobs = positionRepository.findAll();
+        model.addAttribute("jobs", jobs);
+
+        return "positions-page";
     }
 }
