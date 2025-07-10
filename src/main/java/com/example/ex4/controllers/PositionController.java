@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.util.StringUtils;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -34,22 +32,13 @@ public class PositionController {
 
     @PostMapping("/add")
     public String addPosition(@Valid @ModelAttribute("positionForm") PositionForm positionForm,
-                              BindingResult result, Model model, HttpServletRequest request) {
+                              BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             List<String> jobTitles = positionService.getAllDistinctJobTitles();
             model.addAttribute("jobTitles", jobTitles);
-            return "add-position"; //maybe error page?
-        }
-
-        /*if (StringUtils.hasText(positionForm.getOtherJobTitle()) &&
-                positionService.existsByJobTitle(positionForm.getOtherJobTitle())) {
-
-            result.rejectValue("otherJobTitle", "error.Position", "המקצוע כבר קיים ברשימה");
-            List<String> jobTitles = positionService.getAllDistinctJobTitles();
-            model.addAttribute("jobTitles", jobTitles);
             return "add-position";
-        }*/
+        }
 
         Position position = new Position();
         // Handle jobTitle/otherJobTitle logic
@@ -62,9 +51,8 @@ public class PositionController {
         position.setAssignmentType(positionForm.getAssignmentType());
         position.setDescription(positionForm.getDescription());
         
-        // אוסף את הדרישות מהטופס ומעבד אותן
-        String[] requirements = request.getParameterValues("requirement");
-        String processedRequirements = positionService.processRequirements(requirements);
+        // עכשיו הדרישות מגיעות מה-DTO
+        String processedRequirements = positionService.processRequirements(positionForm.getRequirements());
         position.setRequirements(processedRequirements);
         
         positionService.save(position);

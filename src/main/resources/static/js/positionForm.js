@@ -30,7 +30,7 @@ function positionDom(){
             const row = document.createElement('div');
             row.className = 'input-group mb-2';
             row.innerHTML = `
-                <input type="text" name="requirement" placeholder="הכנס  דרישת מינימום לתפקיד (לדוגמא - רובאי 03)" class="form-control rounded-3" required>
+                <input type="text" name="requirements" placeholder="הכנס  דרישת מינימום לתפקיד (לדוגמא - רובאי 03)" class="form-control rounded-3" required>
                 <button type="button" class="btn btn-outline-danger remove-requirement">
                     <i class="bi bi-trash"></i>
                 </button>
