@@ -3,7 +3,8 @@ function DOM() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const passwordRegex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?`~]{6,20}$/
     const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
-    const maxSize = 1024 * 1024; // 1MB
+    // const maxSize = 1024 * 1024; // 1MB - מחק שורה זו
+    let maxSize = parseFileSize(window.maxFileSize || "1MB");
     let valid = true;
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -56,7 +57,7 @@ function DOM() {
                     valid = false;
                 }
                 else if (file.size > maxSize) {
-                    showError("גודל הקובץ חייב להיות עד 1MB", "militaryIdDoc");
+                    showError("גודל הקובץ חייב להיות עד " + formatFileSize(maxSize), "militaryIdDoc");
                     valid = false;
                 }
 
@@ -68,7 +69,6 @@ function DOM() {
         }
 
         function clearErrors() {
-            //document.querySelectorAll("[data-error]").forEach(div => {
             document.querySelectorAll(".client-error, .server-error").forEach(div=>{
                 div.textContent = "";
             });
@@ -78,6 +78,26 @@ function DOM() {
             const errorDiv = document.querySelector(`[data-error="${field}"]`);
             if (errorDiv) {
                 errorDiv.textContent = message;
+            }
+        }
+        
+        function parseFileSize(size) {
+            if (typeof size === "number") return size;
+            if (size.endsWith("MB")) {
+                return parseInt(size.replace("MB", "")) * 1024 * 1024;
+            } else if (size.endsWith("KB")) {
+                return parseInt(size.replace("KB", "")) * 1024;
+            } else {
+                return parseInt(size);
+            }
+        }
+        function formatFileSize(bytes) {
+            if (bytes >= 1024 * 1024) {
+                return (bytes / (1024 * 1024)) + "MB";
+            } else if (bytes >= 1024) {
+                return (bytes / 1024) + "KB";
+            } else {
+                return bytes + "B";
             }
         }
     });

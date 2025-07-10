@@ -72,9 +72,11 @@
     </div>
 </section>
 
+<script>
+    const maxFileSize = "[[${maxFileSize}]]";
+</script>
+<script th:src="@{/js/registrationForm.js}"></script>
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
-
-<script th:src="@{/js/registrationForm.js}"></script>
 </body>
 </html>

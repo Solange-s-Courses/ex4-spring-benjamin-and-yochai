@@ -4,33 +4,36 @@ import com.example.ex4.dto.RegistrationForm;
 import com.example.ex4.services.AppUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/register")
 public class RegistrationController {
 
     private final AppUserService appUserService;
+
+    @Value("${spring.servlet.multipart.max-file-size:1MB}")
+    private String maxFileSize;
 
     @Autowired
     public RegistrationController(AppUserService appUserService) {
         this.appUserService = appUserService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new RegistrationForm());
+        model.addAttribute("maxFileSize", maxFileSize);
         return "register";
     }
 
-    @PostMapping("/")
+    @PostMapping("/register")
     public String registerUser(@Valid @ModelAttribute("user") RegistrationForm form, BindingResult result,
                                RedirectAttributes redirectAttributes){
 
@@ -39,7 +42,7 @@ public class RegistrationController {
         }
 
         if (result.hasErrors()) {
-            return "register"; //maybe error page?
+            return "register";
         }
 
         if (appUserService.existsByUsername(form.getUsername())) {
@@ -55,11 +58,10 @@ public class RegistrationController {
         try{
             appUserService.saveUser(form);
             redirectAttributes.addFlashAttribute("successMessage", "נרשמת בהצלחה!");
-            //return "redirect:/login";
             return "redirect:/register";
         } catch (Exception e){
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך ההרשמה");
-            return "redirect:/register"; //error page? why not return "register"?
+            return "redirect:/register";
         }
     }
 } 

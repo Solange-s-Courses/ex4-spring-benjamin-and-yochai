@@ -4,6 +4,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.example.ex4.validation.FileSize;
 
 public class RegistrationForm {
 
@@ -22,6 +23,7 @@ public class RegistrationForm {
     private boolean commander;
 
     @NotNull(message = "חובה להעלות תעודת משרת מילואים!")
+    @FileSize(message = "גודל הקובץ חייב להיות עד 1MB") // לא צריך להגדיר max, יקח מ-application.properties
     private MultipartFile militaryIdDoc;
 
     public String getUsername() {
