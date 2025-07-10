@@ -71,9 +71,19 @@
                             <div class="mb-4">
                                 <div class="d-flex align-items-center gap-2 mb-1">
                                     <i class="bi bi-list-check text-primary fs-5"></i>
-                                    <label for="requirements" class="form-label mb-0">דרישות מינימום</label>
+                                    <label class="form-label mb-0">דרישות מינימום</label>
                                 </div>
-                                <textarea class="form-control rounded-3" id="requirements" name="requirements" th:field="*{requirements}" rows="3" placeholder="כתוב כל דרישה בשורה נפרדת..." required></textarea>
+                                <div id="requirementsContainer">
+                                    <div class="input-group mb-2">
+                                        <input type="text" name="requirement" placeholder="הכנס  דרישה נוספת לתפקיד" class="form-control rounded-3" required>
+                                        <button type="button" class="btn btn-outline-danger remove-requirement" style="display:none;">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="button" id="addRequirementBtn" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-plus-circle me-1"></i>הוסף דרישה
+                                </button>
                             </div>
 
                             <div class="d-grid gap-2">

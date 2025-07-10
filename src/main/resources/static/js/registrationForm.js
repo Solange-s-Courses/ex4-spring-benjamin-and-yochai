@@ -1,9 +1,28 @@
 function DOM() {
+    function parseFileSize(size) {
+        if (typeof size === "number") return size;
+        if (size.endsWith("MB")) {
+            return parseInt(size.replace("MB", "")) * 1024 * 1024;
+        } else if (size.endsWith("KB")) {
+            return parseInt(size.replace("KB", "")) * 1024;
+        } else {
+            return parseInt(size);
+        }
+    }
+    function formatFileSize(bytes) {
+        if (bytes >= 1024 * 1024) {
+            return (bytes / (1024 * 1024)) + "MB";
+        } else if (bytes >= 1024) {
+            return (bytes / 1024) + "KB";
+        } else {
+            return bytes + "B";
+        }
+    }
     const usernameRegex = /^[A-Za-z0-9]{3,20}$/
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const passwordRegex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?`~]{6,20}$/
     const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
-    // const maxSize = 1024 * 1024; // 1MB - מחק שורה זו
+    // const maxSize = 1024 * 1024;
     let maxSize = parseFileSize(window.maxFileSize || "1MB");
     let valid = true;
 
@@ -78,26 +97,6 @@ function DOM() {
             const errorDiv = document.querySelector(`[data-error="${field}"]`);
             if (errorDiv) {
                 errorDiv.textContent = message;
-            }
-        }
-        
-        function parseFileSize(size) {
-            if (typeof size === "number") return size;
-            if (size.endsWith("MB")) {
-                return parseInt(size.replace("MB", "")) * 1024 * 1024;
-            } else if (size.endsWith("KB")) {
-                return parseInt(size.replace("KB", "")) * 1024;
-            } else {
-                return parseInt(size);
-            }
-        }
-        function formatFileSize(bytes) {
-            if (bytes >= 1024 * 1024) {
-                return (bytes / (1024 * 1024)) + "MB";
-            } else if (bytes >= 1024) {
-                return (bytes / 1024) + "KB";
-            } else {
-                return bytes + "B";
             }
         }
     });
