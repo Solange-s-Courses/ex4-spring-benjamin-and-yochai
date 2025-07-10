@@ -6,7 +6,9 @@ function positionDom(){
         function toggleOtherInput() {
             if (jobTitleSelect.value === "אחר") {
                 otherJobTitleInput.style.display = "block";
+                otherJobTitleInput.value = "";
             } else {
+                otherJobTitleInput.value = "";
                 otherJobTitleInput.style.display = "none";
             }
         }

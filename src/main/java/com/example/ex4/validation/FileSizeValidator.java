@@ -27,6 +27,10 @@ public class FileSizeValidator implements ConstraintValidator<FileSize, Multipar
             return true;
         }
         
+        System.out.println("File size: " + file.getSize() + " bytes");
+        System.out.println("Max allowed: " + maxSize + " bytes");
+        System.out.println("Is valid: " + (file.getSize() <= maxSize));
+        
         return file.getSize() <= maxSize;
     }
     
