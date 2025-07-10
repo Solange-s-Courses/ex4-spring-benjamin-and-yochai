@@ -68,10 +68,10 @@
                     <p class="mb-1"><strong>סוג שירות:</strong> <span th:text="${job.AssignmentType}"></span></p>
                     <p class="mb-1">
                         <strong>דרישות:</strong>
-                        <span th:text="${#strings.abbreviate(job.requirements, 20)}"></span>
+                        <span th:text="${#strings.abbreviate(job.requirements, 50)}"></span>
                     </p>
-                    <p class="card-text text-muted flex-grow-1" th:text="${#strings.abbreviate(job.description, 50)}"></p>
-                    <a th:href="@{'/job/' + ${job.id}}" class="btn btn-outline-primary mt-3 rounded-3">לפרטי המשרה</a>
+                    <p class="card-text text-muted flex-grow-1" th:text="${#strings.abbreviate(job.description, 100)}"></p>
+                    <a th:href="@{'/positions/' + ${job.id}}" class="btn btn-outline-primary mt-3 rounded-3">לפרטי המשרה</a>
                 </div>
             </div>
         </div>
