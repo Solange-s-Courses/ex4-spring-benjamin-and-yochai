@@ -27,7 +27,7 @@
                                     <option th:each="title : ${jobTitles}" th:value="${title}" th:text="${title}"></option>
                                     <option value="אחר">אחר</option>
                                 </select>
-                                <input type="text" class="form-control rounded-3 mt-2" id="otherJobTitleInput" name="otherJobTitle" placeholder="הזן תפקיד אחר (אם בחרת 'אחר')" style="display: none;">
+                                <input type="text" class="form-control rounded-3 mt-2 d-none" id="otherJobTitleInput" name="otherJobTitle" placeholder="הזן תפקיד אחר (אם בחרת 'אחר')">
                             </div>
 
                             <!-- Location Selection -->
@@ -75,8 +75,8 @@
                                 </div>
                                 <div id="requirementsContainer">
                                     <div class="input-group mb-2">
-                                        <input type="text" name="requirement" placeholder="הכנס  דרישה נוספת לתפקיד" class="form-control rounded-3" required>
-                                        <button type="button" class="btn btn-outline-danger remove-requirement" style="display:none;">
+                                        <input type="text" name="requirements" placeholder="הכנס דרישה נוספת לתפקיד" class="form-control rounded-3" required>
+                                        <button type="button" class="btn btn-outline-danger remove-requirement d-none">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
