@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class PositionController {
 
     @PostMapping("/add")
     public String addPosition(@Valid @ModelAttribute("positionForm") PositionForm positionForm,
-                              BindingResult result, Model model) {
+                              BindingResult result, Model model, HttpServletRequest request) {
 
         if (result.hasErrors()) {
             List<String> jobTitles = positionService.getAllDistinctJobTitles();
@@ -60,7 +61,12 @@ public class PositionController {
         position.setLocation(positionForm.getLocation());
         position.setAssignmentType(positionForm.getAssignmentType());
         position.setDescription(positionForm.getDescription());
-        position.setRequirements(positionForm.getRequirements());
+        
+        // אוסף את הדרישות מהטופס ומעבד אותן
+        String[] requirements = request.getParameterValues("requirement");
+        String processedRequirements = positionService.processRequirements(requirements);
+        position.setRequirements(processedRequirements);
+        
         positionService.save(position);
         return "redirect:/positions/add?success";
     }
