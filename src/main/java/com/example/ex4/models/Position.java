@@ -1,13 +1,6 @@
 package com.example.ex4.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 
 @Entity
 public class Position {
@@ -16,10 +9,14 @@ public class Position {
     private Long id;
 
     private String jobTitle;
+    
     @Enumerated(EnumType.STRING)
     private LocationRegion location;
+    
     private String assignmentType;
+    
     private String description;
+    
     private String requirements;
 
     @ManyToOne

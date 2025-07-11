@@ -2,28 +2,29 @@ package com.example.ex4.dto;
 
 import com.example.ex4.models.LocationRegion;
 import jakarta.validation.constraints.*;
+import com.example.ex4.validation.RequirementsValidator;
 
-/**
- * DTO for job posting form.
- */
 public class PositionForm {
-
-    @NotBlank
+    @NotBlank(message = "חובה לבחור תפקיד")
     private String jobTitle;
 
+    @Size(min = 2, message = "שם התפקיד חייב להכיל לפחות 2 תווים")
     private String otherJobTitle;
 
-    @NotNull
+    @NotNull(message = "חובה לבחור מיקום")
     private LocationRegion location;
 
-    @NotBlank
+    @NotBlank(message = "חובה לבחור סוג שיבוץ")
     private String assignmentType;
 
-    @NotBlank
+    @NotBlank(message = "חובה להזין תיאור תפקיד")
+    @Size(min = 10, max = 500, message = "תיאור התפקיד חייב להכיל בין 10 ל-500 תווים")
     private String description;
 
+    @RequirementsValidator
     private String[] requirements;
 
+    // No-args constructor
     public PositionForm() {}
 
     public String getJobTitle() {

@@ -1,7 +1,5 @@
 package com.example.ex4.dto;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.ex4.validation.FileSize;
