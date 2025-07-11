@@ -27,7 +27,9 @@
                                     <option th:each="title : ${jobTitles}" th:value="${title}" th:text="${title}"></option>
                                     <option value="אחר">אחר</option>
                                 </select>
+                                <div class="text-danger client-error" data-error="jobTitle"></div>
                                 <input type="text" class="form-control rounded-3 mt-2 d-none" id="otherJobTitleInput" name="otherJobTitle" placeholder="הזן תפקיד אחר (אם בחרת 'אחר')">
+                                <div class="text-danger client-error" data-error="otherJobTitleInput"></div>
                             </div>
 
                             <!-- Location Selection -->
@@ -36,10 +38,11 @@
                                     <i class="bi bi-geo-alt text-primary fs-5"></i>
                                     <label for="location" class="form-label mb-0">מיקום בארץ</label>
                                 </div>
-                                <select class="form-select rounded-3" id="location" name="location" th:field="*{location}" required>
+                                <select class="form-select rounded-3" id="location" name="location" th:field="*{location}">
                                     <option value="" selected>בחר אזור</option>
                                     <option th:each="region : ${T(com.example.ex4.models.LocationRegion).values()}" th:value="${region}" th:text="${region}"></option>
                                 </select>
+                                <div class="text-danger client-error" data-error="location"></div>
                             </div>
 
                             <!-- Assignment Type -->
@@ -49,13 +52,14 @@
                                     <label class="form-label mb-0">סוג שיבוץ</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="assignmentType" id="attachment" value="סיפוח" th:field="*{assignmentType}" required>
+                                    <input class="form-check-input" type="radio" name="assignmentType" id="attachment" value="סיפוח" th:field="*{assignmentType}">
                                     <label class="form-check-label" for="attachment">סיפוח</label>
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="radio" name="assignmentType" id="placement" value="הצבה" th:field="*{assignmentType}">
                                     <label class="form-check-label" for="placement">הצבה</label>
                                 </div>
+                                <div class="text-danger client-error" data-error="assignmentType"></div>
                             </div>
 
                             <!-- Job Description -->
@@ -64,7 +68,8 @@
                                     <i class="bi bi-card-text text-primary fs-5"></i>
                                     <label for="description" class="form-label mb-0">תיאור תפקיד</label>
                                 </div>
-                                <textarea class="form-control rounded-3" id="description" name="description" th:field="*{description}" rows="3" placeholder="פרט על התפקיד..." required></textarea>
+                                <textarea class="form-control rounded-3" id="description" name="description" th:field="*{description}" rows="3" placeholder="פרט על התפקיד..."></textarea>
+                                <div class="text-danger client-error" data-error="description"></div>
                             </div>
 
                             <!-- Minimum Requirements -->
@@ -75,12 +80,13 @@
                                 </div>
                                 <div id="requirementsContainer">
                                     <div class="input-group mb-2">
-                                        <input type="text" name="requirements" placeholder="הכנס דרישה נוספת לתפקיד" class="form-control rounded-3" required>
+                                        <input type="text" name="requirements" id="requirement-0" placeholder="הכנס דרישה נוספת לתפקיד" class="form-control rounded-3">
                                         <button type="button" class="btn btn-outline-danger remove-requirement d-none">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
                                 </div>
+                                <div class="text-danger client-error" data-error="requirements"></div>
                                 <button type="button" id="addRequirementBtn" class="btn btn-outline-primary btn-sm">
                                     <i class="bi bi-plus-circle me-1"></i>הוסף דרישה
                                 </button>

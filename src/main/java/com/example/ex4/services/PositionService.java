@@ -34,7 +34,7 @@ public class PositionService {
         }
         
         // מסנן ריקים ומחבר עם שורות חדשות
-        return String.join("\n", 
+        return String.join(",\n",
             Arrays.stream(requirements)
                 .filter(req -> req != null && !req.trim().isEmpty())
                 .toArray(String[]::new)
