@@ -61,6 +61,10 @@ public class PositionController {
         position.setDescription(positionForm.getDescription());
         
         // עכשיו הדרישות מגיעות מה-DTO
+        String[] requirements = positionForm.getRequirements();
+        if (requirements != null) {
+            System.out.println("Requirements received: " + java.util.Arrays.toString(requirements));
+        }
         String processedRequirements = positionService.processRequirements(positionForm.getRequirements());
         position.setRequirements(processedRequirements);
         

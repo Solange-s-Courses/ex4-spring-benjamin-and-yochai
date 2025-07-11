@@ -27,14 +27,12 @@ public class PositionService {
         return positionRepository.findDistinctJobTitles();
     }
 
-    // מתודה חדשה לטיפול בדרישות מינימום
     public String processRequirements(String[] requirements) {
         if (requirements == null || requirements.length == 0) {
             return "";
         }
         
-        // מסנן ריקים ומחבר עם שורות חדשות
-        return String.join(",\n",
+        return String.join(", ",
             Arrays.stream(requirements)
                 .filter(req -> req != null && !req.trim().isEmpty())
                 .toArray(String[]::new)
