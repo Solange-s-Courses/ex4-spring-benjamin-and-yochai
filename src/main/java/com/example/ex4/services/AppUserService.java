@@ -16,10 +16,12 @@ import java.util.Optional;
 @Service
 public class AppUserService {
     private final AppUserRepository appUserRepository;
+    private final PasswordEncoderService passwordEncoderService;
 
     @Autowired
-    public AppUserService(AppUserRepository appUserRepository) {
+    public AppUserService(AppUserRepository appUserRepository, PasswordEncoderService passwordEncoderService) {
         this.appUserRepository = appUserRepository;
+        this.passwordEncoderService = passwordEncoderService;
     }
 
     public List<AppUser> getAllUsers() {
@@ -51,7 +53,7 @@ public class AppUserService {
 
         AppUser appUser = new AppUser();
         appUser.setUsername(form.getUsername().trim());
-        appUser.setPassword(form.getPassword());
+        appUser.setPassword(passwordEncoderService.encodePassword(form.getPassword()));
         appUser.setEmail(form.getEmail().trim());
 
         if (form.isCommander()) {
@@ -64,7 +66,6 @@ public class AppUserService {
         if (file != null && !file.isEmpty()) {
             appUser.setMilitaryIdDoc(file.getBytes());
         }
-        //return appUserRepository.save(appUser);
         appUserRepository.save(appUser);
     }
 
