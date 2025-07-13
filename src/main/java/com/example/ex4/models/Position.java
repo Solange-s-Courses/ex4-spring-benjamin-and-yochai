@@ -20,7 +20,7 @@ public class Position {
     private String requirements;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private AppUser publisher;
 
     public Long getId() {

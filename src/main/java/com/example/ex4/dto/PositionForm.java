@@ -5,6 +5,11 @@ import com.example.ex4.validation.OtherJobTitleValidator;
 import jakarta.validation.constraints.*;
 import com.example.ex4.validation.RequirementsValidator;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
+@OtherJobTitleValidator
 public class PositionForm {
     @NotBlank(message = "חובה לבחור תפקיד")
     private String jobTitle;
@@ -23,7 +28,7 @@ public class PositionForm {
     private String description;
 
     @RequirementsValidator
-    private String[] requirements;
+    private List<String> requirements = new ArrayList<>();
 
     // No-args constructor
     public PositionForm() {}
@@ -68,11 +73,11 @@ public class PositionForm {
         this.description = description;
     }
 
-    public String[] getRequirements() {
+    public List<String> getRequirements() {
         return requirements;
     }
 
-    public void setRequirements(String[] requirements) {
+    public void setRequirements(List<String> requirements) {
         this.requirements = requirements;
     }
 }

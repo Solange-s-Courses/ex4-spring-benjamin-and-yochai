@@ -7,7 +7,7 @@ public class AppUser {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long id;
 
     private String username;
 
@@ -27,11 +27,11 @@ public class AppUser {
     private Role role = Role.RESERVIST;
 
     public Long getId() {
-        return userId;
+        return id;
     }
 
     public void setId(Long id) {
-        this.userId = id;
+        this.id = id;
     }
 
     public String getUsername() {

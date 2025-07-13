@@ -8,6 +8,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -17,10 +18,10 @@ public @interface RequirementsValidator {
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
-    class RequirementsValidatorImpl implements ConstraintValidator<RequirementsValidator, String[]> {
+    class RequirementsValidatorImpl implements ConstraintValidator<RequirementsValidator, List<String>> {
         @Override
-        public boolean isValid(String[] requirements, ConstraintValidatorContext context) {
-            if (requirements == null || requirements.length == 0) {
+        public boolean isValid(List<String> requirements, ConstraintValidatorContext context) {
+            if (requirements == null || requirements.isEmpty()) {
                 return false;
             }
             

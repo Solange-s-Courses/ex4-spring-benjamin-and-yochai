@@ -18,7 +18,7 @@
 
 <nav th:fragment="navigation" class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="#" th:href="@{/}">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
             <i class="bi bi-bullseye me-2 fs-4"></i>
             
             <span class="fw-bold fs-4">צו גיוס - מילואים בדרך שלך</span>
@@ -30,12 +30,13 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="navbar-nav ms-auto">
-                <a class="nav-link me-3" href="#" th:href="@{/about}">אודות</a>
-                <a class="btn btn-outline-primary rounded-pill px-4 me-2" href="#" th:href="@{/login}">
+                <a class="nav-link me-3" th:href="@{/about}">אודות</a>
+                <a class="nav-link me-3"  th:href="@{/positions}">משרות</a>
+                <a class="btn btn-outline-primary rounded-pill px-4 me-2" th:href="@{/login}">
                     <i class="bi bi-person-circle me-1"></i>
                     התחברות
                 </a>
-                <a class="btn btn-primary rounded-pill px-4 text-white" href="#" th:href="@{/register}">
+                <a class="btn btn-primary rounded-pill px-4 text-white" th:href="@{/register}">
                     <i class="bi bi-person-plus me-1"></i>
                     הרשמה
                 </a>

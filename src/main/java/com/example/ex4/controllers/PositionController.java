@@ -9,11 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.util.StringUtils;
+
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -23,7 +22,7 @@ public class PositionController {
     @Autowired
     private PositionService positionService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public String positionsPage(Model model) {
         AppUser mockUser = new AppUser();
         mockUser.setUsername("משתמש");
@@ -31,9 +30,16 @@ public class PositionController {
         return positionService.getPositions(model);
     }
 
+    @GetMapping("/{id}")
+    public String getPosition(@PathVariable Long id, Model model) {
+        return positionService.getPosition(id, model);
+    }
+
     @GetMapping("/add")
     public String showAddPositionForm(Model model) {
-        model.addAttribute("positionForm", new PositionForm());
+        PositionForm form = new PositionForm();
+        form.setRequirements(Arrays.asList(""));
+        model.addAttribute("positionForm", form);
         List<String> jobTitles = positionService.getAllDistinctJobTitles();
         model.addAttribute("jobTitles", jobTitles);
         return "add-position";
@@ -46,6 +52,7 @@ public class PositionController {
         if (result.hasErrors()) {
             List<String> jobTitles = positionService.getAllDistinctJobTitles();
             model.addAttribute("jobTitles", jobTitles);
+            model.addAttribute("errors", result.getAllErrors());
             return "add-position";
         }
 
@@ -61,14 +68,14 @@ public class PositionController {
         position.setDescription(positionForm.getDescription());
         
         // עכשיו הדרישות מגיעות מה-DTO
-        String[] requirements = positionForm.getRequirements();
+        List<String> requirements = positionForm.getRequirements();
         if (requirements != null) {
-            System.out.println("Requirements received: " + java.util.Arrays.toString(requirements));
+            System.out.println("PositionControler.java Row 71    Requirements received: " + requirements);
         }
         String processedRequirements = positionService.processRequirements(positionForm.getRequirements());
         position.setRequirements(processedRequirements);
         
         positionService.save(position);
-        return "redirect:/positions/add?success";
+        return "redirect:/positions?success";
     }
 }

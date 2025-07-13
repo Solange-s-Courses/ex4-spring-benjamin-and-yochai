@@ -7,8 +7,10 @@ import com.example.ex4.models.Position;
 import com.example.ex4.repositories.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PositionService {
@@ -27,16 +29,14 @@ public class PositionService {
         return positionRepository.findDistinctJobTitles();
     }
 
-    public String processRequirements(String[] requirements) {
-        if (requirements == null || requirements.length == 0) {
+    public String processRequirements(List<String> requirements) {
+        if (requirements == null || requirements.isEmpty()) {
             return "";
         }
-        
-        return String.join(", ",
-            Arrays.stream(requirements)
+
+        return requirements.stream()
                 .filter(req -> req != null && !req.trim().isEmpty())
-                .toArray(String[]::new)
-        );
+                .collect(Collectors.joining(", "));
     }
 
     public String getPositions(Model model) {
@@ -44,5 +44,11 @@ public class PositionService {
         model.addAttribute("jobs", jobs);
 
         return "positions-page";
+    }
+
+    public String getPosition(@PathVariable Long id, Model model) {
+        Position position = positionRepository.findById(id).orElseThrow(() -> new RuntimeException("Position not found"));
+        model.addAttribute("position", position);
+        return "position";
     }
 }
