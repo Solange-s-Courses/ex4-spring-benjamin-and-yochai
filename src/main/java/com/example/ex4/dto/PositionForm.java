@@ -1,6 +1,7 @@
 package com.example.ex4.dto;
 
 import com.example.ex4.models.LocationRegion;
+import com.example.ex4.validation.OtherJobTitleValidator;
 import jakarta.validation.constraints.*;
 import com.example.ex4.validation.RequirementsValidator;
 
@@ -8,7 +9,7 @@ public class PositionForm {
     @NotBlank(message = "חובה לבחור תפקיד")
     private String jobTitle;
 
-    @Size(min = 2, message = "שם התפקיד חייב להכיל לפחות 2 תווים")
+    //@Size(min = 2, message = "שם התפקיד חייב להכיל לפחות 2 תווים")
     private String otherJobTitle;
 
     @NotNull(message = "חובה לבחור מיקום")
