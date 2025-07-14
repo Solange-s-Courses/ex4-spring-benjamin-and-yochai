@@ -127,9 +127,12 @@
                     <i class="bi bi-share text-primary fs-2 mb-2"></i>
                     <h6 class="fw-bold">שתף עם חברים</h6>
                     <p class="text-muted small mb-2">העבר את המשרה לחברים מתאימים</p>
-                    <button class="btn btn-outline-primary btn-sm rounded-3" onclick="sharePosition()">
+                    <button class="btn btn-outline-primary btn-sm rounded-3" th:id="shareBtn">
                         שתף משרה
                     </button>
+                    <div class="d-none" id="copy-message" style="position:fixed; bottom:20px; right:20px; background:#28a745; color:white; padding:10px 15px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.3); z-index:9999;">
+                        הקישור הועתק בהצלחה!
+                    </div>
                 </div>
             </div>
         </div>
@@ -139,22 +142,7 @@
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
-<script>
-    function sharePosition() {
-        if (navigator.share) {
-            navigator.share({
-                title: document.querySelector('h2').textContent,
-                text: 'בדוק את המשרה הזו:',
-                url: window.location.href
-            });
-        } else {
-            // Fallback - copy URL to clipboard
-            navigator.clipboard.writeText(window.location.href).then(function () {
-                alert('קישור המשרה הועתק ללוח');
-            });
-        }
-    }
-</script>
+<script th:src="@{/js/position.js}"></script>
 
 </body>
 </html>

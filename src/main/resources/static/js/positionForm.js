@@ -159,7 +159,7 @@ function positionDom(){
 
         form.addEventListener('submit', function(e) {
 
-            if (false && !validateForm()) {
+            if (!validateForm()) {
                 e.preventDefault();
                 
                 const firstError = document.querySelector('.client-error:not(:empty)');

@@ -40,8 +40,27 @@ public class PositionService {
     }
 
     public String getPositions(Model model) {
-        List<Position> jobs = positionRepository.findAll();
+        List<Position> jobs = positionRepository.findAllByOrderByJobTitleAsc();
+
+        // מיון אלפביתי של מיקומים (Enum) לפי toString()
+        List<LocationRegion> sortedLocations = jobs.stream()
+                .map(Position::getLocation)
+                .filter(Objects::nonNull)
+                .distinct()
+                .sorted(Comparator.comparing(LocationRegion::toString))
+                .toList();
+
+        // מיון אלפביתי של סוגי שירות (Strings)
+        List<String> sortedServiceTypes = jobs.stream()
+                .map(Position::getAssignmentType)
+                .filter(Objects::nonNull)
+                .distinct()
+                .sorted()
+                .toList();
+
         model.addAttribute("jobs", jobs);
+        model.addAttribute("locations", sortedLocations);
+        model.addAttribute("serviceTypes", sortedServiceTypes);
 
         return "positions-page";
     }

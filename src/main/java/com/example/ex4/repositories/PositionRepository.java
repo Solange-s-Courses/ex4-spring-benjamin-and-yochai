@@ -13,4 +13,5 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
 
     boolean existsByJobTitle(String jobTitle);
 
+    List<Position> findAllByOrderByJobTitleAsc();
 }
