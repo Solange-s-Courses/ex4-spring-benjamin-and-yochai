@@ -52,7 +52,7 @@ public class PositionController {
         if (result.hasErrors()) {
             List<String> jobTitles = positionService.getAllDistinctJobTitles();
             model.addAttribute("jobTitles", jobTitles);
-            model.addAttribute("errors", result.getAllErrors());
+            //model.addAttribute("errors", result.getAllErrors());
             return "add-position";
         }
 

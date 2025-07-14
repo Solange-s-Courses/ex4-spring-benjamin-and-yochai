@@ -114,8 +114,8 @@
                 <div class="card-body text-center">
                     <i class="bi bi-question-circle text-primary fs-2 mb-2"></i>
                     <h6 class="fw-bold">יש שאלות?</h6>
-                    <p class="text-muted small mb-2">צור קשר עם מחלקת הגיוס</p>
-                    <a href="mailto:recruit@example.com" class="btn btn-outline-primary btn-sm rounded-3">
+                    <p class="text-muted small mb-2">צור קשר עם מפרסם המשרה</p>
+                    <a th:href="'mailto:' + ${position.publisher.email}" class="btn btn-outline-primary btn-sm rounded-3">
                         שלח אימייל
                     </a>
                 </div>
