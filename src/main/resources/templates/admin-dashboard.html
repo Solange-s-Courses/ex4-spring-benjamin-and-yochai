@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/header :: navigation}"></nav>
+<main class="flex-grow-1">
+    <section class="py-5 mt-5">
+        <div class="container">
+            <h2 class="text-center mb-5">ניהול משתמשים</h2>
+
+            <!-- New Users Section -->
+            <div class="mb-5">
+                <h4 class="mb-3">משתמשים חדשים ממתינים לאישור</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>שם מלא</th>
+                            <th>דוא"ל</th>
+                            <th>שם משתמש</th>
+                            <th>מסמך זיהוי</th>
+                            <th>פעולה</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user : ${pendingUsers}">
+                            <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${user.username}"></td>
+                            <td><a th:href="@{/documents/{id}(id=${user.id})}" target="_blank">צפה</a></td>
+                            <!--<td>
+                                <button type="button" class="btn btn-outline-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        th:attr="data-bs-target='#pdfModal__' + ${user.id}">
+                                            צפה
+                                </button>
+                            </td>-->
+                            <td>
+                                <form th:action="@{/admin/approve}" method="post" class="d-inline">
+                                    <input type="hidden" name="userId" th:value="${user.id}">
+                                    <button type="submit" class="btn btn-success btn-sm">אשר</button>
+                                </form>
+                                <form th:action="@{/admin/reject}" method="post" class="d-inline ms-2">
+                                    <input type="hidden" name="userId" th:value="${user.id}">
+                                    <button type="submit" class="btn btn-danger btn-sm">דחה</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(pendingUsers)}">
+                            <td colspan="5">אין משתמשים חדשים ממתינים לאישור</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- Permissions Management Section -->
+            <div>
+                <h4 class="mb-3">ניהול הרשאות משתמשים</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>שם מלא</th>
+                            <th>דוא"ל</th>
+                            <th>שם משתמש</th>
+                            <th>הרשאה נוכחית</th>
+                            <th>שנה הרשאה</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user : ${allUsers}">
+                            <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${user.username}"></td>
+                            <td th:text="${user.role}"></td>
+                            <td>
+                                <form th:action="@{/admin/change-role}" method="post" class="d-flex justify-content-center">
+                                    <input type="hidden" name="userId" th:value="${user.id}">
+                                    <select class="form-select form-select-sm w-auto" name="newRole">
+                                        <option value="USER" th:selected="${user.role == 'USER'}">משתמש</option>
+                                        <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">מנהל</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(allUsers)}">
+                            <td colspan="5">אין משתמשים במערכת</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<div th:replace="~{fragments/toasts :: successToast}"></div>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -53,6 +53,10 @@ public class AppUserService implements UserDetailsService {
         return appUserRepository.findAll();
     }
 
+    public List<AppUser> getPendingUsers() {
+        return appUserRepository.findByRegistrationStatus(RegistrationStatus.PENDING);
+    }
+
     public Optional<AppUser> getUserById(Long id) {
         return appUserRepository.findById(id);
     }

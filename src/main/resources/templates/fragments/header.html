@@ -32,6 +32,7 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="navbar-nav ms-auto">
+                <a sec:authorize="hasRole('ADMIN')" class="nav-link me-3" th:href="@{/admin}">ניהול משתמשים</a>
                 <a sec:authorize="isAuthenticated()" class="nav-link me-3" th:href="@{/dashboard}">דשבורד</a>
                 <a sec:authorize="isAuthenticated()" class="nav-link me-3"  th:href="@{/positions}">חיפוש משרות</a>
                 <a class="nav-link me-3" th:href="@{/about}">אודות</a>
