@@ -39,49 +39,13 @@ public class PositionController {
 
     @GetMapping("/add")
     public String showAddPositionForm(Model model) {
-        PositionForm form = new PositionForm();
-        form.setRequirements(Arrays.asList(""));
-        model.addAttribute("positionForm", form);
-        List<String> jobTitles = positionService.getAllDistinctJobTitles();
-        model.addAttribute("jobTitles", jobTitles);
-        return "add-position";
+        return positionService.getAddPositionForm(model);
     }
 
     @PostMapping("/add")
     public String addPosition(@Valid @ModelAttribute("positionForm") PositionForm positionForm,
                               BindingResult result, Model model,
                               RedirectAttributes redirectAttributes, Principal principal) {
-
-        if (result.hasErrors()) {
-            List<String> jobTitles = positionService.getAllDistinctJobTitles();
-            model.addAttribute("jobTitles", jobTitles);
-            return "add-position";
-        }
-
-        Position position = new Position();
-        // Handle jobTitle/otherJobTitle logic
-        if (StringUtils.hasText(positionForm.getOtherJobTitle())) {
-            position.setJobTitle(positionForm.getOtherJobTitle());
-        } else {
-            position.setJobTitle(positionForm.getJobTitle());
-        }
-        position.setLocation(positionForm.getLocation());
-        position.setAssignmentType(positionForm.getAssignmentType());
-        position.setDescription(positionForm.getDescription());
-
-        String processedRequirements = positionService.processRequirements(positionForm.getRequirements());
-        position.setRequirements(processedRequirements);
-
-        AppUser publisher = appUserService.getUserByUsername(principal.getName());
-        position.setPublisher(publisher);
-
-        try{
-            positionService.save(position);
-            redirectAttributes.addFlashAttribute("successMessage", "המשרה הוספה בהצלחה!");
-            return "redirect:/positions";
-        } catch (Exception e){
-            redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך השמירה, אנא נסו שנית במועד מאוחר יותר.");
-            return "add-position";
-        }
+        return positionService.processAddPositionForm(positionForm, model, result, principal.getName(), redirectAttributes);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ex4.services;
 
+import com.example.ex4.dto.PositionForm;
 import com.example.ex4.models.AppUser;
 import org.springframework.ui.Model;
 import com.example.ex4.models.LocationRegion;
@@ -7,7 +8,10 @@ import com.example.ex4.models.Position;
 import com.example.ex4.repositories.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,6 +20,8 @@ import java.util.stream.Collectors;
 public class PositionService {
     @Autowired
     private PositionRepository positionRepository;
+    @Autowired
+    private AppUserService appUserService;
 
     public boolean existsByJobTitle(String jobTitle) {
         return positionRepository.existsByJobTitle(jobTitle);
@@ -69,5 +75,54 @@ public class PositionService {
         Position position = positionRepository.findById(id).orElseThrow(() -> new RuntimeException("Position not found"));
         model.addAttribute("position", position);
         return "position";
+    }
+
+    public String getAddPositionForm(Model model) {
+        PositionForm form = new PositionForm();
+        form.setRequirements(Arrays.asList(""));
+
+        List<String> jobTitles = getAllDistinctJobTitles();
+
+        model.addAttribute("positionForm", form);
+        model.addAttribute("jobTitles", jobTitles);
+
+        return "add-position";
+    }
+
+    public String processAddPositionForm(PositionForm form, Model model,
+                                         BindingResult result, String username,
+                                         RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            //List<String> jobTitles = getAllDistinctJobTitles();
+            //model.addAttribute("positionForm", form);
+            //model.addAttribute("jobTitles", jobTitles);
+            return "add-position";
+        }
+
+        Position position = new Position();
+        // Handle jobTitle/otherJobTitle logic
+        if (StringUtils.hasText(form.getOtherJobTitle())) {
+            position.setJobTitle(form.getOtherJobTitle());
+        } else {
+            position.setJobTitle(form.getJobTitle());
+        }
+        position.setLocation(form.getLocation());
+        position.setAssignmentType(form.getAssignmentType());
+        position.setDescription(form.getDescription());
+
+        String processedRequirements = processRequirements(form.getRequirements());
+        position.setRequirements(processedRequirements);
+
+        AppUser publisher = appUserService.getUserByUsername(username);
+        position.setPublisher(publisher);
+
+        try{
+            save(position);
+            redirectAttributes.addFlashAttribute("successMessage", "המשרה הוספה בהצלחה!");
+            return "redirect:/positions";
+        } catch (Exception e){
+            redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך השמירה, אנא נסו שנית במועד מאוחר יותר.");
+            return "add-position";
+        }
     }
 }

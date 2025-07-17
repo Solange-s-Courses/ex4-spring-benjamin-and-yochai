@@ -132,8 +132,8 @@ function positionDom(){
             const isDescriptionValid = validateDescription();
             const isRequirementsValid = validateRequirements();
             
-            return isJobTitleValid && isLocationValid && isAssignmentTypeValid && 
-                   isDescriptionValid && isRequirementsValid;
+            return isJobTitleValid && isLocationValid && isAssignmentTypeValid &&
+                   isDescriptionValid && isRequirementsValid;//-----------------------------------------------------------------------------------
         }
 
         jobTitleSelect.addEventListener('change', function() {
@@ -172,7 +172,7 @@ function positionDom(){
         function toggleOtherInput() {
             if (jobTitleSelect.value === "אחר") {
                 otherJobTitleInput.classList.remove("d-none");
-                otherJobTitleInput.value = "";
+                //otherJobTitleInput.value = "";
             } else {
                 otherJobTitleInput.value = "";
                 otherJobTitleInput.classList.add("d-none");

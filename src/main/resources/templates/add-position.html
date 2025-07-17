@@ -38,9 +38,11 @@
                                     <div class="text-danger server-error" th:if="${#fields.hasErrors('jobTitle')}"
                                          th:errors="*{jobTitle}"></div>
                                     <div class="text-danger client-error" data-error="jobTitle"></div>
+
                                     <input type="text" class="form-control rounded-3 mt-2 d-none"
                                            id="otherJobTitleInput" name="otherJobTitle"
-                                           placeholder="הזן תפקיד אחר (אם בחרת 'אחר')">
+                                           placeholder="הזן תפקיד אחר (אם בחרת 'אחר')"
+                                           th:field="*{otherJobTitle}">
                                     <div class="text-danger server-error" th:if="${#fields.hasErrors('otherJobTitle')}"
                                          th:errors="*{otherJobTitle}"></div>
                                     <div class="text-danger client-error" data-error="otherJobTitleInput"></div>
@@ -106,8 +108,8 @@
                                     </div>
 
                                     <div id="requirementsContainer">
-                                        <div th:each="requirement, iterStat : ${requirements}" class="input-group mb-2">
-                                            <input type="text" th:name="'requirements[' + ${iterStat.index} + ']'"
+                                        <div th:each="requirement, iterStat : *{requirements}" class="input-group mb-2">
+                                            <input type="text" th:field="*{requirements[__${iterStat.index}__]}"
                                                    placeholder="הכנס דרישת מינימום לתפקיד (לדוגמא - רובאי 03)"
                                                    class="form-control rounded-3" th:value="requirement">
                                             <button type="button"
@@ -115,6 +117,7 @@
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
+                                        <!--
                                         <div class="input-group mb-2">
                                             <input type="text" name="requirements"
                                                    placeholder="הכנס דרישת מינימום לתפקיד (לדוגמא - רובאי 03)"
@@ -124,6 +127,7 @@
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
+                                        -->
                                     </div>
 
                                     <!--<div id="requirementsContainer">
