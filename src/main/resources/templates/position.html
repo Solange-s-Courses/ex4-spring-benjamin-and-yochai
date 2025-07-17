@@ -86,8 +86,12 @@
                             </h6>
                             <div class="row">
                                 <div class="col-sm-6">
+                                    <small class="text-muted">פורסם על ידי:</small>
+                                    <p class="mb-1" th:text="${position.publisher.firstName + ' ' + position.publisher.lastName}"></p>
+                                </div>
+                                <div class="col-sm-6">
                                     <small class="text-muted">מספר משרה:</small>
-                                    <p class="mb-1" th:text="${position.id}">מספר</p>
+                                    <p class="mb-1" th:text="${position.id}"></p>
                                 </div>
                             </div>
                         </div>

@@ -8,9 +8,10 @@
 
 <!-- Main Content -->
 <section class="container py-5 mt-4">
-    <div class="mb-4 d-flex justify-content-between align-items-center">
+    <div class="mb-4 mt-3 d-flex justify-content-between align-items-center">
         <h2 class="fw-bold mb-0">שלום <span sec:authentication="principal.firstName"></span>!</h2>
-        <a href="/positions/add" class="btn btn-primary rounded-3 mt-3">
+        <a  sec:authorize="hasAnyRole('COMMANDER', 'ADMIN')"
+            href="/positions/add" class="btn btn-primary rounded-3 ">
             הוסף משרה <i class="bi bi-plus-circle ms-1"></i>
         </a>
     </div>
