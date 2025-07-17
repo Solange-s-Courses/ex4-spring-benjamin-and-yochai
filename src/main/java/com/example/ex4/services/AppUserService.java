@@ -53,6 +53,8 @@ public class AppUserService {
 
         AppUser appUser = new AppUser();
         appUser.setUsername(form.getUsername().trim());
+        appUser.setFirstName(form.getFirstName().trim());
+        appUser.setLastName(form.getLastName().trim());
         appUser.setPassword(passwordEncoderService.encodePassword(form.getPassword()));
         appUser.setEmail(form.getEmail().trim());
 
@@ -66,6 +68,7 @@ public class AppUserService {
         if (file != null && !file.isEmpty()) {
             appUser.setMilitaryIdDoc(file.getBytes());
         }
+
         appUserRepository.save(appUser);
     }
 

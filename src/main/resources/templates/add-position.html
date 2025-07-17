@@ -124,13 +124,11 @@
                                 </button>
                             </div>
 
-                            <!--
-                            <div class="alert alert-danger" th:if="${errors}">
-                                <ul class="mb-0 ps-3">
-                                    <li th:each="err : ${errors}" th:text="${err.defaultMessage}"></li>
-                                </ul>
+
+                            <div class="alert alert-danger" th:if="${errorMessage}">
+                                <p th:text="${errorMessage}"></p>
                             </div>
-                            -->
+
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">
                                     פרסם משרה <i class="bi bi-megaphone ms-2"></i>

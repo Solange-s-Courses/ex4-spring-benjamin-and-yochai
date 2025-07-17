@@ -4,20 +4,20 @@ const positionsPageDom = ()=>{
         const jobCardsDiv = document.getElementById("job-cards");
         const locationSelector = document.getElementById("location");
         const assigmentTypeSelector = document.getElementById("serviceType");
-        const urlParams = new URLSearchParams(window.location.search);
+        //const urlParams = new URLSearchParams(window.location.search);
 
-        if (urlParams.has('success')) {
-            const successToast = new bootstrap.Toast(document.getElementById('successToast'), {
-                autohide: true,
-                delay: 5000 // 5 seconds
-            });
-
-            successToast.show();
-
-            // Clean up URL (optional)
-            const newUrl = window.location.pathname;
-            window.history.replaceState({}, document.title, newUrl);
-        }
+        // if (urlParams.has('success')) {
+        //     const successToast = new bootstrap.Toast(document.getElementById('successToast'), {
+        //         autohide: true,
+        //         delay: 5000 // 5 seconds
+        //     });
+        //
+        //     successToast.show();
+        //
+        //     // Clean up URL (optional)
+        //     const newUrl = window.location.pathname;
+        //     window.history.replaceState({}, document.title, newUrl);
+        // }
 
         function filterJobs(){
             const selectedLocation = locationSelector.value;

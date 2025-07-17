@@ -28,6 +28,24 @@
                             </div>
                             <div class="mb-4">
                                 <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-person text-primary fs-5"></i>
+                                    <label for="firstName" class="form-label mb-0">שם פרטי</label>
+                                </div>
+                                <input type="text" class="form-control rounded-3" id="firstName" th:field="*{firstName}">
+                                <div class="text-danger server-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                                <div class="text-danger client-error" data-error="firstName"></div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-person text-primary fs-5"></i>
+                                    <label for="lastName" class="form-label mb-0">שם משפחה</label>
+                                </div>
+                                <input type="text" class="form-control rounded-3" id="lastName" th:field="*{lastName}">
+                                <div class="text-danger server-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                                <div class="text-danger client-error" data-error="lastName"></div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-1">
                                     <i class="bi bi-envelope text-primary fs-5"></i>
                                     <label for="email" class="form-label mb-0">אימייל</label>
                                 </div>
@@ -59,6 +77,10 @@
                                     <label class="form-check-label" for="commander">אני מפקד שמעוניין לפרסם תפקיד</label>
                                 </div>
                             </div>
+                            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <span th:text="${errorMessage}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">
                                     הרשמה <i class="bi bi-box-arrow-in-right ms-2"></i>
@@ -71,6 +93,8 @@
         </div>
     </div>
 </section>
+
+<div th:replace="~{fragments/toasts :: successToast}"></div>
 
 <script>
     const maxFileSize = "[[${maxFileSize}]]";

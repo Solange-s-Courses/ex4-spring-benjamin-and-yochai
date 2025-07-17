@@ -10,6 +10,14 @@ public class RegistrationForm {
     @Size(min = 3, max = 20, message = "שם המשתמש חייב להיות בין 3 ל-20 תווים")
     private String username;
 
+    @NotBlank(message = "שם פרטי הוא שדה חובה")
+    @Size(min = 3, max = 20, message = "שם פרטי חייב להיות בין 3 ל-20 תווים")
+    private String firstName;
+
+    @NotBlank(message = "שם משפחה הוא שדה חובה")
+    @Size(min = 3, max = 20, message = "שם משפחה חייב להיות בין 3 ל-20 תווים")
+    private String lastName;
+
     @NotBlank(message = "סיסמה היא שדה חובה")
     @Size(min = 6, message = "הסיסמה חייבת להכיל לפחות 6 תווים")
     private String password;
@@ -31,6 +39,14 @@ public class RegistrationForm {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public String getFirstName() { return firstName; }
+
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public String getLastName() { return lastName; }
+
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
     public String getPassword() {
         return password;

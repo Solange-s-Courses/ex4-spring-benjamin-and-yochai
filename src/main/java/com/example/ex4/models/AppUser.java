@@ -1,6 +1,7 @@
 package com.example.ex4.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 public class AppUser {
@@ -9,10 +10,19 @@ public class AppUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty
     private String username;
 
+    @NotEmpty
+    private String firstName;
+
+    @NotEmpty
+    private String lastName;
+
+    @NotEmpty
     private String password;
 
+    @NotEmpty
     private String email;
 
     @Lob
@@ -25,6 +35,10 @@ public class AppUser {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum('ADMIN', 'COMMANDER', 'RESERVIST') DEFAULT 'RESERVIST'")
     private Role role = Role.RESERVIST;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum('PENDING', 'APPROVED', 'BLOCKED') DEFAULT 'PENDING'")
+    private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
 
     public Long getId() {
         return id;
@@ -41,6 +55,14 @@ public class AppUser {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public String getFirstName() { return firstName; }
+
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public String getLastName() { return lastName; }
+
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
     public String getPassword() {
         return password;
@@ -81,4 +103,8 @@ public class AppUser {
     public void setIsApproved(Boolean isApproved) {
         this.isApproved = isApproved;
     }
+
+    public RegistrationStatus getRegistrationStatus() { return registrationStatus; }
+
+    public void setRegistrationStatus(RegistrationStatus registrationStatus) { this.registrationStatus = registrationStatus; }
 } 

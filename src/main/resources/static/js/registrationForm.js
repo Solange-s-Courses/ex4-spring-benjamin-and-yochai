@@ -19,6 +19,7 @@ function DOM() {
         }
     }
     const usernameRegex = /^[A-Za-z0-9]{3,20}$/
+    const hebrewNameRegex = /^[\u05D0-\u05EA]{3,20}$/
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const passwordRegex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?`~]{6,20}$/
     const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
@@ -29,6 +30,8 @@ function DOM() {
     document.addEventListener("DOMContentLoaded", () => {
         const form = document.getElementById("registrationForm");
         const username = document.getElementById("username");
+        const firstName = document.getElementById("firstName");
+        const lastName = document.getElementById("lastName");
         const email = document.getElementById("email");
         const password = document.getElementById("password");
         const militaryIdDoc = document.getElementById("militaryIdDoc");
@@ -44,6 +47,24 @@ function DOM() {
                 }
                 else if(!usernameRegex.test(username.value.trim())){
                     showError("על שם המשתמש להכיל תווים באנגלית ומספרים בלבד, באורך 3-20", "username");
+                    valid = false;
+                }
+
+                if (!firstName.value || firstName.value.trim().length === 0) {
+                    showError("יש להזין שם פרטי", "firstName");
+                    valid = false;
+                }
+                else if(!hebrewNameRegex.test(firstName.value.trim())){
+                    showError("על השם הפרטי להכיל תווים בעברית בלבד, באורך 3-20", "firstName");
+                    valid = false;
+                }
+
+                if (!lastName.value || lastName.value.trim().length === 0) {
+                    showError("יש להזין שם משפחה", "lastName");
+                    valid = false;
+                }
+                else if(!hebrewNameRegex.test(lastName.value.trim())){
+                    showError("על שם המשפחה להכיל תווים בעברית בלבד, באורך 3-20", "lastName");
                     valid = false;
                 }
 

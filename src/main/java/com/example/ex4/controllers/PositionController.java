@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,12 +48,11 @@ public class PositionController {
 
     @PostMapping("/add")
     public String addPosition(@Valid @ModelAttribute("positionForm") PositionForm positionForm,
-                              BindingResult result, Model model) {
+                              BindingResult result, Model model, RedirectAttributes redirectAttributes) {
 
         if (result.hasErrors()) {
             List<String> jobTitles = positionService.getAllDistinctJobTitles();
             model.addAttribute("jobTitles", jobTitles);
-            //model.addAttribute("errors", result.getAllErrors());
             return "add-position";
         }
 
@@ -66,16 +66,18 @@ public class PositionController {
         position.setLocation(positionForm.getLocation());
         position.setAssignmentType(positionForm.getAssignmentType());
         position.setDescription(positionForm.getDescription());
-        
-        // עכשיו הדרישות מגיעות מה-DTO
-        List<String> requirements = positionForm.getRequirements();
-        if (requirements != null) {
-            System.out.println("PositionControler.java Row 71    Requirements received: " + requirements);
-        }
+
         String processedRequirements = positionService.processRequirements(positionForm.getRequirements());
         position.setRequirements(processedRequirements);
-        
-        positionService.save(position);
-        return "redirect:/positions?success";
+
+        //----------------------------
+        try{
+            positionService.save(position);
+            redirectAttributes.addFlashAttribute("successMessage", "המשרה הוספה בהצלחה!");
+            return "redirect:/positions";
+        } catch (Exception e){
+            redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך השמירה, אנא נסו שנית במועד מאוחר יותר.");
+            return "add-position";
+        }
     }
 }
