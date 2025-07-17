@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/header :: header}"></head>
-<body>
-    <!-- Navigation -->
-    <nav th:replace="~{fragments/header :: navigation}"></nav>
+<body class="d-flex flex-column min-vh-100">
+<!-- Navigation -->
+<nav th:replace="~{fragments/header :: navigation}"></nav>
 
-    <!-- Hero Section -->
-    <section class="bg-gradient bg-primary text-white py-5 mt-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+<!-- Hero Section -->
+<main class="flex-grow-1">
+    <section class="bg-gradient bg-primary text-white py-5 mt-5"
+             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
         <div class="container">
             <div class="row justify-content-center text-center">
                 <div class="col-lg-8">
@@ -23,7 +25,8 @@
                         מוצאים את ההתאמה המושלמת בין כישורים לצרכים!
                     </p>
                     <div>
-                        <a href="#" th:href="@{/register}" class="btn btn-light btn-lg rounded-pill px-4 py-2 me-3 shadow">
+                        <a href="#" th:href="@{/register}"
+                           class="btn btn-light btn-lg rounded-pill px-4 py-2 me-3 shadow">
                             <i class="bi bi-rocket-takeoff me-2"></i>
                             הצטרפו עכשיו
                         </a>
@@ -51,13 +54,15 @@
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
                     <div class="card h-100 text-center p-4 border-0 shadow-sm hover-shadow transition">
-                        <div class="bg-gradient bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+                        <div class="bg-gradient bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
                             <i class="bi bi-search fs-1"></i>
                         </div>
                         <div class="card-body">
                             <h5 class="card-title fw-bold">חיפוש מתקדם</h5>
                             <p class="card-text text-muted">
-                                מערכת חיפוש חכמה המאפשרת מיון לפי התמחות, יחידה, דרגה וקריטריונים נוספים למציאת ההתאמה המושלמת
+                                מערכת חיפוש חכמה המאפשרת מיון לפי התמחות, יחידה, דרגה וקריטריונים נוספים למציאת ההתאמה
+                                המושלמת
                             </p>
                         </div>
                     </div>
@@ -65,7 +70,8 @@
 
                 <div class="col-lg-4 col-md-6">
                     <div class="card h-100 text-center p-4 border-0 shadow-sm hover-shadow transition">
-                        <div class="bg-gradient bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+                        <div class="bg-gradient bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
                             <i class="bi bi-shield-check fs-1"></i>
                         </div>
                         <div class="card-body">
@@ -79,7 +85,8 @@
 
                 <div class="col-lg-4 col-md-6">
                     <div class="card h-100 text-center p-4 border-0 shadow-sm hover-shadow transition">
-                        <div class="bg-gradient bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+                        <div class="bg-gradient bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
                             <i class="bi bi-lightning-charge fs-1"></i>
                         </div>
                         <div class="card-body">
@@ -95,7 +102,8 @@
     </section>
 
     <!-- User Types Section -->
-    <section class="bg-gradient py-5 text-white" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;">
+    <section class="bg-gradient py-5 text-white"
+             style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;">
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center">
@@ -177,7 +185,8 @@
     </section>
 
     <!-- Call to Action Section -->
-    <section class="bg-gradient py-5 text-white" style="background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%) !important;">
+    <section class="bg-gradient py-5 text-white"
+             style="background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%) !important;">
         <div class="container text-center">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
@@ -193,9 +202,10 @@
             </div>
         </div>
     </section>
+</main>
 
-    <div th:replace="~{fragments/toasts :: successToast}"></div>
-    <!-- Footer -->
-    <footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/toasts :: successToast}"></div>
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

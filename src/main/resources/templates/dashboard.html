@@ -1,113 +1,139 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/header :: header}"></head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <!-- Navigation -->
 <nav th:replace="~{fragments/header :: navigation}"></nav>
 
 <!-- Main Dashboard Section -->
-<section class="container py-5 mt-4">
-    <!-- Welcome -->
-    <div class="mb-4 mt-4 d-flex justify-content-between align-items-center">
-        <h2 class="fw-bold">שלום <span sec:authentication="principal.firstName"></span>!</h2>
-    </div>
-
-    <div th:if="${user.registrationStatus == T(com.example.ex4.models.RegistrationStatus).BLOCKED}">
-        <div class="alert alert-danger text-center" role="alert">
-            החשבון שלך חסום. אנא פנה למנהל המערכת.
+<main class="flex-grow-1">
+    <section class="container py-5 mt-4">
+        <!-- Welcome -->
+        <div class="mb-4 mt-4 d-flex justify-content-between align-items-center">
+            <h2 class="fw-bold">שלום <span sec:authentication="principal.firstName"></span>!</h2>
         </div>
-    </div>
 
-    <div th:if="${user.registrationStatus == T(com.example.ex4.models.RegistrationStatus).PENDING}">
-        <div class="alert alert-warning text-center" role="alert">
-            החשבון שלך ממתין לאישור. אנא המתן עד שתאושר על ידי מנהל המערכת.
-        </div>
-    </div>
-
-    <div th:if="${user.registrationStatus == T(com.example.ex4.models.RegistrationStatus).APPROVED}">
-        <!-- Statistics -->
-        <div class="row mb-5 text-center">
-            <div class="col-md-4">
-                <div class="border rounded-3 p-3 shadow-sm">
-                    <h5>סה"כ משרות שהוגשו</h5>
-                    <p class="fs-4 fw-bold text-primary" th:text="${totalApplications}">0</p>
+        <div th:if="${user.registrationStatus == T(com.example.ex4.models.RegistrationStatus).APPROVED}">
+            <!-- Statistics -->
+            <div class="row mb-5 text-center">
+                <div class="col-md-4">
+                    <div class="border rounded-3 p-3 shadow-sm">
+                        <h5>סה"כ משרות שהוגשו</h5>
+                        <p class="fs-4 fw-bold text-primary" th:text="${totalApplications}">0</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border rounded-3 p-3 shadow-sm">
+                        <h5>ממתינות לתגובה</h5>
+                        <p class="fs-4 fw-bold text-warning" th:text="${pendingApplications}">0</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border rounded-3 p-3 shadow-sm">
+                        <h5>ראיונות קרובים</h5>
+                        <p class="fs-4 fw-bold text-success" th:text="${upcomingInterviewCount}">0</p>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="border rounded-3 p-3 shadow-sm">
-                    <h5>ממתינות לתגובה</h5>
-                    <p class="fs-4 fw-bold text-warning" th:text="${pendingApplications}">0</p>
+
+            <!-- my positions -->
+            <div sec:authorize="hasAnyRole('ADMIN', 'COMMANDER')" class="mb-5">
+                <h4 class="mb-3">המשרות שפרסמת</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>שם משרה</th>
+                            <th>מיקום</th>
+                            <th>סוג</th>
+                            <th>תאריך הגשה</th>
+                            <th>סטטוס</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="app : ${applications}">
+                            <td th:text="${app.position.jobTitle}">תפקיד</td>
+                            <td th:text="${app.position.location}">מיקום</td>
+                            <td th:text="${app.position.assignmentType}">סוג</td>
+                            <td th:text="${#dates.format(app.submissionDate, 'dd/MM/yyyy')}">01/01/2025</td>
+                            <td>
+                                <span class="badge" th:classappend="' bg-' + ${app.statusColor}"
+                                      th:text="${app.status}">ממתין</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(applications)}">
+                            <td colspan="5">לא נמצאו משרות <B> טבלה לא רלוונטית</B></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="border rounded-3 p-3 shadow-sm">
-                    <h5>ראיונות קרובים</h5>
-                    <p class="fs-4 fw-bold text-success" th:text="${upcomingInterviewCount}">0</p>
+
+            <!-- Applications Table -->
+            <div class="mb-5">
+                <h4 class="mb-3">המשרות שהגשת אליהן</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>שם משרה</th>
+                            <th>מיקום</th>
+                            <th>סוג</th>
+                            <th>תאריך הגשה</th>
+                            <th>סטטוס</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="app : ${applications}">
+                            <td th:text="${app.position.jobTitle}">תפקיד</td>
+                            <td th:text="${app.position.location}">מיקום</td>
+                            <td th:text="${app.position.assignmentType}">סוג</td>
+                            <td th:text="${#dates.format(app.submissionDate, 'dd/MM/yyyy')}">01/01/2025</td>
+                            <td>
+                                <span class="badge" th:classappend="' bg-' + ${app.statusColor}"
+                                      th:text="${app.status}">ממתין</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(applications)}">
+                            <td colspan="5">לא נמצאו משרות</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interviews Table -->
+            <div>
+                <h4 class="mb-3">ראיונות עתידיים</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped text-center align-middle">
+                        <thead>
+                        <tr>
+                            <th>שם משרה</th>
+                            <th>תאריך</th>
+                            <th>שעה</th>
+                            <th>מיקום / לינק</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="interview : ${upcomingInterviews}">
+                            <td th:text="${interview.position.jobTitle}">שם</td>
+                            <td th:text="${#dates.format(interview.date, 'dd/MM/yyyy')}">01/01/2025</td>
+                            <td th:text="${#dates.format(interview.date, 'HH:mm')}">12:00</td>
+                            <td><a th:href="${interview.locationLink}" th:text="${interview.locationText}"
+                                   target="_blank">לינק</a></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(upcomingInterviews)}">
+                            <td colspan="4">אין ראיונות קרובים</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-
-        <!-- Applications Table -->
-        <div class="mb-5">
-            <h4 class="mb-3">המשרות שהגשת אליהן</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered text-center align-middle">
-                    <thead class="table-light">
-                    <tr>
-                        <th>שם משרה</th>
-                        <th>מיקום</th>
-                        <th>סוג</th>
-                        <th>תאריך הגשה</th>
-                        <th>סטטוס</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="app : ${applications}">
-                        <td th:text="${app.position.jobTitle}">תפקיד</td>
-                        <td th:text="${app.position.location}">מיקום</td>
-                        <td th:text="${app.position.assignmentType}">סוג</td>
-                        <td th:text="${#dates.format(app.submissionDate, 'dd/MM/yyyy')}">01/01/2025</td>
-                        <td>
-                            <span class="badge" th:classappend="' bg-' + ${app.statusColor}" th:text="${app.status}">ממתין</span>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(applications)}">
-                        <td colspan="5">לא נמצאו משרות</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Interviews Table -->
-        <div>
-            <h4 class="mb-3">ראיונות עתידיים</h4>
-            <div class="table-responsive">
-                <table class="table table-striped text-center align-middle">
-                    <thead>
-                    <tr>
-                        <th>שם משרה</th>
-                        <th>תאריך</th>
-                        <th>שעה</th>
-                        <th>מיקום / לינק</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="interview : ${upcomingInterviews}">
-                        <td th:text="${interview.position.jobTitle}">שם</td>
-                        <td th:text="${#dates.format(interview.date, 'dd/MM/yyyy')}">01/01/2025</td>
-                        <td th:text="${#dates.format(interview.date, 'HH:mm')}">12:00</td>
-                        <td><a th:href="${interview.locationLink}" th:text="${interview.locationText}" target="_blank">לינק</a></td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(upcomingInterviews)}">
-                        <td colspan="4">אין ראיונות קרובים</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
+</main>
 
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>

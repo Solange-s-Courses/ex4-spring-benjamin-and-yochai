@@ -1,146 +1,170 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/header :: header}"></head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <!-- Navigation -->
 <nav th:replace="~{fragments/header :: navigation}"></nav>
 
 <!-- Add Position Form Section -->
-<section class="py-5 mt-5">
-    <div class="container">
-        <div class="mb-4">
-            <a href="/positions" class="btn btn-outline-secondary rounded-3">
-                <i class="bi bi-arrow-right ms-1"></i> חזור לרשימת המשרות
-            </a>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-7">
-                <div class="card shadow rounded-4">
-                    <div class="card-header bg-white rounded-top-4 border-bottom-0">
-                        <h3 class="text-center">פרסום תפקיד חדש</h3>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/positions/add}" th:object="${positionForm}" method="post">
-                            <!-- Job Title Selection -->
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-briefcase text-primary fs-5"></i>
-                                    <label for="jobTitle" class="form-label mb-0">תפקיד</label>
-                                </div>
-                                <select class="form-select rounded-3" id="jobTitle" name="jobTitle" th:field="*{jobTitle}">
-                                    <option value="" selected>בחר תפקיד</option>
-                                    <option th:each="title : ${jobTitles}" th:value="${title}" th:text="${title}"></option>
-                                    <option value="אחר">אחר</option>
-                                </select>
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('jobTitle')}" th:errors="*{jobTitle}"></div>
-                                <div class="text-danger client-error" data-error="jobTitle"></div>
-                                <input type="text" class="form-control rounded-3 mt-2 d-none" id="otherJobTitleInput" name="otherJobTitle" placeholder="הזן תפקיד אחר (אם בחרת 'אחר')">
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('otherJobTitle')}" th:errors="*{otherJobTitle}"></div>
-                                <div class="text-danger client-error" data-error="otherJobTitleInput"></div>
-                            </div>
-
-                            <!-- Location Selection -->
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-geo-alt text-primary fs-5"></i>
-                                    <label for="location" class="form-label mb-0">מיקום בארץ</label>
-                                </div>
-                                <select class="form-select rounded-3" id="location" name="location" th:field="*{location}">
-                                    <option value="" selected>בחר אזור</option>
-                                    <option th:each="region : ${T(com.example.ex4.models.LocationRegion).values()}" th:value="${region}" th:text="${region}"></option>
-                                </select>
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></div>
-                                <div class="text-danger client-error" data-error="location"></div>
-                            </div>
-
-                            <!-- Assignment Type -->
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-toggle-on text-primary fs-5"></i>
-                                    <label class="form-label mb-0">סוג שיבוץ</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="assignmentType" id="attachment" value="סיפוח" th:field="*{assignmentType}">
-                                    <label class="form-check-label" for="attachment">סיפוח</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="assignmentType" id="placement" value="הצבה" th:field="*{assignmentType}">
-                                    <label class="form-check-label" for="placement">הצבה</label>
-                                </div>
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('assignmentType')}" th:errors="*{assignmentType}"></div>
-                                <div class="text-danger client-error" data-error="assignmentType"></div>
-                            </div>
-
-                            <!-- Job Description -->
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-card-text text-primary fs-5"></i>
-                                    <label for="description" class="form-label mb-0">תיאור תפקיד</label>
-                                </div>
-                                <textarea class="form-control rounded-3" id="description" name="description" th:field="*{description}" rows="3" placeholder="פרט על התפקיד..."></textarea>
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-                                <div class="text-danger client-error" data-error="description"></div>
-                            </div>
-
-                            <!-- Minimum Requirements -->
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-list-check text-primary fs-5"></i>
-                                    <label class="form-label mb-0">דרישות מינימום</label>
-                                </div>
-
-                                <div id="requirementsContainer">
-                                    <div th:each="requirement, iterStat : ${requirements}" class="input-group mb-2">
-                                        <input type="text" th:name="'requirements[' + ${iterStat.index} + ']'" placeholder="הכנס דרישת מינימום לתפקיד (לדוגמא - רובאי 03)" class="form-control rounded-3" th:value="requirement">
-                                        <button type="button" class="btn btn-outline-danger remove-requirement d-none">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+<main class="flex-grow-1">
+    <section class="py-5 mt-5">
+        <div class="container">
+            <div class="mb-4">
+                <a href="/positions" class="btn btn-outline-secondary rounded-3">
+                    <i class="bi bi-arrow-right ms-1"></i> חזור לרשימת המשרות
+                </a>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-7">
+                    <div class="card shadow rounded-4">
+                        <div class="card-header bg-white rounded-top-4 border-bottom-0">
+                            <h3 class="text-center">פרסום תפקיד חדש</h3>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/positions/add}" th:object="${positionForm}" method="post">
+                                <!-- Job Title Selection -->
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-briefcase text-primary fs-5"></i>
+                                        <label for="jobTitle" class="form-label mb-0">תפקיד</label>
                                     </div>
-                                    <div class="input-group mb-2">
-                                        <input type="text" name="requirements" placeholder="הכנס דרישת מינימום לתפקיד (לדוגמא - רובאי 03)" class="form-control rounded-3">
-                                        <button type="button" class="btn btn-outline-danger remove-requirement d-none">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
+                                    <select class="form-select rounded-3" id="jobTitle" name="jobTitle"
+                                            th:field="*{jobTitle}">
+                                        <option value="" selected>בחר תפקיד</option>
+                                        <option th:each="title : ${jobTitles}" th:value="${title}"
+                                                th:text="${title}"></option>
+                                        <option value="אחר">אחר</option>
+                                    </select>
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('jobTitle')}"
+                                         th:errors="*{jobTitle}"></div>
+                                    <div class="text-danger client-error" data-error="jobTitle"></div>
+                                    <input type="text" class="form-control rounded-3 mt-2 d-none"
+                                           id="otherJobTitleInput" name="otherJobTitle"
+                                           placeholder="הזן תפקיד אחר (אם בחרת 'אחר')">
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('otherJobTitle')}"
+                                         th:errors="*{otherJobTitle}"></div>
+                                    <div class="text-danger client-error" data-error="otherJobTitleInput"></div>
                                 </div>
 
-                                <!--<div id="requirementsContainer">
-                                    <div th:each="requirement, iterStat : ${requirements}" class="input-group mb-2">
-                                        <input type="text"
-                                               class="form-control rounded-3"
-                                               th:name="'requirements[' + ${iterStat.index} + ']'"
-                                               th:value="${requirement}"
-                                               placeholder="הכנס דרישת מינימום לתפקיד (לדוג' - רובאי 03)">
-                                        <button type="button" class="btn btn-outline-danger remove-requirement">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                <!-- Location Selection -->
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-geo-alt text-primary fs-5"></i>
+                                        <label for="location" class="form-label mb-0">מיקום בארץ</label>
                                     </div>
-                                </div>-->
+                                    <select class="form-select rounded-3" id="location" name="location"
+                                            th:field="*{location}">
+                                        <option value="" selected>בחר אזור</option>
+                                        <option th:each="region : ${T(com.example.ex4.models.LocationRegion).values()}"
+                                                th:value="${region}" th:text="${region}"></option>
+                                    </select>
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('location')}"
+                                         th:errors="*{location}"></div>
+                                    <div class="text-danger client-error" data-error="location"></div>
+                                </div>
 
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('requirements')}" th:errors="*{requirements}"></div>
-                                <div class="text-danger client-error" data-error="requirements"></div>
-                                <button type="button" id="addRequirementBtn" class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-plus-circle me-1"></i>הוסף דרישה
-                                </button>
-                            </div>
+                                <!-- Assignment Type -->
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-toggle-on text-primary fs-5"></i>
+                                        <label class="form-label mb-0">סוג שיבוץ</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="assignmentType"
+                                               id="attachment" value="סיפוח" th:field="*{assignmentType}">
+                                        <label class="form-check-label" for="attachment">סיפוח</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="assignmentType"
+                                               id="placement" value="הצבה" th:field="*{assignmentType}">
+                                        <label class="form-check-label" for="placement">הצבה</label>
+                                    </div>
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('assignmentType')}"
+                                         th:errors="*{assignmentType}"></div>
+                                    <div class="text-danger client-error" data-error="assignmentType"></div>
+                                </div>
+
+                                <!-- Job Description -->
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-card-text text-primary fs-5"></i>
+                                        <label for="description" class="form-label mb-0">תיאור תפקיד</label>
+                                    </div>
+                                    <textarea class="form-control rounded-3" id="description" name="description"
+                                              th:field="*{description}" rows="3"
+                                              placeholder="פרט על התפקיד..."></textarea>
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('description')}"
+                                         th:errors="*{description}"></div>
+                                    <div class="text-danger client-error" data-error="description"></div>
+                                </div>
+
+                                <!-- Minimum Requirements -->
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-list-check text-primary fs-5"></i>
+                                        <label class="form-label mb-0">דרישות מינימום</label>
+                                    </div>
+
+                                    <div id="requirementsContainer">
+                                        <div th:each="requirement, iterStat : ${requirements}" class="input-group mb-2">
+                                            <input type="text" th:name="'requirements[' + ${iterStat.index} + ']'"
+                                                   placeholder="הכנס דרישת מינימום לתפקיד (לדוגמא - רובאי 03)"
+                                                   class="form-control rounded-3" th:value="requirement">
+                                            <button type="button"
+                                                    class="btn btn-outline-danger remove-requirement d-none">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div class="input-group mb-2">
+                                            <input type="text" name="requirements"
+                                                   placeholder="הכנס דרישת מינימום לתפקיד (לדוגמא - רובאי 03)"
+                                                   class="form-control rounded-3">
+                                            <button type="button"
+                                                    class="btn btn-outline-danger remove-requirement d-none">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!--<div id="requirementsContainer">
+                                        <div th:each="requirement, iterStat : ${requirements}" class="input-group mb-2">
+                                            <input type="text"
+                                                   class="form-control rounded-3"
+                                                   th:name="'requirements[' + ${iterStat.index} + ']'"
+                                                   th:value="${requirement}"
+                                                   placeholder="הכנס דרישת מינימום לתפקיד (לדוג' - רובאי 03)">
+                                            <button type="button" class="btn btn-outline-danger remove-requirement">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>-->
+
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('requirements')}"
+                                         th:errors="*{requirements}"></div>
+                                    <div class="text-danger client-error" data-error="requirements"></div>
+                                    <button type="button" id="addRequirementBtn" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-plus-circle me-1"></i>הוסף דרישה
+                                    </button>
+                                </div>
 
 
-                            <div class="alert alert-danger" th:if="${errorMessage}">
-                                <p th:text="${errorMessage}"></p>
-                            </div>
+                                <div class="alert alert-danger" th:if="${errorMessage}">
+                                    <p th:text="${errorMessage}"></p>
+                                </div>
 
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">
-                                    פרסם משרה <i class="bi bi-megaphone ms-2"></i>
-                                </button>
-                            </div>
-                        </form>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">
+                                        פרסם משרה <i class="bi bi-megaphone ms-2"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</main>
 
 <script th:src="@{/js/positionForm.js}"></script>
 <!-- Footer -->

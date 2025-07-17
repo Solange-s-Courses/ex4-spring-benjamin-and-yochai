@@ -2,146 +2,151 @@
 <html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{fragments/header :: header}"></head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <!-- Navigation -->
 <nav th:replace="~{fragments/header :: navigation}"></nav>
 
 <!-- Main Content -->
-<section class="container py-5 mt-4">
-    <!-- Back Button -->
-    <div class="mb-4">
-        <a href="/positions" class="btn btn-outline-secondary rounded-3">
-            <i class="bi bi-arrow-right ms-1"></i> חזור לרשימת המשרות
-        </a>
-    </div>
-
-    <!-- Position Details Card -->
-    <div class="card shadow-sm rounded-4">
-        <div class="card-header bg-primary text-white rounded-top-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2 class="mb-0 fw-bold" th:text="${position.jobTitle}">תפקיד</h2>
-                <span class="badge bg-light text-primary fs-6" th:text="${position.assignmentType}">סוג שירות</span>
-            </div>
+<main class="flex-grow-1">
+    <section class="container py-5 mt-4">
+        <!-- Back Button -->
+        <div class="mb-4">
+            <a href="/positions" class="btn btn-outline-secondary rounded-3">
+                <i class="bi bi-arrow-right ms-1"></i> חזור לרשימת המשרות
+            </a>
         </div>
 
-        <div class="card-body p-4">
-            <!-- Position Basic Info -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="bi bi-geo-alt-fill text-primary fs-4 me-3"></i>
-                        <div>
-                            <h6 class="mb-0 fw-bold">מיקום</h6>
-                            <p class="mb-0 text-muted" th:text="${position.location}">מיקום</p>
+        <!-- Position Details Card -->
+        <div class="card shadow-sm rounded-4">
+            <div class="card-header bg-primary text-white rounded-top-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0 fw-bold" th:text="${position.jobTitle}">תפקיד</h2>
+                    <span class="badge bg-light text-primary fs-6" th:text="${position.assignmentType}">סוג שירות</span>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <!-- Position Basic Info -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-geo-alt-fill text-primary fs-4 me-3"></i>
+                            <div>
+                                <h6 class="mb-0 fw-bold">מיקום</h6>
+                                <p class="mb-0 text-muted" th:text="${position.location}">מיקום</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-person-badge-fill text-primary fs-4 me-3"></i>
+                            <div>
+                                <h6 class="mb-0 fw-bold">סוג שיבוץ</h6>
+                                <p class="mb-0 text-muted" th:text="${position.assignmentType}">סוג שיבוץ</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="bi bi-person-badge-fill text-primary fs-4 me-3"></i>
-                        <div>
-                            <h6 class="mb-0 fw-bold">סוג שיבוץ</h6>
-                            <p class="mb-0 text-muted" th:text="${position.assignmentType}">סוג שיבוץ</p>
-                        </div>
+
+                <!-- Position Description -->
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-file-text text-primary me-2"></i>
+                        תיאור התפקיד
+                    </h5>
+                    <div class="bg-light p-3 rounded-3">
+                        <p class="mb-0" th:text="${position.description}">תיאור התפקיד</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- Position Description -->
-            <div class="mb-4">
-                <h5 class="fw-bold mb-3">
-                    <i class="bi bi-file-text text-primary me-2"></i>
-                    תיאור התפקיד
-                </h5>
-                <div class="bg-light p-3 rounded-3">
-                    <p class="mb-0" th:text="${position.description}">תיאור התפקיד</p>
+                <!-- Position Requirements -->
+                <div class="mb-4" th:if="${position.requirements != null and !#lists.isEmpty(position.requirements)}">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-check-circle text-primary me-2"></i>
+                        דרישות התפקיד
+                    </h5>
+                    <div class="bg-light p-3 rounded-3">
+                        <ul class="mb-0">
+                            <li th:if="${position.requirements != null}"
+                                th:each="requirement :  ${position.requirements.split(',')}"
+                                th:text="${requirement.trim()}"
+                                class="mb-2">
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Position Requirements -->
-            <div class="mb-4" th:if="${position.requirements != null and !#lists.isEmpty(position.requirements)}">
-                <h5 class="fw-bold mb-3">
-                    <i class="bi bi-check-circle text-primary me-2"></i>
-                    דרישות התפקיד
-                </h5>
-                <div class="bg-light p-3 rounded-3">
-                    <ul class="mb-0">
-                        <li th:if="${position.requirements != null}"
-                            th:each="requirement :  ${position.requirements.split(',')}"
-                            th:text="${requirement.trim()}"
-                            class="mb-2">
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Additional Info -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="card bg-light border-0">
-                        <div class="card-body">
-                            <h6 class="fw-bold mb-2">
-                                <i class="bi bi-info-circle text-primary me-2"></i>
-                                מידע נוסף
-                            </h6>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <small class="text-muted">פורסם על ידי:</small>
-                                    <p class="mb-1" th:text="${position.publisher.firstName + ' ' + position.publisher.lastName}"></p>
-                                </div>
-                                <div class="col-sm-6">
-                                    <small class="text-muted">מספר משרה:</small>
-                                    <p class="mb-1" th:text="${position.id}"></p>
+                <!-- Additional Info -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card bg-light border-0">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-2">
+                                    <i class="bi bi-info-circle text-primary me-2"></i>
+                                    מידע נוסף
+                                </h6>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <small class="text-muted">פורסם על ידי:</small>
+                                        <p class="mb-1"
+                                           th:text="${position.publisher.firstName + ' ' + position.publisher.lastName}"></p>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <small class="text-muted">מספר משרה:</small>
+                                        <p class="mb-1" th:text="${position.id}"></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Apply Button -->
-            <div class="text-center">
-                <form th:action="@{'/positions/' + ${position.id} + '/apply'}" method="post">
-                    <button type="submit" class="btn btn-success btn-lg px-5 rounded-3">
-                        <i class="bi bi-send-fill me-2"></i>
-                        הגש מועמדות
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Additional Actions -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card border-0 bg-light">
-                <div class="card-body text-center">
-                    <i class="bi bi-question-circle text-primary fs-2 mb-2"></i>
-                    <h6 class="fw-bold">יש שאלות?</h6>
-                    <p class="text-muted small mb-2">צור קשר עם מפרסם המשרה</p>
-                    <a th:href="'mailto:' + ${position.publisher.email}" class="btn btn-outline-primary btn-sm rounded-3">
-                        שלח אימייל
-                    </a>
+                <!-- Apply Button -->
+                <div class="text-center">
+                    <form th:action="@{'/positions/' + ${position.id} + '/apply'}" method="post">
+                        <button type="submit" class="btn btn-success btn-lg px-5 rounded-3">
+                            <i class="bi bi-send-fill me-2"></i>
+                            הגש מועמדות
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card border-0 bg-light">
-                <div class="card-body text-center">
-                    <i class="bi bi-share text-primary fs-2 mb-2"></i>
-                    <h6 class="fw-bold">שתף עם חברים</h6>
-                    <p class="text-muted small mb-2">העבר את המשרה לחברים מתאימים</p>
-                    <button class="btn btn-outline-primary btn-sm rounded-3" th:id="shareBtn">
-                        שתף משרה
-                    </button>
-                    <div class="d-none" id="copy-message" style="position:fixed; bottom:20px; right:20px; background:#28a745; color:white; padding:10px 15px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.3); z-index:9999;">
-                        הקישור הועתק בהצלחה!
+
+        <!-- Additional Actions -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card border-0 bg-light">
+                    <div class="card-body text-center">
+                        <i class="bi bi-question-circle text-primary fs-2 mb-2"></i>
+                        <h6 class="fw-bold">יש שאלות?</h6>
+                        <p class="text-muted small mb-2">צור קשר עם מפרסם המשרה</p>
+                        <a th:href="'mailto:' + ${position.publisher.email}"
+                           class="btn btn-outline-primary btn-sm rounded-3">
+                            שלח אימייל
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 bg-light">
+                    <div class="card-body text-center">
+                        <i class="bi bi-share text-primary fs-2 mb-2"></i>
+                        <h6 class="fw-bold">שתף עם חברים</h6>
+                        <p class="text-muted small mb-2">העבר את המשרה לחברים מתאימים</p>
+                        <button class="btn btn-outline-primary btn-sm rounded-3" th:id="shareBtn">
+                            שתף משרה
+                        </button>
+                        <div class="d-none" id="copy-message"
+                             style="position:fixed; bottom:20px; right:20px; background:#28a745; color:white; padding:10px 15px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.3); z-index:9999;">
+                            הקישור הועתק בהצלחה!
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</main>
 
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>

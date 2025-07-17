@@ -2,97 +2,116 @@
 <html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{fragments/header :: header}"></head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <!-- Navigation -->
 <nav th:replace="~{fragments/header :: navigation}"></nav>
 
 <!-- Registration Form Section -->
-<section class="py-5 mt-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow rounded-4">
-                    <div class="card-header bg-white rounded-top-4 border-bottom-0">
-                        <h3 class="text-center">הרשמה</h3>
-                    </div>
-                    <div class="card-body">
-                        <form th:id="registrationForm" th:action="@{/register}" th:object="${user}" method="post" enctype="multipart/form-data">
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-person text-primary fs-5"></i>
-                                    <label for="username" class="form-label mb-0">שם משתמש</label>
+<main class="flex-grow-1">
+    <section class="py-5 mt-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow rounded-4">
+                        <div class="card-header bg-white rounded-top-4 border-bottom-0">
+                            <h3 class="text-center">הרשמה</h3>
+                        </div>
+                        <div class="card-body">
+                            <form th:id="registrationForm" th:action="@{/register}" th:object="${user}" method="post"
+                                  enctype="multipart/form-data">
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-person text-primary fs-5"></i>
+                                        <label for="username" class="form-label mb-0">שם משתמש</label>
+                                    </div>
+                                    <input type="text" class="form-control rounded-3" id="username"
+                                           th:field="*{username}">
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('username')}"
+                                         th:errors="*{username}"></div>
+                                    <div class="text-danger client-error" data-error="username"></div>
                                 </div>
-                                <input type="text" class="form-control rounded-3" id="username" th:field="*{username}">
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
-                                <div class="text-danger client-error" data-error="username"></div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-person text-primary fs-5"></i>
-                                    <label for="firstName" class="form-label mb-0">שם פרטי</label>
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-person text-primary fs-5"></i>
+                                        <label for="firstName" class="form-label mb-0">שם פרטי</label>
+                                    </div>
+                                    <input type="text" class="form-control rounded-3" id="firstName"
+                                           th:field="*{firstName}">
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('firstName')}"
+                                         th:errors="*{firstName}"></div>
+                                    <div class="text-danger client-error" data-error="firstName"></div>
                                 </div>
-                                <input type="text" class="form-control rounded-3" id="firstName" th:field="*{firstName}">
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
-                                <div class="text-danger client-error" data-error="firstName"></div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-person text-primary fs-5"></i>
-                                    <label for="lastName" class="form-label mb-0">שם משפחה</label>
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-person text-primary fs-5"></i>
+                                        <label for="lastName" class="form-label mb-0">שם משפחה</label>
+                                    </div>
+                                    <input type="text" class="form-control rounded-3" id="lastName"
+                                           th:field="*{lastName}">
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('lastName')}"
+                                         th:errors="*{lastName}"></div>
+                                    <div class="text-danger client-error" data-error="lastName"></div>
                                 </div>
-                                <input type="text" class="form-control rounded-3" id="lastName" th:field="*{lastName}">
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
-                                <div class="text-danger client-error" data-error="lastName"></div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-envelope text-primary fs-5"></i>
-                                    <label for="email" class="form-label mb-0">אימייל</label>
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-envelope text-primary fs-5"></i>
+                                        <label for="email" class="form-label mb-0">אימייל</label>
+                                    </div>
+                                    <input type="text" class="form-control rounded-3" id="email" th:field="*{email}">
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('email')}"
+                                         th:errors="*{email}"></div>
+                                    <div class="text-danger client-error" data-error="email"></div>
                                 </div>
-                                <input type="text" class="form-control rounded-3" id="email" th:field="*{email}">
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-                                <div class="text-danger client-error" data-error="email"></div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-lock text-primary fs-5"></i>
-                                    <label for="password" class="form-label mb-0">סיסמה</label>
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-lock text-primary fs-5"></i>
+                                        <label for="password" class="form-label mb-0">סיסמה</label>
+                                    </div>
+                                    <input type="password" class="form-control rounded-3" id="password"
+                                           th:field="*{password}">
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('password')}"
+                                         th:errors="*{password}"></div>
+                                    <div class="text-danger client-error" data-error="password"></div>
                                 </div>
-                                <input type="password" class="form-control rounded-3" id="password" th:field="*{password}">
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-                                <div class="text-danger client-error" data-error="password"></div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <i class="bi bi-file-earmark-arrow-up text-primary fs-5"></i>
-                                    <label for="militaryIdDoc" class="form-label mb-0">תעודת משרת מילואים פעיל - עד 1MB</label>
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-file-earmark-arrow-up text-primary fs-5"></i>
+                                        <label for="militaryIdDoc" class="form-label mb-0">תעודת משרת מילואים פעיל - עד
+                                            1MB</label>
+                                    </div>
+                                    <input type="file" class="form-control rounded-3" id="militaryIdDoc"
+                                           name="militaryIdDoc" accept="application/pdf,image/*">
+                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('militaryIdDoc')}"
+                                         th:errors="*{militaryIdDoc}"></div>
+                                    <div class="text-danger client-error" data-error="militaryIdDoc"></div>
                                 </div>
-                                <input type="file" class="form-control rounded-3" id="militaryIdDoc" name="militaryIdDoc" accept="application/pdf,image/*" >
-                                <div class="text-danger server-error" th:if="${#fields.hasErrors('militaryIdDoc')}" th:errors="*{militaryIdDoc}" ></div>
-                                <div class="text-danger client-error" data-error="militaryIdDoc"></div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="commander" name="commander" th:field="*{commander}">
-                                    <label class="form-check-label" for="commander">אני מפקד שמעוניין לפרסם תפקיד</label>
+                                <div class="mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="commander" name="commander"
+                                               th:field="*{commander}">
+                                        <label class="form-check-label" for="commander">אני מפקד שמעוניין לפרסם
+                                            תפקיד</label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <span th:text="${errorMessage}"></span>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">
-                                    הרשמה <i class="bi bi-box-arrow-in-right ms-2"></i>
-                                </button>
-                            </div>
-                        </form>
+                                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show"
+                                     role="alert">
+                                    <span th:text="${errorMessage}"></span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">
+                                        הרשמה <i class="bi bi-box-arrow-in-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</main>
 
 <div th:replace="~{fragments/toasts :: successToast}"></div>
 

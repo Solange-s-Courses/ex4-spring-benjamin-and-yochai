@@ -1,83 +1,91 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/header :: header}"></head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
 <!-- Navigation -->
 <nav th:replace="~{fragments/header :: navigation}"></nav>
 
 <!-- Hero Section -->
-<section class="mt-5 text-light py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
-    <div class="container text-center">
-        <h1 class="display-4 fw-bold">מי אנחנו ואיך אפשר ליצור קשר?</h1>
-        <p class="lead mt-3">
-            הכירו את האנשים מאחורי המערכת, וצרו קשר ישיר איתנו לכל שאלה, הצעה או שיתוף פעולה.
-        </p>
-    </div>
-</section>
-
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <img src="/images/about-us.jpg" alt="אודות" class="img-fluid rounded shadow">
-            </div>
-            <div class="col-lg-6">
-                <h2 class="fw-bold mb-3">חזון הפלטפורמה</h2>
-                <p class="text-muted">
-                    ״צו גיוס״ היא מערכת חכמה לחיבור בין חיילי מילואים לבין יחידות צה״ל. מטרתנו היא לפשט את תהליך ההתנדבות, לאפשר התאמה מדויקת בין כישורי המועמד לצרכי היחידה, ולייעל את תהליך הגיוס.
-                </p>
-                <p class="text-muted">
-                    המערכת נולדה מתוך צורך ממשי – מפקדים שמתקשים לאייש תקנים, ומילואימניקים שמחפשים לתרום – אבל לא יודעים איך. כאן אנחנו נכנסים לתמונה.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Team Members Section -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">הצוות המקים</h2>
-            <p class="text-muted">
-                אנשים עם תשוקה לשירות, טכנולוגיה וחדשנות במערך המילואים<br>
-                נשמח לשמוע מכם - בכל נושא שקשור לפיתוח, שירות מילואים או רעיונות להרחבת הפלטפורמה
+<main class="flex-grow-1">
+    <section class="mt-5 text-light py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold">מי אנחנו ואיך אפשר ליצור קשר?</h1>
+            <p class="lead mt-3">
+                הכירו את האנשים מאחורי המערכת, וצרו קשר ישיר איתנו לכל שאלה, הצעה או שיתוף פעולה.
             </p>
         </div>
-        <div class="row justify-content-center g-4">
-            <!-- Member 1 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card text-center border-0 shadow h-100">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">יוחאי בניטה</h5>
-                        <a href="mailto:yochaiben@edu.jmc.ac.il" class="d-block text-decoration-none text-primary mb-2">
-                            <i class="bi bi-envelope-fill me-1"></i> yochaiben@edu.jmc.ac.il
-                        </a>
-                        <a href="https://www.linkedin.com/in/yochaibenita" target="_blank" class="text-decoration-none">
-                            <i class="bi bi-linkedin me-1"></i> פרופיל LinkedIn
-                        </a>
-                    </div>
+    </section>
+
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <img src="/images/about-us.jpg" alt="אודות" class="img-fluid rounded shadow">
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="fw-bold mb-3">חזון הפלטפורמה</h2>
+                    <p class="text-muted">
+                        ״צו גיוס״ היא מערכת חכמה לחיבור בין חיילי מילואים לבין יחידות צה״ל. מטרתנו היא לפשט את תהליך
+                        ההתנדבות, לאפשר התאמה מדויקת בין כישורי המועמד לצרכי היחידה, ולייעל את תהליך הגיוס.
+                    </p>
+                    <p class="text-muted">
+                        המערכת נולדה מתוך צורך ממשי – מפקדים שמתקשים לאייש תקנים, ומילואימניקים שמחפשים לתרום – אבל לא
+                        יודעים איך. כאן אנחנו נכנסים לתמונה.
+                    </p>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- Member 2 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card text-center border-0 shadow h-100">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">בנימין רוסין</h5>
-                        <a href="mailto:benjaminro@edu.jmc.ac.il" class="d-block text-decoration-none text-primary mb-2">
-                            <i class="bi bi-envelope-fill me-1"></i> benjaminro@edu.jmc.ac.il
-                        </a>
-                        <a href="https://www.linkedin.com/in/benjamin-rosin" target="_blank" class="text-decoration-none">
-                            <i class="bi bi-linkedin me-1"></i> פרופיל LinkedIn
-                        </a>
+    <!-- Team Members Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">הצוות המקים</h2>
+                <p class="text-muted">
+                    אנשים עם תשוקה לשירות, טכנולוגיה וחדשנות במערך המילואים<br>
+                    נשמח לשמוע מכם - בכל נושא שקשור לפיתוח, שירות מילואים או רעיונות להרחבת הפלטפורמה
+                </p>
+            </div>
+            <div class="row justify-content-center g-4">
+                <!-- Member 1 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card text-center border-0 shadow h-100">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">יוחאי בניטה</h5>
+                            <a href="mailto:yochaiben@edu.jmc.ac.il"
+                               class="d-block text-decoration-none text-primary mb-2">
+                                <i class="bi bi-envelope-fill me-1"></i> yochaiben@edu.jmc.ac.il
+                            </a>
+                            <a href="https://www.linkedin.com/in/yochaibenita" target="_blank"
+                               class="text-decoration-none">
+                                <i class="bi bi-linkedin me-1"></i> פרופיל LinkedIn
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Member 2 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card text-center border-0 shadow h-100">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">בנימין רוסין</h5>
+                            <a href="mailto:benjaminro@edu.jmc.ac.il"
+                               class="d-block text-decoration-none text-primary mb-2">
+                                <i class="bi bi-envelope-fill me-1"></i> benjaminro@edu.jmc.ac.il
+                            </a>
+                            <a href="https://www.linkedin.com/in/benjamin-rosin" target="_blank"
+                               class="text-decoration-none">
+                                <i class="bi bi-linkedin me-1"></i> פרופיל LinkedIn
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</main>
 
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
