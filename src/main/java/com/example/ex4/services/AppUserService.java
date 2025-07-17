@@ -139,8 +139,8 @@ public class AppUserService implements UserDetailsService {
         return appUserRepository.findById(id);
     }
 
-    public Optional<AppUser> getUserByUsername(String username) {
-        return appUserRepository.findByUsername(username);
+    public AppUser getUserByUsername(String username) {
+        return appUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     public Optional<AppUser> getUserByEmail(String email) {

@@ -3,6 +3,7 @@ package com.example.ex4.controllers;
 import com.example.ex4.dto.PositionForm;
 import com.example.ex4.models.AppUser;
 import com.example.ex4.models.Position;
+import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.PositionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class PositionController {
 
     @Autowired
     private PositionService positionService;
+    @Autowired
+    private AppUserService appUserService;
 
     @GetMapping("")
     public String positionsPage(Model model, Principal principal) {
@@ -46,7 +49,8 @@ public class PositionController {
 
     @PostMapping("/add")
     public String addPosition(@Valid @ModelAttribute("positionForm") PositionForm positionForm,
-                              BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+                              BindingResult result, Model model,
+                              RedirectAttributes redirectAttributes, Principal principal) {
 
         if (result.hasErrors()) {
             List<String> jobTitles = positionService.getAllDistinctJobTitles();
@@ -68,7 +72,9 @@ public class PositionController {
         String processedRequirements = positionService.processRequirements(positionForm.getRequirements());
         position.setRequirements(processedRequirements);
 
-        //----------------------------
+        AppUser publisher = appUserService.getUserByUsername(principal.getName());
+        position.setPublisher(publisher);
+
         try{
             positionService.save(position);
             redirectAttributes.addFlashAttribute("successMessage", "המשרה הוספה בהצלחה!");
