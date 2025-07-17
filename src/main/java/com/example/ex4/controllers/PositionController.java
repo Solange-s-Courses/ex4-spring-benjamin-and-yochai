@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,10 +25,7 @@ public class PositionController {
     private PositionService positionService;
 
     @GetMapping("")
-    public String positionsPage(Model model) {
-        AppUser mockUser = new AppUser();
-        mockUser.setUsername("משתמש");
-        model.addAttribute("user", mockUser);
+    public String positionsPage(Model model, Principal principal) {
         return positionService.getPositions(model);
     }
 

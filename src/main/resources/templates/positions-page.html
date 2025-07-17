@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:replace="~{fragments/header :: header}"></head>
 <body>
@@ -9,7 +9,7 @@
 <!-- Main Content -->
 <section class="container py-5 mt-4">
     <div class="mb-4 d-flex justify-content-between align-items-center">
-        <h2 class="fw-bold mb-0">שלום <span th:text="${user.username}"></span>!</h2>
+        <h2 class="fw-bold mb-0">שלום <span sec:authentication="principal.firstName"></span>!</h2>
         <a href="/positions/add" class="btn btn-primary rounded-3 mt-3">
             הוסף משרה <i class="bi bi-plus-circle ms-1"></i>
         </a>
