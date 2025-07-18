@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,11 +39,15 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(Customizer.withDefaults())
 
+                .headers(headers -> headers
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                )
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/login").not().authenticated()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**", "restapi/admin/**").hasRole("ADMIN")
                         .requestMatchers("/positions/add**").hasAnyRole("ADMIN", "COMMANDER")
-                        .requestMatchers("/positions/**").authenticated()
+                        .requestMatchers("/positions/**", "/restapi**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
