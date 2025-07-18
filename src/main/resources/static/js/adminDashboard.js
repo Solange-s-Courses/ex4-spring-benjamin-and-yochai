@@ -1,5 +1,6 @@
+
 const renderPdfWithPdfJs = async (url, container) => {
-    container.innerHTML = ''; // Clear old content
+    //container.innerHTML = ''; // Clear old content
 
     // Load the PDF
     const loadingTask = pdfjsLib.getDocument(url);
@@ -13,22 +14,20 @@ const renderPdfWithPdfJs = async (url, container) => {
         const context = canvas.getContext('2d');
         const viewport = page.getViewport({ scale: 3 });
 
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        canvas.style.maxWidth = "100%";
+        context.font = "24px Arial";
+        context.direction = "rtl";
+
+        canvas.width = viewport.width * 2;
+        canvas.height = viewport.height * 2;
+        canvas.style.width = "100%";
         canvas.style.height = "auto";
 
-        const border = document.createElement("div");
-        border.classList.add("alert", "alert-dark", "mt-3");
-        border.role = "alert";
-
-        //border.appendChild(canvas);
-        //container.appendChild(border); // Add canvas to modal
         container.appendChild(canvas);
 
         await page.render({
             canvasContext: context,
-            viewport: viewport
+            viewport: viewport,
+            transform:[2,0,0,2,0,0]
         }).promise;
     }
 };
@@ -42,6 +41,27 @@ const adminDashboard = ()=>{
         const nameDisplay = document.getElementById("modal-fullName");
         const pdfContainer = document.getElementById("pdf-container");
 
+        const renderPdfWithViewer = async (url, container) => {
+            //container.innerHTML = ''; // Clear old content
+
+            // Create iframe with PDF.js viewer
+            const iframe = document.createElement('iframe');
+            //iframe.src = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`;
+            iframe.src = `/assets/pdfjs/web/viewer.html?file=${encodeURIComponent(url)}`;
+            iframe.style.width = '100%';
+            iframe.style.height = '800px';
+            iframe.style.border = 'none';
+            iframe.style.borderRadius = '8px';
+            iframe.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+
+            container.appendChild(iframe);
+
+            iframe.addEventListener("load", ()=>{
+                spinner.classList.add("d-none");
+                pdfContainer.classList.remove("d-none");
+            })
+        };
+
         buttons.forEach(button => {
             button.addEventListener("click", async function () {
                 const userId = this.dataset.userId;
@@ -53,50 +73,21 @@ const adminDashboard = ()=>{
                 pdfContainer.classList.add("d-none");
                 nameDisplay.innerText = fullName;
 
+                pdfContainer.innerHTML = "";
+
                 try {
                     await renderPdfWithPdfJs(url, pdfContainer);
+                    //await renderPdfWithViewer(url, pdfContainer);
                 } catch (err) {
                     pdfContainer.innerHTML = `<p class="text-danger">${err.message}</p>`;
                 } finally {
                     spinner.classList.add("d-none");
                     pdfContainer.classList.remove("d-none");
                 }
-                // const userId = this.dataset.userId;
-                // const fullName = this.dataset.userFullName;
-                //
-                // // Show spinner
-                // spinner.classList.remove("d-none");
-                //
-                // nameDisplay.innerText = fullName;
-                //
-                // const frame = document.createElement("iframe");
-                // frame.id = 'pdf-frame';
-                // frame.type = 'application/pdf';
-                // frame.width = '100%';
-                // frame.height = '600px';
-                // frame.src = `/restapi/admin/document/${userId}`;
-                // frame.classList.add("d-none")
-                //
-                // modalBody.appendChild(frame);
-                //
-                // frame.addEventListener("load", () => {
-                //     spinner.classList.add("d-none");
-                //     frame.classList.remove("d-none");
-                // });
-                //
-                // setTimeout(() => {
-                //     if (!frame.classList.contains("d-none")) return; // Already shown
-                //     spinner.classList.add("d-none");
-                //     frame.classList.remove("d-none");
-                //     console.log("timeout")
-                // }, 5000);
             });
         })
 
-        // document.getElementById("pdfModal").addEventListener("hidden.bs.modal", ()=>{
-        //     const frame = document.getElementById("pdf-frame");
-        //     modalBody.removeChild(frame);
-        // })
+
     })
 };
 
