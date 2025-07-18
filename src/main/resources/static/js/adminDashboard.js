@@ -38,7 +38,6 @@ const adminDashboard = ()=>{
     document.addEventListener("DOMContentLoaded", function () {
         const buttons = document.querySelectorAll(".view-pdf-btn");
         const spinner = document.getElementById("pdf-spinner");
-        const modalBody = document.querySelector("#pdfModal .modal-body");
         const modalOpenNewPageBtn = document.getElementById("modalOpenBtn");
         const nameDisplay = document.getElementById("modal-fullName");
         const pdfContainer = document.getElementById("pdf-container");
