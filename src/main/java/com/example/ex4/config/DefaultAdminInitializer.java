@@ -26,8 +26,8 @@ public class DefaultAdminInitializer {
             admin.setUsername(username);
             admin.setPassword(passwordEncoder.encode("admin123")); // שנה לסיסמה בטוחה יותר
             admin.setEmail("admin@example.com");
-            admin.setFirstName("System");
-            admin.setLastName("Admin");
+            admin.setFirstName("מנהל");
+            admin.setLastName("מערכת");
             admin.setRole(Role.ADMIN);
             admin.setMilitaryIdDoc(new byte[0]);
             admin.setRegistrationStatus(com.example.ex4.models.RegistrationStatus.APPROVED);

@@ -18,6 +18,7 @@
                             <th>שם מלא</th>
                             <th>דוא"ל</th>
                             <th>שם משתמש</th>
+                            <th>הרשאה מבוקשת</th>
                             <th>מסמך זיהוי</th>
                             <th>פעולה</th>
                         </tr>
@@ -27,6 +28,7 @@
                             <td th:text="${user.firstName + ' ' + user.lastName}"></td>
                             <td th:text="${user.email}"></td>
                             <td th:text="${user.username}"></td>
+                            <td th:text="${user.role}"></td>
                             <td>
                                 <!--<a th:href="@{/restapi/admin/document/{id}(id=${user.id})}" target="_blank">צפה</a>
                                 <button type="button" class="btn btn-outline-primary btn-sm"
@@ -102,6 +104,7 @@
                             <th>שם משתמש</th>
                             <th>הרשאה נוכחית</th>
                             <th>שנה הרשאה</th>
+                            <th>מצב חשבון</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -114,8 +117,20 @@
                                 <form th:action="@{/admin/change-role}" method="post" class="d-flex justify-content-center">
                                     <input type="hidden" name="userId" th:value="${user.id}">
                                     <select class="form-select form-select-sm w-auto" name="newRole">
-                                        <option value="USER" th:selected="${user.role == 'USER'}">משתמש</option>
-                                        <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">מנהל</option>
+                                        <option value="RESERVIST" th:selected="${user.role.name() == 'RESERVIST'}">חייל</option>
+                                        <option value="COMMANDER" th:selected="${user.role.name() == 'COMMANDER'}">מפקד</option>
+                                        <option value="ADMIN" th:selected="${user.role.name() == 'ADMIN'}">מנהל</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form th:action="@{/admin/change-status}" method="post" class="d-flex justify-content-center">
+                                    <input type="hidden" name="userId" th:value="${user.id}">
+                                    <select class="form-select form-select-sm w-auto" name="newStatus">
+                                        <option value="PENDING" th:selected="${user.registrationStatus.name() == 'PENDING'}">ממתין לאישור</option>
+                                        <option value="APPROVED" th:selected="${user.registrationStatus.name() == 'APPROVED'}">פעיל</option>
+                                        <option value="BLOCKED" th:selected="${user.registrationStatus.name() == 'BLOCKED'}">חסום</option>
                                     </select>
                                     <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
                                 </form>
