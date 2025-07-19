@@ -2,6 +2,10 @@ package com.example.ex4.services;
 
 import com.example.ex4.dto.PositionForm;
 import com.example.ex4.models.AppUser;
+import com.example.ex4.models.PositionStatus;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import com.example.ex4.models.LocationRegion;
 import com.example.ex4.models.Position;
@@ -45,15 +49,21 @@ public class PositionService {
                 .collect(Collectors.joining(", "));
     }
 
-    public String getPositions(Model model) {
-        List<Position> jobs = positionRepository.findAllByOrderByJobTitleAsc();
+    private List<Position> getPositionsByStatus(PositionStatus status) {
+        List<Position> jobs = positionRepository.findByStatusOrderByJobTitleAsc(status);
+        return jobs;
+    }
 
-        // מיון אלפביתי של מיקומים (Enum) לפי toString()
-        List<LocationRegion> sortedLocations = jobs.stream()
+    private Map<String, Object> getActivePositionsWithStringFilters() {
+        List<Position> jobs = getPositionsByStatus(PositionStatus.ACTIVE);
+
+        // מיון אלפביתי של מיקומים - המרה ל-String
+        List<String> sortedLocationStrings = jobs.stream()
                 .map(Position::getLocation)
                 .filter(Objects::nonNull)
                 .distinct()
                 .sorted(Comparator.comparing(LocationRegion::toString))
+                .map(LocationRegion::toString)
                 .toList();
 
         // מיון אלפביתי של סוגי שירות (Strings)
@@ -64,14 +74,25 @@ public class PositionService {
                 .sorted()
                 .toList();
 
-        model.addAttribute("jobs", jobs);
-        model.addAttribute("locations", sortedLocations);
-        model.addAttribute("serviceTypes", sortedServiceTypes);
+        Map<String, Object> result = new HashMap<>();
+        result.put("jobs", jobs);
+        result.put("locations", sortedLocationStrings);
+        result.put("serviceTypes", sortedServiceTypes);
+
+        return result;
+    }
+
+    public String getPositionsPage(Model model) {
+        Map<String, Object> result = getActivePositionsWithStringFilters();
+
+        model.addAttribute("jobs", result.get("jobs"));
+        model.addAttribute("locations", result.get("locations"));
+        model.addAttribute("serviceTypes", result.get("serviceTypes"));
 
         return "positions-page";
     }
 
-    public String getPosition(@PathVariable Long id, Model model) {
+    public String getPosition(Long id, Model model) {
         Position position = positionRepository.findById(id).orElseThrow(() -> new RuntimeException("Position not found"));
         model.addAttribute("position", position);
         return "position";
@@ -116,6 +137,8 @@ public class PositionService {
         AppUser publisher = appUserService.getUserByUsername(username);
         position.setPublisher(publisher);
 
+        position.setStatus(PositionStatus.ACTIVE);
+
         try{
             save(position);
             redirectAttributes.addFlashAttribute("successMessage", "המשרה הוספה בהצלחה!");
@@ -123,6 +146,16 @@ public class PositionService {
         } catch (Exception e){
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך השמירה, אנא נסו שנית במועד מאוחר יותר.");
             return "add-position";
+        }
+    }
+
+    public ResponseEntity<Map<String, Object>> reloadPositions() {
+         try {
+            Map<String, Object> response = getActivePositionsWithStringFilters();
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

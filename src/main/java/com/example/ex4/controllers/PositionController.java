@@ -1,8 +1,6 @@
 package com.example.ex4.controllers;
 
 import com.example.ex4.dto.PositionForm;
-import com.example.ex4.models.AppUser;
-import com.example.ex4.models.Position;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.PositionService;
 import jakarta.validation.Valid;
@@ -11,12 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
 
 @Controller
 @RequestMapping("/positions")
@@ -29,7 +24,7 @@ public class PositionController {
 
     @GetMapping("")
     public String positionsPage(Model model, Principal principal) {
-        return positionService.getPositions(model);
+        return positionService.getPositionsPage(model);
     }
 
     @GetMapping("/{id}")

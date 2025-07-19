@@ -1,11 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const toastElements = document.querySelectorAll('.toast');
+    const toastElement = document.getElementById("successToast");
 
-    toastElements.forEach((toastEl) => {
-        const toast = new bootstrap.Toast(toastEl, {
+    if (toastElement) {
+        const toast = new bootstrap.Toast(toastElement, {
             delay: 5000,     // 5 seconds
             autohide: true   // Auto-dismiss
         });
         toast.show();
-    });
+    }
+
 });

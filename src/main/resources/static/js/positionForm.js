@@ -82,13 +82,11 @@ function positionDom(){
                 showError('חובה להזין תיאור תפקיד', 'description');
                 return false;
             }
-            
-            if (value.trim().length < 10) {
+            else if (value.trim().length < 10) {
                 showError('תיאור התפקיד חייב להכיל לפחות 10 תווים', 'description');
                 return false;
             }
-            
-            if (value.trim().length > 500) {
+            else if (value.trim().length > 500) {
                 showError('תיאור התפקיד לא יכול לעלות על 500 תווים', 'description');
                 return false;
             }
@@ -158,7 +156,6 @@ function positionDom(){
         });
 
         form.addEventListener('submit', function(e) {
-
             if (!validateForm()) {
                 e.preventDefault();
                 
