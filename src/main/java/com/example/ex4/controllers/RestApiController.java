@@ -1,6 +1,8 @@
 package com.example.ex4.controllers;
 
 import com.example.ex4.models.AppUser;
+import com.example.ex4.models.RegistrationStatus;
+import com.example.ex4.models.Role;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -36,6 +37,27 @@ public class RestApiController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/admin/changeUserStatus")
+    public ResponseEntity<String> changeUserStatus(@RequestBody Map<String, String> body) {
+        Long userId = Long.valueOf(body.get("userId"));
+        String newStatus = body.get("status");
+
+        return appUserService.changeUserStatus(userId, RegistrationStatus.valueOf(newStatus));
+    }
+
+    @PostMapping("/admin/changeUserRole")
+    public ResponseEntity<String> changeUserRole(@RequestBody Map<String, String> body) {
+        Long userId = Long.valueOf(body.get("userId"));
+        String newRole = body.get("role");
+
+        return appUserService.changeUserRole(userId, Role.valueOf(newRole));
+    }
+
+    @GetMapping("/positions/active")
+    public ResponseEntity<Map<String, Object>> getPositionsData() {
+        return positionService.reloadPositions();
     }
 }
 

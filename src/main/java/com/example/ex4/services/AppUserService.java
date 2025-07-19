@@ -6,6 +6,8 @@ import com.example.ex4.models.RegistrationStatus;
 import com.example.ex4.models.Role;
 import com.example.ex4.repositories.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -107,5 +109,33 @@ public class AppUserService implements UserDetailsService {
 
     public void deleteUser(Long id) {
         appUserRepository.deleteById(id);
+    }
+
+    @Transactional
+    public ResponseEntity<String> changeUserStatus(Long id, RegistrationStatus status) {
+        Optional<AppUser> userOpt = getUserById(id);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        AppUser user = userOpt.get();
+        user.setRegistrationStatus(status);
+        appUserRepository.save(user);
+
+        return ResponseEntity.ok("Status updated successfully");
+    }
+
+    @Transactional
+    public ResponseEntity<String> changeUserRole(Long id, Role role) {
+        Optional<AppUser> userOpt = getUserById(id);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        AppUser user = userOpt.get();
+        user.setRole(role);
+        appUserRepository.save(user);
+
+        return ResponseEntity.ok("Status updated successfully");
     }
 }

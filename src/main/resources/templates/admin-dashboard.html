@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <head th:replace="~{fragments/header :: header}"></head>
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{fragments/header :: navigation}"></nav>
@@ -10,7 +12,17 @@
 
             <!-- New Users Section -->
             <div class="mb-5">
-                <h4 class="mb-3">משתמשים חדשים ממתינים לאישור</h4>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0 flex-grow-1 me-3">משתמשים חדשים ממתינים לאישור</h4>
+                    <div class="flex-shrink-0 position-relative" style="min-width: 300px;">
+                        <input type="text"
+                               id="newAccSearch"
+                               class="form-control pe-5"
+                               placeholder="חיפוש משתמשים לפי שם משתמש"
+                               aria-label="חיפוש משתמשים">
+                        <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered text-center align-middle">
                         <thead class="table-light">
@@ -23,19 +35,13 @@
                             <th>פעולה</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr th:each="user : ${pendingUsers}">
+                        <tbody id="newAccountsTbody">
+                        <tr th:each="user : ${pendingUsers}" th:attr="data-username=${user.username}">
                             <td th:text="${user.firstName + ' ' + user.lastName}"></td>
                             <td th:text="${user.email}"></td>
                             <td th:text="${user.username}"></td>
                             <td th:text="${user.role}"></td>
                             <td>
-                                <!--<a th:href="@{/restapi/admin/document/{id}(id=${user.id})}" target="_blank">צפה</a>
-                                <button type="button" class="btn btn-outline-primary btn-sm"
-                                        data-bs-toggle="modal"
-                                        th:attr="data-bs-target='#pdfModal__' + ${user.id}">
-                                    צפה
-                                </button>-->
                                 <button class="btn btn-outline-primary btn-sm view-pdf-btn"
                                         th:data-user-id="${user.id}"
                                         th:data-user-full-name="${user.firstName + ' ' + user.lastName}"
@@ -44,29 +50,96 @@
                                     הצג תעודה
                                 </button>
                             </td>
-                            <!--<td>
-                                <button type="button" class="btn btn-outline-primary btn-sm"
-                                        data-bs-toggle="modal"
-                                        th:attr="data-bs-target='#pdfModal__' + ${user.id}">
-                                            צפה
-                                </button>
-                            </td>-->
                             <td>
-                                <form th:action="@{/admin/approve}" method="post" class="d-inline">
-                                    <input type="hidden" name="userId" th:value="${user.id}">
-                                    <button type="submit" class="btn btn-success btn-sm">אשר</button>
+                                <form class="status-form d-inline ms-2" th:attr="data-user-id=${user.id}" data-new-status="BLOCKED">
+                                    <button type="submit" class="btn btn-danger btn-sm">חסום</button>
                                 </form>
-                                <form th:action="@{/admin/reject}" method="post" class="d-inline ms-2">
-                                    <input type="hidden" name="userId" th:value="${user.id}">
-                                    <button type="submit" class="btn btn-danger btn-sm">דחה</button>
+
+                                <form class="status-form d-inline ms-2" th:attr="data-user-id=${user.id}" data-new-status="APPROVED">
+                                    <button type="submit" class="btn btn-success btn-sm">אשר</button>
                                 </form>
                             </td>
                         </tr>
-                        <tr th:if="${#lists.isEmpty(pendingUsers)}">
-                            <td colspan="5">אין משתמשים חדשים ממתינים לאישור</td>
+                        <tr data-error="no-users">
+                            <td colspan="6">לא נמצאו משתמשים</td>
                         </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- Permissions Management Section -->
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0 flex-grow-1 me-3">ניהול הרשאות משתמשים</h4>
+                    <div class="flex-shrink-0 position-relative" style="min-width: 300px;">
+                        <input type="text"
+                               id="accSearch"
+                               class="form-control pe-5"
+                               placeholder="חיפוש משתמשים לפי שם משתמש"
+                               aria-label="חיפוש משתמשים">
+                        <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>שם מלא</th>
+                            <th>דוא"ל</th>
+                            <th>שם משתמש</th>
+                            <th>הרשאה נוכחית</th>
+                            <th>שנה הרשאה</th>
+                            <th>מצב חשבון</th>
+                        </tr>
+                        </thead>
+                        <tbody id="accountsPermissionTbody">
+                        <tr th:each="user : ${allUsers}" th:attr="data-username=${user.username}">
+                            <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${user.username}"></td>
+                            <td th:text="${user.role}"></td>
+                            <td>
+                                <form class="d-flex justify-content-center change-role-form">
+                                    <input type="hidden" name="userId" th:value="${user.id}">
+                                    <select class="form-select form-select-sm w-auto" name="newRole" th:attr="data-role=${user.role}">
+                                        <option value="RESERVIST" th:selected="${user.role.name() == 'RESERVIST'}">חייל</option>
+                                        <option value="COMMANDER" th:selected="${user.role.name() == 'COMMANDER'}">מפקד</option>
+                                        <option value="ADMIN" th:selected="${user.role.name() == 'ADMIN'}">מנהל</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form class="d-flex justify-content-center change-status-form">
+                                    <input type="hidden" name="userId" th:value="${user.id}">
+                                    <select class="form-select form-select-sm w-auto" name="newStatus" th:attr="data-status=${user.registrationStatus}">
+                                        <option value="PENDING" th:selected="${user.registrationStatus.name() == 'PENDING'}">ממתין לאישור</option>
+                                        <option value="APPROVED" th:selected="${user.registrationStatus.name() == 'APPROVED'}">פעיל</option>
+                                        <option value="BLOCKED" th:selected="${user.registrationStatus.name() == 'BLOCKED'}">חסום</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr data-error="no-users">
+                            <td colspan="6">לא נמצאו משתמשים</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                <div id="actionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"
+                     data-bs-autohide="true" data-bs-delay="4000">
+                    <div class="toast-header">
+                        <strong class="me-auto">עדכון</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        פעולה בוצעה בהצלחה.
+                    </div>
                 </div>
             </div>
 
@@ -91,58 +164,6 @@
                 </div>
             </div>
 
-
-            <!-- Permissions Management Section -->
-            <div>
-                <h4 class="mb-3">ניהול הרשאות משתמשים</h4>
-                <div class="table-responsive">
-                    <table class="table table-bordered text-center align-middle">
-                        <thead class="table-light">
-                        <tr>
-                            <th>שם מלא</th>
-                            <th>דוא"ל</th>
-                            <th>שם משתמש</th>
-                            <th>הרשאה נוכחית</th>
-                            <th>שנה הרשאה</th>
-                            <th>מצב חשבון</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="user : ${allUsers}">
-                            <td th:text="${user.firstName + ' ' + user.lastName}"></td>
-                            <td th:text="${user.email}"></td>
-                            <td th:text="${user.username}"></td>
-                            <td th:text="${user.role}"></td>
-                            <td>
-                                <form th:action="@{/admin/change-role}" method="post" class="d-flex justify-content-center">
-                                    <input type="hidden" name="userId" th:value="${user.id}">
-                                    <select class="form-select form-select-sm w-auto" name="newRole">
-                                        <option value="RESERVIST" th:selected="${user.role.name() == 'RESERVIST'}">חייל</option>
-                                        <option value="COMMANDER" th:selected="${user.role.name() == 'COMMANDER'}">מפקד</option>
-                                        <option value="ADMIN" th:selected="${user.role.name() == 'ADMIN'}">מנהל</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
-                                </form>
-                            </td>
-                            <td>
-                                <form th:action="@{/admin/change-status}" method="post" class="d-flex justify-content-center">
-                                    <input type="hidden" name="userId" th:value="${user.id}">
-                                    <select class="form-select form-select-sm w-auto" name="newStatus">
-                                        <option value="PENDING" th:selected="${user.registrationStatus.name() == 'PENDING'}">ממתין לאישור</option>
-                                        <option value="APPROVED" th:selected="${user.registrationStatus.name() == 'APPROVED'}">פעיל</option>
-                                        <option value="BLOCKED" th:selected="${user.registrationStatus.name() == 'BLOCKED'}">חסום</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
-                                </form>
-                            </td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(allUsers)}">
-                            <td colspan="5">אין משתמשים במערכת</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
     </section>
 </main>
