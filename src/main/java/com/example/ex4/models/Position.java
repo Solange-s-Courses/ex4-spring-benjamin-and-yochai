@@ -19,6 +19,10 @@ public class Position {
     
     private String requirements;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "enum('ACTIVE', 'CANCELED', 'FULFILLED', 'FROZEN') DEFAULT 'ACTIVE'")
+    private PositionStatus status;
+
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private AppUser publisher;
@@ -78,4 +82,8 @@ public class Position {
     public void setPublisher(AppUser publisher) {
         this.publisher = publisher;
     }
+
+    public PositionStatus getStatus() { return status; }
+
+    public void setStatus(PositionStatus status) { this.status = status; }
 }
