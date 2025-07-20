@@ -4,8 +4,7 @@ function positionDom(){
         const otherJobTitleInput = document.getElementById("otherJobTitleInput");
         const locationSelect = document.getElementById("location");
         const descriptionTextArea = document.getElementById("description");
-        const form = document.querySelector('form');
-        const submitButton = document.querySelector('button[type="submit"]');
+        const form = document.getElementById('addPositionForm');
         const requirementsContainer = document.getElementById('requirementsContainer');
 
         function clearErrors() {
@@ -95,7 +94,7 @@ function positionDom(){
         }
 
         function validateRequirements() {
-            const requirementInputs = document.querySelectorAll('input[name="requirements"]');
+            const requirementInputs = requirementsContainer.querySelectorAll('input');
 
             let isValid = true;
             let hasValidRequirements = false;
@@ -129,7 +128,7 @@ function positionDom(){
             const isAssignmentTypeValid = validateAssignmentType();
             const isDescriptionValid = validateDescription();
             const isRequirementsValid = validateRequirements();
-            
+
             return isJobTitleValid && isLocationValid && isAssignmentTypeValid &&
                    isDescriptionValid && isRequirementsValid;//-----------------------------------------------------------------------------------
         }
@@ -155,7 +154,7 @@ function positionDom(){
             }
         });
 
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit',  function(e) {
             if (!validateForm()) {
                 e.preventDefault();
                 

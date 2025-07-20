@@ -21,7 +21,7 @@
                             <h3 class="text-center">פרסום תפקיד חדש</h3>
                         </div>
                         <div class="card-body">
-                            <form th:action="@{/positions/add}" th:object="${positionForm}" method="post">
+                            <form th:action="@{/positions/add}" th:object="${positionForm}" method="post" id="addPositionForm">
                                 <!-- Job Title Selection -->
                                 <div class="mb-4">
                                     <div class="d-flex align-items-center gap-2 mb-1">
@@ -143,9 +143,9 @@
                                         </div>
                                     </div>-->
 
-                                    <div class="text-danger server-error" th:if="${#fields.hasErrors('requirements')}"
+                                    <div class="text-danger server-error mb-2" th:if="${#fields.hasErrors('requirements')}"
                                          th:errors="*{requirements}"></div>
-                                    <div class="text-danger client-error" data-error="requirements"></div>
+                                    <div class="text-danger client-error mb-2" data-error="requirements"></div>
                                     <button type="button" id="addRequirementBtn" class="btn btn-outline-primary btn-sm">
                                         <i class="bi bi-plus-circle me-1"></i>הוסף דרישה
                                     </button>
