@@ -127,8 +127,8 @@ public class AppUserService implements UserDetailsService {
 
     @Transactional
     public ResponseEntity<String> changeUserRole(Long id, Role role) {
-        Optional<AppUser> userOpt = getUserById(id);
-        if (userOpt.isEmpty()) {
+        Optional<AppUser> userOpt = appUserRepository.findById(id);
+        if (!userOpt.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 

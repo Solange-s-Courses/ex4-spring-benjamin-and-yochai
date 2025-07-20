@@ -57,23 +57,28 @@ public class PositionService {
     private Map<String, Object> getActivePositionsWithStringFilters() {
         List<Position> jobs = getPositionsByStatus(PositionStatus.ACTIVE);
 
+        List<String> sortedLocationStrings = new ArrayList<>();
+        List<String> sortedServiceTypes = new ArrayList<>();
+
         // מיון אלפביתי של מיקומים - המרה ל-String
-        List<String> sortedLocationStrings = jobs.stream()
-                .map(Position::getLocation)
-                .filter(Objects::nonNull)
-                .distinct()
-                .sorted(Comparator.comparing(LocationRegion::toString))
-                .map(LocationRegion::toString)
-                .toList();
+        if (!jobs.isEmpty()) {
+            sortedLocationStrings = jobs.stream()
+                    .map(Position::getLocation)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .sorted(Comparator.comparing(LocationRegion::toString))
+                    .map(LocationRegion::toString)
+                    .toList();
 
-        // מיון אלפביתי של סוגי שירות (Strings)
-        List<String> sortedServiceTypes = jobs.stream()
-                .map(Position::getAssignmentType)
-                .filter(Objects::nonNull)
-                .distinct()
-                .sorted()
-                .toList();
+            // מיון אלפביתי של סוגי שירות (Strings)
+            sortedServiceTypes = jobs.stream()
+                    .map(Position::getAssignmentType)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .sorted()
+                    .toList();
 
+        }
         Map<String, Object> result = new HashMap<>();
         result.put("jobs", jobs);
         result.put("locations", sortedLocationStrings);

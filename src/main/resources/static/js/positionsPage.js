@@ -39,6 +39,8 @@ const positionsPageDom = ()=>{
             }
         }
 
+        filterJobs();
+
         function updateSelectOptions(selector, options, selectedValue) {
             const firstOption = selector.firstElementChild;
             selector.innerHTML = '';

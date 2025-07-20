@@ -1,6 +1,7 @@
 
 const adminDashboard = ()=>{
     const renderPdfWithPdfJs = async (url, container) => {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         const loadingTask = pdfjsLib.getDocument(url);
         const pdf = await loadingTask.promise;
 
