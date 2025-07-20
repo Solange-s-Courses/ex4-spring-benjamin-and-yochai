@@ -88,7 +88,7 @@
                             <th>שם מלא</th>
                             <th>דוא"ל</th>
                             <th>שם משתמש</th>
-                            <th>הרשאה נוכחית</th>
+                            <!--th>הרשאה נוכחית</th-->
                             <th>שנה הרשאה</th>
                             <th>מצב חשבון</th>
                         </tr>
@@ -98,7 +98,7 @@
                             <td th:text="${user.firstName + ' ' + user.lastName}"></td>
                             <td th:text="${user.email}"></td>
                             <td th:text="${user.username}"></td>
-                            <td th:text="${user.role}"></td>
+                            <!--td th:text="${user.role}"></td-->
                             <td>
                                 <form class="d-flex justify-content-center change-role-form">
                                     <input type="hidden" name="userId" th:value="${user.id}">
@@ -123,7 +123,7 @@
                             </td>
                         </tr>
                         <tr data-error="no-users">
-                            <td colspan="6">לא נמצאו משתמשים</td>
+                            <td colspan="5">לא נמצאו משתמשים</td>
                         </tr>
                         </tbody>
                     </table>

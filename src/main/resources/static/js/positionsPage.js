@@ -4,6 +4,7 @@ const positionsPageDom = ()=>{
         const jobCardsDiv = document.getElementById("job-cards");
         const locationSelector = document.getElementById("location");
         const assigmentTypeSelector = document.getElementById("serviceType");
+        const noPositionsMsg = document.getElementById("noPositionsMsg")
 
         let currentFilters = {
             location: '',
@@ -13,6 +14,9 @@ const positionsPageDom = ()=>{
         function filterJobs(){
             const selectedLocation = locationSelector.value;
             const selectedType = assigmentTypeSelector.value;
+            let counter = 0;
+
+            noPositionsMsg.classList.add("d-none");
 
             const cards = jobCardsDiv.querySelectorAll(".col");
 
@@ -25,10 +29,14 @@ const positionsPageDom = ()=>{
 
                 if (matchesLocation && matchesType) {
                     card.classList.remove("d-none");
+                    counter ++;
                 } else {
                     card.classList.add("d-none");
                 }
             });
+            if (counter === 0){
+                noPositionsMsg.classList.remove("d-none");
+            }
         }
 
         function updateSelectOptions(selector, options, selectedValue) {
