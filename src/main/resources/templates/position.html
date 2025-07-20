@@ -103,7 +103,14 @@
 
                 <!-- Apply Button -->
                 <div class="text-center">
-                    <form th:action="@{'/positions/' + ${position.id} + '/apply'}" method="post">
+                    <!-- אם המשתמש כבר הגיש מועמדות -->
+                    <div th:if="${hasApplied}" class="alert alert-info rounded-3">
+                        <i class="bi bi-info-circle me-2"></i>
+                        כבר הגשת מועמדות למשרה זו
+                    </div>
+                    
+                    <!-- כפתור הגשת מועמדות -->
+                    <form th:unless="${hasApplied}" th:action="@{'/positions/' + ${position.id} + '/apply'}" method="post">
                         <button type="submit" class="btn btn-success btn-lg px-5 rounded-3">
                             <i class="bi bi-send-fill me-2"></i>
                             הגש מועמדות
@@ -147,6 +154,8 @@
         </div>
     </section>
 </main>
+
+<div th:replace="~{fragments/toasts :: successToast}"></div>
 
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>

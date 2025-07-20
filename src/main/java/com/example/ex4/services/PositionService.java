@@ -6,11 +6,14 @@ import com.example.ex4.models.PositionStatus;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import com.example.ex4.models.LocationRegion;
 import com.example.ex4.models.Position;
 import com.example.ex4.repositories.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -29,6 +32,10 @@ public class PositionService {
 
     public boolean existsByJobTitle(String jobTitle) {
         return positionRepository.existsByJobTitle(jobTitle);
+    }
+
+    public Position findById(Long id) {
+        return positionRepository.findById(id).orElse(null);
     }
 
     public void save(Position position) {

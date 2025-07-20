@@ -4,6 +4,7 @@ import com.example.ex4.models.AppUser;
 import com.example.ex4.models.RegistrationStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -37,15 +38,14 @@ public class HomeController {
         user.setFirstName(principal.getName());
         user.setRegistrationStatus(RegistrationStatus.APPROVED);
 
-        // נתונים כלליים לתצוגה
-        List<?> submittedApplications = new ArrayList<>();//applicationService.getApplicationsByUser(user);
-        List<?> upcomingInterviews = new ArrayList<>(); //interviewService.getUpcomingInterviewsByUser(user);
+        // נתונים כלליים לתצוגה - כעת נשלוף אמיתי
+        List<?> submittedApplications = new ArrayList<>(); // למועמדויות שהגשתי - לא משומש כרגע
+        List<?> upcomingInterviews = new ArrayList<>(); // לראיונות עתידיים - לא משומש כרגע
 
-        // סטטיסטיקות
-        long totalApplications = 5;
-        long pendingApplications = 3;
-        long upcomingInterviewCount = 3;
-
+        // סטטיסטיקות - לא משומש כרגע
+        long totalApplications = 0;
+        long pendingApplications = 0;
+        long upcomingInterviewCount = 0;
 
         // שליחה ל־Thymeleaf
         model.addAttribute("user", user);
@@ -57,4 +57,6 @@ public class HomeController {
 
         return "dashboard";
     }
+
+
 }

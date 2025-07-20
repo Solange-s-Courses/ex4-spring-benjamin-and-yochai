@@ -3,6 +3,7 @@ package com.example.ex4.controllers;
 import com.example.ex4.dto.PositionForm;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.PositionService;
+import com.example.ex4.services.ApplicationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,8 @@ public class PositionController {
     private PositionService positionService;
     @Autowired
     private AppUserService appUserService;
+    @Autowired
+    private ApplicationService applicationService;
 
     @GetMapping("")
     public String positionsPage(Model model, Principal principal) {
@@ -28,8 +31,16 @@ public class PositionController {
     }
 
     @GetMapping("/{id}")
-    public String getPosition(@PathVariable Long id, Model model) {
-        return positionService.getPosition(id, model);
+    public String getPosition(@PathVariable Long id, Model model, Principal principal) {
+        String result = positionService.getPosition(id, model);
+        
+        // Check if user has already applied
+        if (principal != null) {
+            boolean hasApplied = applicationService.hasUserApplied(id, principal.getName());
+            model.addAttribute("hasApplied", hasApplied);
+        }
+        
+        return result;
     }
 
     @GetMapping("/add")
@@ -43,4 +54,21 @@ public class PositionController {
                               RedirectAttributes redirectAttributes, Principal principal) {
         return positionService.processAddPositionForm(positionForm, model, result, principal.getName(), redirectAttributes);
     }
+
+    @PostMapping("/{id}/apply")
+    public String applyForPosition(@PathVariable Long id, 
+                                   Principal principal,
+                                   RedirectAttributes redirectAttributes) {
+        boolean success = applicationService.submitApplication(id, principal.getName());
+        
+        if (success) {
+            redirectAttributes.addFlashAttribute("successMessage", "המועמדות הוגשה בהצלחה!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "שגיאה בהגשת המועמדות. ייתכן שכבר הגשת מועמדות למשרה זו.");
+        }
+        
+        return "redirect:/positions/" + id;
+    }
+
+
 }
