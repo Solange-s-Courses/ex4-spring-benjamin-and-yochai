@@ -23,7 +23,7 @@ public class Application {
     private LocalDateTime applicationDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING'")
+    @Column(columnDefinition = "enum('PENDING', 'APPROVED', 'REJECTED', 'CANCELED') DEFAULT 'PENDING'")
     private ApplicationStatus status = ApplicationStatus.PENDING;
 
     public Application() {

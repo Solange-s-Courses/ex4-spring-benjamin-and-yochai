@@ -9,6 +9,8 @@ public class ApplicationDto {
     private String applicantName;
     private Long positionId;
     private String positionTitle;
+    private String positionLocation;
+    private String positionAssignmentType;
     private LocalDateTime applicationDate;
     private ApplicationStatus status;
 
@@ -16,12 +18,15 @@ public class ApplicationDto {
 
     public ApplicationDto(Long id, Long applicantId, String applicantName, 
                          Long positionId, String positionTitle, 
+                         String positionLocation, String positionAssignmentType,
                          LocalDateTime applicationDate, ApplicationStatus status) {
         this.id = id;
         this.applicantId = applicantId;
         this.applicantName = applicantName;
         this.positionId = positionId;
         this.positionTitle = positionTitle;
+        this.positionLocation = positionLocation;
+        this.positionAssignmentType = positionAssignmentType;
         this.applicationDate = applicationDate;
         this.status = status;
     }
@@ -64,6 +69,22 @@ public class ApplicationDto {
 
     public void setPositionTitle(String positionTitle) {
         this.positionTitle = positionTitle;
+    }
+
+    public String getPositionLocation() {
+        return positionLocation;
+    }
+
+    public void setPositionLocation(String positionLocation) {
+        this.positionLocation = positionLocation;
+    }
+
+    public String getPositionAssignmentType() {
+        return positionAssignmentType;
+    }
+
+    public void setPositionAssignmentType(String positionAssignmentType) {
+        this.positionAssignmentType = positionAssignmentType;
     }
 
     public LocalDateTime getApplicationDate() {

@@ -101,12 +101,46 @@
                     </div>
                 </div>
 
-                <!-- Apply Button -->
+                <!-- Apply/Cancel Button -->
                 <div class="text-center">
                     <!-- אם המשתמש כבר הגיש מועמדות -->
                     <div th:if="${hasApplied}" class="alert alert-info rounded-3">
-                        <i class="bi bi-info-circle me-2"></i>
-                        כבר הגשת מועמדות למשרה זו
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-info-circle me-2"></i>
+                                כבר הגשת מועמדות למשרה זו
+                                <div class="small text-muted mt-1" th:if="${userApplication != null}">
+                                    תאריך הגשה: <span th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                </div>
+                            </div>
+                            <form th:if="${userApplication != null and userApplication.status.name() == 'PENDING'}" 
+                                  th:action="@{'/positions/' + ${position.id} + '/cancel'}" method="post" 
+                                  onsubmit="return confirm('האם אתה בטוח שברצונך לבטל את המועמדות?')">
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    בטל מועמדות
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- אם המשתמש ביטל את המועמדות -->
+                    <div th:if="${userApplication != null and userApplication.status.name() == 'CANCELED'}" class="alert alert-secondary rounded-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-x-circle me-2"></i>
+                                ביטלת את המועמדות למשרה זו
+                                <div class="small text-muted mt-1">
+                                    תאריך הגשה: <span th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                </div>
+                            </div>
+                            <form th:action="@{'/positions/' + ${position.id} + '/apply'}" method="post">
+                                <button type="submit" class="btn btn-outline-success btn-sm rounded-3">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>
+                                    הגש שוב
+                                </button>
+                            </form>
+                        </div>
                     </div>
                     
                     <!-- כפתור הגשת מועמדות -->
@@ -156,6 +190,7 @@
 </main>
 
 <div th:replace="~{fragments/toasts :: successToast}"></div>
+<div th:replace="~{fragments/toasts :: errorToast}"></div>
 
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
