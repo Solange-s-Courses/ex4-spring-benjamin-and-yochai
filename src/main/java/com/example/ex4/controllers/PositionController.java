@@ -37,12 +37,15 @@ public class PositionController {
         
         // Check if user has already applied
         if (principal != null) {
-            boolean hasApplied = applicationService.hasUserApplied(id, principal.getName());
-            model.addAttribute("hasApplied", hasApplied);
-            
-            if (hasApplied) {
-                Application userApplication = applicationService.getUserApplicationForPosition(id, principal.getName());
+            // בדוק אם יש מועמדות כלשהי (פעילה או מבוטלת)
+            Application userApplication = applicationService.getUserApplicationForPosition(id, principal.getName());
+            if (userApplication != null) {
                 model.addAttribute("userApplication", userApplication);
+                // hasApplied יהיה true רק אם המועמדות פעילה (לא מבוטלת)
+                boolean hasApplied = userApplication.getStatus() != com.example.ex4.models.ApplicationStatus.CANCELED;
+                model.addAttribute("hasApplied", hasApplied);
+            } else {
+                model.addAttribute("hasApplied", false);
             }
         }
         
