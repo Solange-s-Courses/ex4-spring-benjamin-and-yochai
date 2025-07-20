@@ -2,8 +2,11 @@ package com.example.ex4.controllers;
 
 import com.example.ex4.models.AppUser;
 import com.example.ex4.models.RegistrationStatus;
+import com.example.ex4.services.AppUserService;
+import com.example.ex4.services.ApplicationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -19,6 +22,12 @@ import java.util.List;
 @Controller
 public class HomeController {
 
+    @Autowired
+    private AppUserService appUserService;
+    
+    @Autowired
+    private ApplicationService applicationService;
+
     @GetMapping("/")
     public String home() {
         return "index";
@@ -32,29 +41,38 @@ public class HomeController {
 
     @GetMapping("/dashboard")
     public String getDashboard(Model model, Principal principal) {
-        // שליפת המשתמש לפי השם מתוך הפרינסיפל
-        AppUser user = new AppUser();
-        user.setFirstName(principal.getName());
-        user.setRegistrationStatus(RegistrationStatus.APPROVED);
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        
+        // שליפת המשתמש האמיתי
+        AppUser user = appUserService.getUserByUsername(principal.getName());
+        if (user == null) {
+            return "redirect:/login";
+        }
 
-        // נתונים כלליים לתצוגה
-        List<?> submittedApplications = new ArrayList<>();//applicationService.getApplicationsByUser(user);
-        List<?> upcomingInterviews = new ArrayList<>(); //interviewService.getUpcomingInterviewsByUser(user);
-
+        // שליפת המועמדויות של המשתמש
+        List<?> submittedApplications = applicationService.getUserApplications(principal.getName());
+        
         // סטטיסטיקות
-        long totalApplications = 5;
-        long pendingApplications = 3;
-        long upcomingInterviewCount = 3;
-
+        long totalApplications = submittedApplications.size();
+        long pendingApplications = submittedApplications.stream()
+                .filter(app -> app instanceof com.example.ex4.dto.ApplicationDto)
+                .map(app -> (com.example.ex4.dto.ApplicationDto) app)
+                .filter(app -> app.getStatus() == com.example.ex4.models.ApplicationStatus.PENDING)
+                .count();
+        long upcomingInterviewCount = 0; // לא מומש עדיין
 
         // שליחה ל־Thymeleaf
         model.addAttribute("user", user);
         model.addAttribute("applications", submittedApplications);
-        model.addAttribute("interviews", upcomingInterviews);
+        model.addAttribute("upcomingInterviews", new ArrayList<>());
         model.addAttribute("totalApplications", totalApplications);
         model.addAttribute("pendingApplications", pendingApplications);
         model.addAttribute("upcomingInterviewCount", upcomingInterviewCount);
 
         return "dashboard";
     }
+
+
 }

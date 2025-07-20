@@ -10,3 +10,16 @@
     </div>
   </div>
 </div>
+
+<div th:fragment="errorToast" th:if="${errorMessage}">
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header bg-danger text-white">
+        <i class="bi bi-exclamation-triangle-fill me-2" role="img" aria-label="Error"></i>
+        <strong class="me-auto">שגיאה!</strong>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body" th:text="${errorMessage}"></div>
+    </div>
+  </div>
+</div>

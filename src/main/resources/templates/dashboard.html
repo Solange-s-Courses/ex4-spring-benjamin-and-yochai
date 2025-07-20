@@ -52,18 +52,8 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="app : ${applications}">
-                            <td th:text="${app.position.jobTitle}">תפקיד</td>
-                            <td th:text="${app.position.location}">מיקום</td>
-                            <td th:text="${app.position.assignmentType}">סוג</td>
-                            <td th:text="${#dates.format(app.submissionDate, 'dd/MM/yyyy')}">01/01/2025</td>
-                            <td>
-                                <span class="badge" th:classappend="' bg-' + ${app.statusColor}"
-                                      th:text="${app.status}">ממתין</span>
-                            </td>
-                        </tr>
                         <tr th:if="${#lists.isEmpty(applications)}">
-                            <td colspan="5">לא נמצאו משרות <B> טבלה לא רלוונטית</B></td>
+                            <td colspan="5">לא נמצאו משרות שפרסמת</td>
                         </tr>
                         </tbody>
                     </table>
@@ -82,21 +72,50 @@
                             <th>סוג</th>
                             <th>תאריך הגשה</th>
                             <th>סטטוס</th>
+                            <th>פעולות</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="app : ${applications}">
-                            <td th:text="${app.position.jobTitle}">תפקיד</td>
-                            <td th:text="${app.position.location}">מיקום</td>
-                            <td th:text="${app.position.assignmentType}">סוג</td>
-                            <td th:text="${#dates.format(app.submissionDate, 'dd/MM/yyyy')}">01/01/2025</td>
                             <td>
-                                <span class="badge" th:classappend="' bg-' + ${app.statusColor}"
-                                      th:text="${app.status}">ממתין</span>
+                                <a th:href="@{'/positions/' + ${app.positionId}}" 
+                                   th:text="${app.positionTitle}" 
+                                   class="text-decoration-none">
+                                    תפקיד
+                                </a>
+                            </td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy')}">01/01/2025</td>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${app.status.name() == 'PENDING' ? 'bg-warning' : (app.status.name() == 'APPROVED' ? 'bg-success' : (app.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'))}"
+                                      th:text="${app.status.name() == 'PENDING' ? 'ממתין' : (app.status.name() == 'APPROVED' ? 'אושר' : (app.status.name() == 'REJECTED' ? 'נדחה' : 'בוטל'))}">
+                                    ממתין
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a th:href="@{'/positions/' + ${app.positionId}}" 
+                                       class="btn btn-outline-primary btn-sm rounded-3">
+                                        <i class="bi bi-eye me-1"></i>
+                                        צפה
+                                    </a>
+                                    <form th:if="${app.status.name() == 'PENDING'}" 
+                                          th:action="@{'/positions/' + ${app.positionId} + '/cancel'}" 
+                                          method="post" 
+                                          style="display: inline;"
+                                          onsubmit="return confirm('האם אתה בטוח שברצונך לבטל את המועמדות?')">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
+                                            <i class="bi bi-x-circle me-1"></i>
+                                            בטל
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(applications)}">
-                            <td colspan="5">לא נמצאו משרות</td>
+                            <td colspan="6">לא נמצאו מועמדויות</td>
                         </tr>
                         </tbody>
                     </table>
@@ -117,13 +136,6 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="interview : ${upcomingInterviews}">
-                            <td th:text="${interview.position.jobTitle}">שם</td>
-                            <td th:text="${#dates.format(interview.date, 'dd/MM/yyyy')}">01/01/2025</td>
-                            <td th:text="${#dates.format(interview.date, 'HH:mm')}">12:00</td>
-                            <td><a th:href="${interview.locationLink}" th:text="${interview.locationText}"
-                                   target="_blank">לינק</a></td>
-                        </tr>
                         <tr th:if="${#lists.isEmpty(upcomingInterviews)}">
                             <td colspan="4">אין ראיונות קרובים</td>
                         </tr>
@@ -135,7 +147,12 @@
     </section>
 </main>
 
+<div th:replace="~{fragments/toasts :: successToast}"></div>
+<div th:replace="~{fragments/toasts :: errorToast}"></div>
+
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:src="@{/js/toasts.js}"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 const PositionDom = ()=>{
     document.addEventListener("DOMContentLoaded",()=>{
+        // Share button functionality
         document.getElementById("shareBtn").addEventListener("click",()=>{
             if (navigator.share) {
                 navigator.share({
@@ -18,8 +19,24 @@ const PositionDom = ()=>{
                     }, 3000);
                 });
             }
-        })
+        });
+
+        // Show success/error toasts
+        const successToast = document.getElementById('successToast');
+        const errorToast = document.getElementById('errorToast');
+        
+        if (successToast) {
+            const bsSuccessToast = new bootstrap.Toast(successToast);
+            bsSuccessToast.show();
+        }
+        
+        if (errorToast) {
+            const bsErrorToast = new bootstrap.Toast(errorToast);
+            bsErrorToast.show();
+        }
     });
 }
+
+
 
 PositionDom();
