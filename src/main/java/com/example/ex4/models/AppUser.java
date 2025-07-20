@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Arrays;
 
 @Entity
 public class AppUser implements UserDetails {
@@ -116,7 +117,7 @@ public class AppUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return Arrays.asList(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
