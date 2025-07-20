@@ -1,5 +1,6 @@
 
 const adminDashboard = ()=>{
+    const POLLING = 5000;
     const renderPdfWithPdfJs = async (url, container) => {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         const loadingTask = pdfjsLib.getDocument(url);
@@ -76,6 +77,7 @@ const adminDashboard = ()=>{
         const changeRoleForms = permissionTable.querySelectorAll(".change-role-form");
         const toastEl = document.getElementById("actionToast");
         const toastBody = toastEl.querySelector(".toast-body");
+        let pollingInterval = null;
 
         permissionSearch.addEventListener("input", ()=>{filterTable(permissionTable, permissionSearch.value)});
         newAccountsSearch.addEventListener("input", ()=>{filterTable(newAccountsTable, newAccountsSearch.value)});
@@ -85,81 +87,162 @@ const adminDashboard = ()=>{
 
         showPdfButtons.forEach(button => {
             button.addEventListener("click", async function () {
-                const userId = this.dataset.userId;
-                const fullName = this.dataset.userFullName;
-                const url = `/restapi/admin/document/${userId}`;
-
-                modalOpenNewPageBtn.href = url;
-                spinner.classList.remove("d-none");
-                pdfContainer.classList.add("d-none");
-                nameDisplay.innerText = fullName;
-
-                pdfContainer.innerHTML = "";
-
-                try {
-                    await renderPdfWithPdfJs(url, pdfContainer);
-                } catch (err) {
-                    pdfContainer.innerHTML = `<p class="text-danger">${err.message}</p>`;
-                } finally {
-                    spinner.classList.add("d-none");
-                    pdfContainer.classList.remove("d-none");
-                }
+                await showPdfListener(button);
             });
         })
 
+        async function showPdfListener (button){
+            const userId = button.dataset.userId;
+            const fullName = button.dataset.userFullName;
+            const url = `/restapi/admin/document/${userId}`;
+
+            modalOpenNewPageBtn.href = url;
+            spinner.classList.remove("d-none");
+            pdfContainer.classList.add("d-none");
+            nameDisplay.innerText = fullName;
+
+            pdfContainer.innerHTML = "";
+
+            try {
+                await renderPdfWithPdfJs(url, pdfContainer);
+            } catch (err) {
+                pdfContainer.innerHTML = `<p class="text-danger">${err.message}</p>`;
+            } finally {
+                spinner.classList.add("d-none");
+                pdfContainer.classList.remove("d-none");
+            }
+        }
+
+        //first table
         setStatusButtons.forEach(form => {
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                const userId = form.dataset.userId;
-                const newStatus = form.dataset.newStatus;
-
-                const ok = await changeUserStatus(userId, newStatus);
-                if (ok){
-                    form.closest("tr").remove();
-                    filterTable(newAccountsTable, newAccountsSearch.value);
-                }
+            form.addEventListener("submit", async (event) => {
+                await setStatusListener(form, event);
             });
         });
 
+        async function setStatusListener(form, event){
+            clearInterval(pollingInterval);
+            event.preventDefault();
+
+            const userId = form.dataset.userId;
+            const newStatus = form.dataset.newStatus;
+
+            const updatedUser = await changeUserStatus(userId, newStatus);
+            if (updatedUser){
+                await refreshData();
+                //form.closest("tr").remove();
+                //updatePermissionTable(updatedUser);
+                //filterTable(newAccountsTable, newAccountsSearch.value);
+            }
+            pollingInterval = setInterval(refreshData, POLLING);
+        }
+
+        //second table
         changeStatusForms.forEach(form => {
-            form.addEventListener("submit", async (e)=> {
-                e.preventDefault();
-
-                const userId = form.querySelector("input").value;
-                const selector = form.querySelector("select");
-                const newStatus = selector.value;
-                const oldStatus = selector.dataset.status;
-
-                if (newStatus !== oldStatus){
-                    const ok = await changeUserStatus(userId, newStatus);
-                    if (ok){
-                        selector.dataset.status = newStatus;
-                    }
-                }
-            });
+            form.addEventListener("submit", async(event)=>{await changeStatusListener(form, event)});
         });
+
+        async function changeStatusListener(form, event){
+            event.preventDefault();
+
+            const userId = form.querySelector("input").value;
+            const selector = form.querySelector("select");
+            const newStatus = selector.value;
+            const oldStatus = selector.dataset.status;
+
+            if (newStatus !== oldStatus){
+                clearInterval(pollingInterval);
+                const updatedUser = await changeUserStatus(userId, newStatus);
+                if (updatedUser){
+                    selector.dataset.status = newStatus;
+                    await refreshData();
+                }
+                pollingInterval = setInterval(refreshData, POLLING);
+            }
+        }
 
         changeRoleForms.forEach(form => {
-            form.addEventListener("submit", async (e)=> {
-                e.preventDefault();
-
-                const userId = form.querySelector("input").value;
-                const selector = form.querySelector("select");
-                const newRole = selector.value;
-                const oldRole = selector.dataset.role;
-
-                if (newRole !== oldRole){
-                    const ok = await changeUserRole(userId, newRole);
-                    if (ok){
-                        selector.dataset.role = newRole;
-                    }
-                }
-            });
+            form.addEventListener("submit", async (event)=> {await changeRoleListener(form, event)});
         });
 
+        async function changeRoleListener(form, event){
+            event.preventDefault();
+
+            const userId = form.querySelector("input").value;
+            const selector = form.querySelector("select");
+            const newRole = selector.value;
+            const oldRole = selector.dataset.role;
+
+            if (newRole !== oldRole){
+                clearInterval(pollingInterval);
+                const updatedUser = await changeUserRole(userId, newRole);
+                if (updatedUser){
+                    selector.dataset.role = newRole;
+                    await refreshData();
+                }
+                pollingInterval = setInterval(refreshData, POLLING);
+            }
+        }
+
+        function updatePermissionTable(user) {
+            const row = permissionTable.querySelector(`tr[data-username="${user.username}"]`);
+            if (row) {
+                // Update role select
+                const roleSelect = row.querySelector('select[name="newRole"]');
+                if (roleSelect.dataset.role !== user.role) {
+                    roleSelect.value = user.role;
+                    roleSelect.setAttribute('data-role', user.role);
+                }
+
+                // Update status select
+                const statusSelect = row.querySelector('select[name="newStatus"]');
+                if (statusSelect.dataset.status !== user.registrationStatus) {
+                    statusSelect.value = user.registrationStatus;
+                    statusSelect.setAttribute('data-status', user.registrationStatus);
+                }
+            }
+            else{
+                const newRow = document.createElement("tr");
+                newRow.setAttribute("data-username", user.username);
+
+                newRow.innerHTML = `
+                    <td>${user.firstName} ${user.lastName}</td>
+                    <td>${user.email}</td>
+                    <td>${user.username}</td>
+                    <td>
+                        <form class="d-flex justify-content-center change-role-form">
+                            <input type="hidden" name="userId" value="${user.id}">
+                            <select class="form-select form-select-sm w-auto" name="newRole" data-role="${user.role}">
+                                <option value="RESERVIST" ${user.role === 'RESERVIST' ? 'selected' : ''}>חייל</option>
+                                <option value="COMMANDER" ${user.role === 'COMMANDER' ? 'selected' : ''}>מפקד</option>
+                                <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>מנהל</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form class="d-flex justify-content-center change-status-form">
+                            <input type="hidden" name="userId" value="${user.id}">
+                            <select class="form-select form-select-sm w-auto" name="newStatus" data-status="${user.registrationStatus}">
+                                <option value="PENDING" ${user.registrationStatus === 'PENDING' ? 'selected' : ''}>ממתין לאישור</option>
+                                <option value="APPROVED" ${user.registrationStatus === 'APPROVED' ? 'selected' : ''}>פעיל</option>
+                                <option value="BLOCKED" ${user.registrationStatus === 'BLOCKED' ? 'selected' : ''}>חסום</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
+                        </form>
+                    </td>
+                `;
+
+                permissionTable.appendChild(newRow);
+
+                const statusForm = newRow.querySelector(".change-status-form");
+                const roleForm = newRow.querySelector(".change-role-form");
+                statusForm.addEventListener("submit", async (event)=> {await changeStatusListener(statusForm, event)});
+                roleForm.addEventListener("submit", async (event)=> {await changeRoleListener(roleForm, event)});
+            }
+        }
+
         async function changeUserStatus(userId, status){
-            let response = {};
             try {
 
                 const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
@@ -170,7 +253,7 @@ const adminDashboard = ()=>{
                     [csrfHeader]: csrfToken
                 };
 
-                response = await fetch("/restapi/admin/changeUserStatus", {
+                const response = await fetch("/restapi/admin/changeUserStatus", {
                     method: "POST",
                     headers: headers,
                     body: JSON.stringify({ userId, status }),
@@ -179,18 +262,20 @@ const adminDashboard = ()=>{
 
                 if (response.ok) {
                     showToast("הסטטוס עודכן בהצלחה.");
+                    return await response.json();
                 } else {
                     const text = await response.text();
                     showToast("שגיאה בעדכון הסטטוס: " + text, true);
+                    return null;
                 }
             } catch (err) {
                 showToast("שגיאה בלתי צפויה.", true);
+                return null;
             }
-            return response.ok;
+
         }
 
         async function changeUserRole(userId, role){
-            let response = {};
             try {
 
                 const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
@@ -201,7 +286,7 @@ const adminDashboard = ()=>{
                     [csrfHeader]: csrfToken
                 };
 
-                response = await fetch("/restapi/admin/changeUserRole", {
+                const response = await fetch("/restapi/admin/changeUserRole", {
                     method: "POST",
                     headers: headers,
                     body: JSON.stringify({ userId, role }),
@@ -210,14 +295,104 @@ const adminDashboard = ()=>{
 
                 if (response.ok) {
                     showToast("התפקיד עודכן בהצלחה.");
+                    return await response.json();
                 } else {
                     const text = await response.text();
                     showToast("שגיאה בעדכון התפקיד: " + text, true);
+                    return null;
                 }
             } catch (err) {
                 showToast("שגיאה בלתי צפויה.", true);
+                return null;
             }
-            return response.ok;
+        }
+
+        async function fetchAllUsers(){
+            try {
+                // You may need to adjust this endpoint based on your backend API
+                const response = await fetch('/restapi/admin/allUsers', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching positions data:', error);
+                return null;
+            }
+        }
+
+        function updatePendingTable(user) {
+            const row = newAccountsTable.querySelector(`tr[data-username="${user.username}"]`);
+            if (!row && user.registrationStatus === "PENDING") {
+                const newRow = document.createElement("tr");
+                newRow.setAttribute("data-username", user.username);
+
+                newRow.innerHTML = `
+                    <td>${user.firstName + ' ' + user.lastName}</td>
+                    <td>${user.email}</td>
+                    <td>${user.username}</td>
+                    <td>${user.role}</td>
+                    <td>
+                        <button class="btn btn-outline-primary btn-sm view-pdf-btn"
+                            data-user-id="${user.id}"
+                            data-user-full-name="${user.firstName + ' ' + user.lastName}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#pdfModal">
+                                הצג תעודה
+                        </button>
+                    </td>
+                    <td>    
+                        <form class="status-form d-inline ms-2" data-user-id="${user.id}" data-new-status="BLOCKED">
+                            <button type="submit" class="btn btn-danger btn-sm">חסום</button>
+                        </form>
+                        <form class="status-form d-inline ms-2" data-user-id="${user.id}" data-new-status="APPROVED">
+                            <button type="submit" class="btn btn-success btn-sm">אשר</button>
+                        </form>
+                    </td>
+                `;
+
+                newAccountsTable.appendChild(newRow);
+
+                const statusForms = newRow.querySelectorAll(".status-form");
+                statusForms.forEach(form => {
+                    form.addEventListener("submit", async (event) => {
+                        await setStatusListener(form, event);
+                    });
+                });
+                const pdfButton = newRow.querySelector(".view-pdf-btn");
+                pdfButton.addEventListener("click", async()=>{
+                    await showPdfListener(pdfButton);
+                });
+            }
+            else if (row && user.registrationStatus !== "PENDING") {
+                row.remove();
+            }
+        }
+
+        async function refreshData() {
+            try {
+                const data = await fetchAllUsers();
+
+                if (data) {
+                    data.forEach(user =>{
+                        updatePermissionTable(user);
+                        updatePendingTable(user);
+                    })
+                    filterTable(newAccountsTable, newAccountsSearch.value);
+                    filterTable(permissionTable, permissionSearch.value);
+                }
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+            }
         }
 
         function showToast(message, isError = false) {
@@ -242,6 +417,12 @@ const adminDashboard = ()=>{
             if (focusedElement) {
                 focusedElement.blur();
             }
+        });
+
+        pollingInterval = setInterval(refreshData, 5000);
+
+        window.addEventListener('beforeunload', function() {
+            clearInterval(pollingInterval);
         });
 
     })

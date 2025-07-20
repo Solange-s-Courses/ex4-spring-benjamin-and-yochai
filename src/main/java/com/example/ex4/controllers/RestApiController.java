@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,8 +40,13 @@ public class RestApiController {
         }
     }
 
+    @GetMapping("/admin/allUsers")
+    public ResponseEntity<List<AppUser>> getAllUsers() {
+        return ResponseEntity.ok(appUserService.getAllUsers());
+    }
+
     @PostMapping("/admin/changeUserStatus")
-    public ResponseEntity<String> changeUserStatus(@RequestBody Map<String, String> body) {
+    public ResponseEntity<AppUser> changeUserStatus(@RequestBody Map<String, String> body) {
         Long userId = Long.valueOf(body.get("userId"));
         String newStatus = body.get("status");
 
@@ -48,7 +54,7 @@ public class RestApiController {
     }
 
     @PostMapping("/admin/changeUserRole")
-    public ResponseEntity<String> changeUserRole(@RequestBody Map<String, String> body) {
+    public ResponseEntity<AppUser> changeUserRole(@RequestBody Map<String, String> body) {
         Long userId = Long.valueOf(body.get("userId"));
         String newRole = body.get("role");
 

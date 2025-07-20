@@ -121,10 +121,13 @@
                         <i class="bi bi-question-circle text-primary fs-2 mb-2"></i>
                         <h6 class="fw-bold">יש שאלות?</h6>
                         <p class="text-muted small mb-2">צור קשר עם מפרסם המשרה</p>
-                        <a th:href="'mailto:' + ${position.publisher.email}"
+                        <a th:href="'mailto:' + ${position.publisher.email} + '?subject=פניה מאתר צו גיוס בנוגע למשרה מס: ' + ${position.id}"
+                           target="_blank"
                            class="btn btn-outline-primary btn-sm rounded-3">
                             שלח אימייל
                         </a>
+
+
                     </div>
                 </div>
             </div>

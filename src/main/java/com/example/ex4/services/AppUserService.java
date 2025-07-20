@@ -112,30 +112,30 @@ public class AppUserService implements UserDetailsService {
     }
 
     @Transactional
-    public ResponseEntity<String> changeUserStatus(Long id, RegistrationStatus status) {
+    public ResponseEntity<AppUser> changeUserStatus(Long id, RegistrationStatus status) {
         Optional<AppUser> userOpt = getUserById(id);
         if (userOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
         AppUser user = userOpt.get();
         user.setRegistrationStatus(status);
         appUserRepository.save(user);
 
-        return ResponseEntity.ok("Status updated successfully");
+        return ResponseEntity.ok(user);
     }
 
     @Transactional
-    public ResponseEntity<String> changeUserRole(Long id, Role role) {
+    public ResponseEntity<AppUser> changeUserRole(Long id, Role role) {
         Optional<AppUser> userOpt = appUserRepository.findById(id);
-        if (!userOpt.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
         AppUser user = userOpt.get();
         user.setRole(role);
         appUserRepository.save(user);
 
-        return ResponseEntity.ok("Status updated successfully");
+        return ResponseEntity.ok(user);
     }
 }
