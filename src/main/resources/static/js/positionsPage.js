@@ -39,6 +39,8 @@ const positionsPageDom = ()=>{
             }
         }
 
+        filterJobs();
+
         function updateSelectOptions(selector, options, selectedValue) {
             const firstOption = selector.firstElementChild;
             selector.innerHTML = '';
@@ -79,17 +81,6 @@ const positionsPageDom = ()=>{
         }
 
         function updateJobCards(jobs) {
-            if (!jobs || jobs.length === 0) {
-                jobCardsDiv.innerHTML = `
-                    <div class="col-12">
-                        <div class="alert alert-warning text-center rounded-3 shadow-sm">
-                            אין משרות זמינות להצגה.
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-
             jobCardsDiv.innerHTML = '';
 
             jobs.forEach(job => {
