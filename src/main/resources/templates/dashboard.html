@@ -151,8 +151,7 @@
                                     <form th:if="${app.status.name() == 'PENDING'}" 
                                           th:action="@{'/positions/' + ${app.positionId} + '/cancel'}" 
                                           method="post" 
-                                          style="display: inline;"
-                                          onsubmit="return confirm('האם אתה בטוח שברצונך לבטל את המועמדות?')">
+                                          style="display: inline;">
                                         <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
                                             <i class="bi bi-x-circle me-1"></i>
                                             בטל
