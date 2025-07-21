@@ -40,7 +40,7 @@
                             <td th:text="${user.firstName + ' ' + user.lastName}"></td>
                             <td th:text="${user.email}"></td>
                             <td th:text="${user.username}"></td>
-                            <td th:text="${user.role}"></td>
+                            <td class="role-column" th:text="${user.role}"></td>
                             <td>
                                 <button class="btn btn-outline-primary btn-sm view-pdf-btn"
                                         th:data-user-id="${user.id}"
@@ -88,7 +88,6 @@
                             <th>שם מלא</th>
                             <th>דוא"ל</th>
                             <th>שם משתמש</th>
-                            <!--th>הרשאה נוכחית</th-->
                             <th>שנה הרשאה</th>
                             <th>מצב חשבון</th>
                         </tr>
@@ -98,27 +97,30 @@
                             <td th:text="${user.firstName + ' ' + user.lastName}"></td>
                             <td th:text="${user.email}"></td>
                             <td th:text="${user.username}"></td>
-                            <!--td th:text="${user.role}"></td-->
                             <td>
                                 <form class="d-flex justify-content-center change-role-form">
                                     <input type="hidden" name="userId" th:value="${user.id}">
-                                    <select class="form-select form-select-sm w-auto" name="newRole" th:attr="data-role=${user.role}">
-                                        <option value="RESERVIST" th:selected="${user.role.name() == 'RESERVIST'}">חייל</option>
-                                        <option value="COMMANDER" th:selected="${user.role.name() == 'COMMANDER'}">מפקד</option>
-                                        <option value="ADMIN" th:selected="${user.role.name() == 'ADMIN'}">מנהל</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
+                                    <div class="input-group input-group-sm w-auto">
+                                        <select class="form-select " name="newRole" th:attr="data-role=${user.role}">
+                                            <option value="RESERVIST" th:selected="${user.role.name() == 'RESERVIST'}">חייל</option>
+                                            <option value="COMMANDER" th:selected="${user.role.name() == 'COMMANDER'}">מפקד</option>
+                                            <option value="ADMIN" th:selected="${user.role.name() == 'ADMIN'}">מנהל</option>
+                                        </select>
+                                    <button type="submit" class="btn btn-primary">שמור</button>
+                                    </div>
                                 </form>
                             </td>
                             <td>
                                 <form class="d-flex justify-content-center change-status-form">
                                     <input type="hidden" name="userId" th:value="${user.id}">
-                                    <select class="form-select form-select-sm w-auto" name="newStatus" th:attr="data-status=${user.registrationStatus}">
-                                        <option value="PENDING" th:selected="${user.registrationStatus.name() == 'PENDING'}">ממתין לאישור</option>
-                                        <option value="APPROVED" th:selected="${user.registrationStatus.name() == 'APPROVED'}">פעיל</option>
-                                        <option value="BLOCKED" th:selected="${user.registrationStatus.name() == 'BLOCKED'}">חסום</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
+                                    <div class="input-group input-group-sm w-auto">
+                                        <select class="form-select " name="newStatus" th:attr="data-status=${user.registrationStatus}">
+                                            <option value="PENDING" th:selected="${user.registrationStatus.name() == 'PENDING'}">ממתין לאישור</option>
+                                            <option value="APPROVED" th:selected="${user.registrationStatus.name() == 'APPROVED'}">פעיל</option>
+                                            <option value="BLOCKED" th:selected="${user.registrationStatus.name() == 'BLOCKED'}">חסום</option>
+                                        </select>
+                                    <button type="submit" class="btn btn-primary">שמור</button>
+                                    </div>
                                 </form>
                             </td>
                         </tr>

@@ -79,13 +79,13 @@ public class ApplicationService {
         }
     }
 
-    public List<ApplicationDto> getUserApplications(String username) {
+    public List<Application> getUserApplications(String username) {
         try {
             AppUser user = appUserService.getUserByUsername(username);
             List<Application> applications = applicationRepository.findByApplicant(user);
-            return applications.stream()
-                    .map(this::convertToDto)
-                    .collect(Collectors.toList());
+            return applications;//applications.stream()
+                    //.map(this::convertToDto)
+                    //.collect(Collectors.toList());
         } catch (Exception e) {
             return new ArrayList<>();
         }

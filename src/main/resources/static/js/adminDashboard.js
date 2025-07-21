@@ -212,23 +212,27 @@ const adminDashboard = ()=>{
                     <td>
                         <form class="d-flex justify-content-center change-role-form">
                             <input type="hidden" name="userId" value="${user.id}">
-                            <select class="form-select form-select-sm w-auto" name="newRole" data-role="${user.role}">
-                                <option value="RESERVIST" ${user.role === 'RESERVIST' ? 'selected' : ''}>חייל</option>
-                                <option value="COMMANDER" ${user.role === 'COMMANDER' ? 'selected' : ''}>מפקד</option>
-                                <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>מנהל</option>
-                            </select>
-                            <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
+                            <div class="input-group input-group-sm w-auto">
+                                <select class="form-select" name="newRole" data-role="${user.role}">
+                                    <option value="RESERVIST" ${user.role === 'RESERVIST' ? 'selected' : ''}>חייל</option>
+                                    <option value="COMMANDER" ${user.role === 'COMMANDER' ? 'selected' : ''}>מפקד</option>
+                                    <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>מנהל</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary">שמור</button>
+                            </div>
                         </form>
                     </td>
                     <td>
                         <form class="d-flex justify-content-center change-status-form">
                             <input type="hidden" name="userId" value="${user.id}">
-                            <select class="form-select form-select-sm w-auto" name="newStatus" data-status="${user.registrationStatus}">
-                                <option value="PENDING" ${user.registrationStatus === 'PENDING' ? 'selected' : ''}>ממתין לאישור</option>
-                                <option value="APPROVED" ${user.registrationStatus === 'APPROVED' ? 'selected' : ''}>פעיל</option>
-                                <option value="BLOCKED" ${user.registrationStatus === 'BLOCKED' ? 'selected' : ''}>חסום</option>
-                            </select>
-                            <button type="submit" class="btn btn-primary btn-sm ms-2">שמור</button>
+                            <div class="input-group input-group-sm w-auto">
+                                <select class="form-select" name="newStatus" data-status="${user.registrationStatus}">
+                                    <option value="PENDING" ${user.registrationStatus === 'PENDING' ? 'selected' : ''}>ממתין לאישור</option>
+                                    <option value="APPROVED" ${user.registrationStatus === 'APPROVED' ? 'selected' : ''}>פעיל</option>
+                                    <option value="BLOCKED" ${user.registrationStatus === 'BLOCKED' ? 'selected' : ''}>חסום</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary">שמור</button>
+                            </div>
                         </form>
                     </td>
                 `;
@@ -340,7 +344,7 @@ const adminDashboard = ()=>{
                     <td>${user.firstName + ' ' + user.lastName}</td>
                     <td>${user.email}</td>
                     <td>${user.username}</td>
-                    <td>${user.role}</td>
+                    <td class="role-column">${user.role}</td>
                     <td>
                         <button class="btn btn-outline-primary btn-sm view-pdf-btn"
                             data-user-id="${user.id}"
@@ -375,6 +379,9 @@ const adminDashboard = ()=>{
             }
             else if (row && user.registrationStatus !== "PENDING") {
                 row.remove();
+            }
+            else if (row && user.registrationStatus === "PENDING") {
+                row.querySelector(".role-column").innerText = user.role;
             }
         }
 

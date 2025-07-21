@@ -1,6 +1,7 @@
 package com.example.ex4.controllers;
 
 import com.example.ex4.models.AppUser;
+import com.example.ex4.models.Application;
 import com.example.ex4.models.RegistrationStatus;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.ApplicationService;
@@ -61,19 +62,17 @@ public class HomeController {
         }
 
         // שליפת המועמדויות של המשתמש
-        List<?> submittedApplications = applicationService.getUserApplications(principal.getName());
+        List<Application> submittedApplications = applicationService.getUserApplications(principal.getName());
         
         // סטטיסטיקות
         long totalApplications = submittedApplications.size();
         long pendingApplications = submittedApplications.stream()
-                .filter(app -> app instanceof com.example.ex4.dto.ApplicationDto)
-                .map(app -> (com.example.ex4.dto.ApplicationDto) app)
                 .filter(app -> app.getStatus() == com.example.ex4.models.ApplicationStatus.PENDING)
                 .count();
         long upcomingInterviewCount = 0; // לא מומש עדיין
 
         // שליחה ל־Thymeleaf
-        model.addAttribute("user", user);
+        //model.addAttribute("user", user);
         model.addAttribute("applications", submittedApplications);
         model.addAttribute("upcomingInterviews", new ArrayList<>());
         model.addAttribute("totalApplications", totalApplications);

@@ -14,7 +14,6 @@
             <h2 class="fw-bold">שלום <span sec:authentication="principal.firstName"></span>!</h2>
         </div>
 
-        <div th:if="${user.registrationStatus == T(com.example.ex4.models.RegistrationStatus).APPROVED}">
             <!-- Statistics -->
             <div class="row mb-5 text-center">
                 <div class="col-md-4">
@@ -125,15 +124,14 @@
                         <tbody>
                         <tr th:each="app : ${applications}">
                             <td>
-                                <a th:href="@{'/positions/' + ${app.positionId}}" 
-                                   th:text="${app.positionTitle}" 
+                                <a th:href="@{'/positions/' + ${app.position.id}}"
+                                   th:text="${app.position.jobTitle}"
                                    class="text-decoration-none">
-                                    תפקיד
                                 </a>
                             </td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy')}">01/01/2025</td>
+                            <td th:text="${app.position.location}"></td>
+                            <td th:text="${app.position.assignmentType}">-</td>
+                            <td th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy')}"></td>
                             <td>
                                 <span class="badge" 
                                       th:classappend="${app.status.name() == 'PENDING' ? 'bg-warning' : (app.status.name() == 'APPROVED' ? 'bg-success' : (app.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'))}"
@@ -143,13 +141,13 @@
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a th:href="@{'/positions/' + ${app.positionId}}" 
-                                       class="btn btn-outline-primary btn-sm rounded-3">
+                                    <a th:href="@{'/positions/' + ${app.position.id}}"
+                                        class="btn btn-outline-primary btn-sm rounded-3">
                                         <i class="bi bi-eye me-1"></i>
                                         צפה
                                     </a>
-                                    <form th:if="${app.status.name() == 'PENDING'}" 
-                                          th:action="@{'/positions/' + ${app.positionId} + '/cancel'}" 
+                                    <form th:if="${app.status.name() == 'PENDING'}"
+                                          th:action="@{'/positions/' + ${app.position.id} + '/cancel'}"
                                           method="post" 
                                           style="display: inline;">
                                         <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
@@ -189,7 +187,6 @@
                     </table>
                 </div>
             </div>
-        </div>
     </section>
 </main>
 
