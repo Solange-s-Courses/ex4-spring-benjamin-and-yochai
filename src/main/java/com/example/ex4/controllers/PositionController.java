@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.List;
+import com.example.ex4.models.Position;
+import com.example.ex4.repositories.PositionRepository;
+import com.example.ex4.models.AppUser;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Controller
 @RequestMapping("/positions")
@@ -25,6 +30,8 @@ public class PositionController {
     private AppUserService appUserService;
     @Autowired
     private ApplicationService applicationService;
+    @Autowired
+    private PositionRepository positionRepository;
 
     @GetMapping("")
     public String positionsPage(Model model, Principal principal) {
@@ -99,5 +106,19 @@ public class PositionController {
         return "redirect:/positions/" + id;
     }
 
+    // בוטלה אפשרות עריכת משרה
 
+    @PostMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COMMANDER')")
+    public String changePositionStatus(@PathVariable Long id,
+                                       @RequestParam("status") String status,
+                                       RedirectAttributes redirectAttributes, Principal principal) {
+        boolean success = positionService.changePositionStatus(id, status, principal.getName());
+        if (success) {
+            redirectAttributes.addFlashAttribute("successMessage", "הסטטוס עודכן בהצלחה!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "שגיאה בעדכון הסטטוס.");
+        }
+        return "redirect:/dashboard";
+    }
 }

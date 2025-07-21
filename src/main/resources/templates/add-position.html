@@ -10,18 +10,19 @@
     <section class="py-5 mt-5">
         <div class="container">
             <div class="mb-4">
-                <a href="/positions" class="btn btn-outline-secondary rounded-3">
-                    <i class="bi bi-arrow-right ms-1"></i> חזור לרשימת המשרות
+                <a th:href="${editMode} ? '/dashboard' : '/positions'" class="btn btn-outline-secondary rounded-3">
+                    <i class="bi bi-arrow-right ms-1"></i>
+                    <span th:text="${editMode} ? 'חזור לדשבורד' : 'חזור לרשימת המשרות'"></span>
                 </a>
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-8 col-lg-7">
                     <div class="card shadow rounded-4">
                         <div class="card-header bg-white rounded-top-4 border-bottom-0">
-                            <h3 class="text-center">פרסום תפקיד חדש</h3>
+                            <h3 class="text-center" th:text="${editMode} ? 'עריכת משרה' : 'פרסום תפקיד חדש'"></h3>
                         </div>
                         <div class="card-body">
-                            <form th:action="@{/positions/add}" th:object="${positionForm}" method="post" id="addPositionForm">
+                            <form th:action="${editMode} ? @{'/positions/' + ${positionId} + '/edit'} : @{/positions/add}" th:object="${positionForm}" method="post" id="addPositionForm">
                                 <!-- Job Title Selection -->
                                 <div class="mb-4">
                                     <div class="d-flex align-items-center gap-2 mb-1">
@@ -158,7 +159,8 @@
 
                                 <div class="d-grid gap-2">
                                     <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">
-                                        פרסם משרה <i class="bi bi-megaphone ms-2"></i>
+                                        <span th:text="${editMode} ? 'שמור שינויים' : 'פרסם משרה'"></span>
+                                        <i th:class="${editMode} ? 'bi bi-save ms-2' : 'bi bi-megaphone ms-2'"></i>
                                     </button>
                                 </div>
                             </form>

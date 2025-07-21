@@ -170,4 +170,71 @@ public class PositionService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    public List<Position> getPositionsByPublisher(String username) {
+        AppUser user = appUserService.getUserByUsername(username);
+        return positionRepository.findByPublisher(user);
+    }
+
+    /*public String getEditPositionForm(Long id, Model model, String username) {
+        Position position = findById(id);
+        if (position == null || !position.getPublisher().getUsername().equals(username)) {
+            throw new RuntimeException("אין לך הרשאה לערוך משרה זו");
+        }
+        com.example.ex4.dto.PositionForm form = new com.example.ex4.dto.PositionForm();
+        form.setJobTitle(position.getJobTitle());
+        form.setOtherJobTitle("");
+        form.setLocation(position.getLocation());
+        form.setAssignmentType(position.getAssignmentType());
+        form.setDescription(position.getDescription());
+        form.setRequirements(position.getRequirements() != null ? position.getRequirements().split(", ") : new String[]{});
+        List<String> jobTitles = getAllDistinctJobTitles();
+        model.addAttribute("positionForm", form);
+        model.addAttribute("jobTitles", jobTitles);
+        model.addAttribute("editMode", true);
+        model.addAttribute("positionId", id);
+        return "add-position";
+    }*/
+
+    /*public String processEditPositionForm(Long id, com.example.ex4.dto.PositionForm form, Model model,
+                                          org.springframework.validation.BindingResult result, String username,
+                                          org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        Position position = findById(id);
+        if (position == null || !position.getPublisher().getUsername().equals(username)) {
+            throw new RuntimeException("אין לך הרשאה לערוך משרה זו");
+        }
+        if (result.hasErrors()) {
+            List<String> jobTitles = getAllDistinctJobTitles();
+            model.addAttribute("jobTitles", jobTitles);
+            model.addAttribute("editMode", true);
+            model.addAttribute("positionId", id);
+            return "add-position";
+        }
+        if (form.getOtherJobTitle() != null && !form.getOtherJobTitle().isEmpty()) {
+            position.setJobTitle(form.getOtherJobTitle());
+        } else {
+            position.setJobTitle(form.getJobTitle());
+        }
+        position.setLocation(form.getLocation());
+        position.setAssignmentType(form.getAssignmentType());
+        position.setDescription(form.getDescription());
+        position.setRequirements(processRequirements(form.getRequirements() != null ? Arrays.asList(form.getRequirements()) : List.of()));
+        save(position);
+        redirectAttributes.addFlashAttribute("successMessage", "המשרה עודכנה בהצלחה!");
+        return "redirect:/dashboard";
+    }*/
+
+    public boolean changePositionStatus(Long id, String status, String username) {
+        Position position = findById(id);
+        if (position == null || !position.getPublisher().getUsername().equals(username)) {
+            return false;
+        }
+        try {
+            position.setStatus(Enum.valueOf(com.example.ex4.models.PositionStatus.class, status));
+            save(position);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

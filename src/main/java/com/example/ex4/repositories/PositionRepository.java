@@ -17,4 +17,6 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
     List<Position> findAllByOrderByJobTitleAsc();
 
     List<Position> findByStatusOrderByJobTitleAsc(PositionStatus status);
+
+    List<Position> findByPublisher(com.example.ex4.models.AppUser publisher);
 }

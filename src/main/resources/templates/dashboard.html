@@ -47,12 +47,39 @@
                             <th>שם משרה</th>
                             <th>מיקום</th>
                             <th>סוג</th>
-                            <th>תאריך הגשה</th>
                             <th>סטטוס</th>
+                            <th>פעולות</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:if="${#lists.isEmpty(applications)}">
+                        <tr th:each="position : ${myPositions}">
+                            <td th:text="${position.jobTitle}"></td>
+                            <td th:text="${position.location}"></td>
+                            <td th:text="${position.assignmentType}"></td>
+                            <td th:text="${position.status}"></td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a th:href="@{'/positions/' + ${position.id}}" class="btn btn-outline-primary btn-sm rounded-3" title="צפה">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <!-- עריכה בוטלה -->
+                                    <form th:action="@{'/positions/' + ${position.id} + '/status'}" method="post" style="display:inline;">
+                                        <div class="input-group input-group-sm align-items-center" style="display:inline-flex;">
+                                            <select name="status" class="form-select form-select-sm" style="width:auto;">
+                                                <option th:selected="${position.status.name() == 'ACTIVE'}" value="ACTIVE">פעילה</option>
+                                                <option th:selected="${position.status.name() == 'CANCELED'}" value="CANCELED">מבוטלת</option>
+                                                <option th:selected="${position.status.name() == 'FULFILLED'}" value="FULFILLED">אוישה</option>
+                                                <option th:selected="${position.status.name() == 'FROZEN'}" value="FROZEN">מוקפאת</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-outline-success btn-sm ms-1" title="עדכן סטטוס">
+                                                <i class="bi bi-arrow-repeat"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(myPositions)}">
                             <td colspan="5">לא נמצאו משרות שפרסמת</td>
                         </tr>
                         </tbody>

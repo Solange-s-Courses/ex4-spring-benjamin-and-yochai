@@ -4,6 +4,9 @@ import com.example.ex4.models.AppUser;
 import com.example.ex4.models.RegistrationStatus;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.ApplicationService;
+import com.example.ex4.services.PositionService;
+import com.example.ex4.models.Position;
+import com.example.ex4.repositories.PositionRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,12 @@ public class HomeController {
     
     @Autowired
     private ApplicationService applicationService;
+
+    @Autowired
+    private PositionService positionService;
+
+    @Autowired
+    private PositionRepository positionRepository;
 
     @GetMapping("/")
     public String home() {
@@ -70,6 +79,9 @@ public class HomeController {
         model.addAttribute("totalApplications", totalApplications);
         model.addAttribute("pendingApplications", pendingApplications);
         model.addAttribute("upcomingInterviewCount", upcomingInterviewCount);
+
+        // הוספת משרות שפורסמו ע"י המשתמש
+        model.addAttribute("myPositions", positionService.getPositionsByPublisher(principal.getName()));
 
         return "dashboard";
     }
