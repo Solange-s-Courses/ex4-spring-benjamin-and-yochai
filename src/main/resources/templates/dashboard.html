@@ -53,14 +53,31 @@
                         </thead>
                         <tbody>
                         <tr th:each="position : ${myPositions}">
-                            <td th:text="${position.jobTitle}"></td>
+                            <td>
+                                <a th:href="@{'/positions/' + ${position.id}}"
+                                   th:text="${position.jobTitle}"
+                                   class="text-decoration-none">
+                                </a>
+                            </td>
                             <td th:text="${position.location}"></td>
                             <td th:text="${position.assignmentType}"></td>
-                            <td th:text="${position.status}"></td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${position.status.name() == 'ACTIVE' ? 'bg-success' :
+                                      (position.status.name() == 'CANCELED' ? 'bg-danger' :
+                                      (position.status.name() == 'FULFILLED' ? 'bg-primary' :
+                                      (position.status.name() == 'FROZEN' ? 'bg-secondary' : 'bg-light')))}"
+                                      th:text="${position.status.name() == 'ACTIVE' ? 'פעילה' :
+                                      (position.status.name() == 'CANCELED' ? 'מבוטלת' :
+                                      (position.status.name() == 'FULFILLED' ? 'אוישה' :
+                                      (position.status.name() == 'FROZEN' ? 'מוקפאת' : position.status.name())))}">
+                                </span>
+                            </td>
                             <td>
                                 <div class="btn-group" role="group">
                                     <a th:href="@{'/positions/' + ${position.id}}" class="btn btn-outline-primary btn-sm rounded-3" title="צפה">
                                         <i class="bi bi-eye"></i>
+                                        צפה
                                     </a>
                                     <!-- עריכה בוטלה -->
                                     <form th:action="@{'/positions/' + ${position.id} + '/status'}" method="post" style="display:inline;">
@@ -71,8 +88,11 @@
                                                 <option th:selected="${position.status.name() == 'FULFILLED'}" value="FULFILLED">אוישה</option>
                                                 <option th:selected="${position.status.name() == 'FROZEN'}" value="FROZEN">מוקפאת</option>
                                             </select>
-                                            <button type="submit" class="btn btn-outline-success btn-sm ms-1" title="עדכן סטטוס">
+                                            <!--<button type="submit" class="btn btn-outline-success btn-sm ms-1" title="עדכן סטטוס">
                                                 <i class="bi bi-arrow-repeat"></i>
+                                            </button -->
+                                            <button type="submit" class="btn btn-primary btn-sm ms-2" title="עדכן סטטוס">
+                                                עדכן סטטוס
                                             </button>
                                         </div>
                                     </form>

@@ -106,19 +106,12 @@ public class PositionController {
         return "redirect:/positions/" + id;
     }
 
-    // בוטלה אפשרות עריכת משרה
-
-    @PostMapping("/{id}/status")
+    @GetMapping("/my")
     @PreAuthorize("hasAnyRole('ADMIN', 'COMMANDER')")
-    public String changePositionStatus(@PathVariable Long id,
-                                       @RequestParam("status") String status,
-                                       RedirectAttributes redirectAttributes, Principal principal) {
-        boolean success = positionService.changePositionStatus(id, status, principal.getName());
-        if (success) {
-            redirectAttributes.addFlashAttribute("successMessage", "הסטטוס עודכן בהצלחה!");
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "שגיאה בעדכון הסטטוס.");
-        }
-        return "redirect:/dashboard";
+    public String getMyPositions(Model model, Principal principal) {
+        List<Position> myPositions = positionService.getPositionsByPublisher(principal.getName());
+        model.addAttribute("myPositions", myPositions);
+        return "my-positions"; // תבנית חדשה
     }
+
 }
