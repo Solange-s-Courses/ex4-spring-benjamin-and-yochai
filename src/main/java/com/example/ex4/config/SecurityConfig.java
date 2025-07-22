@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/register", "/login").not().authenticated()
                         .requestMatchers("/admin/**", "/restapi/admin/**").hasRole("ADMIN")
                         .requestMatchers("/positions/add**").hasAnyRole("ADMIN", "COMMANDER")
+                        .requestMatchers("/positions/*/applicants", "/positions/*/status").hasAnyRole("ADMIN", "COMMANDER")
                         .requestMatchers("/positions/**", "/restapi**").authenticated()
                         .anyRequest().permitAll()
                 )

@@ -129,7 +129,6 @@ public class ApplicationService {
             
             Optional<Application> application = applicationRepository.findByApplicantAndPosition(user, position);
             
-            // רק מועמדויות פעילות (לא מבוטלות) נחשבות כמועמדות קיימת
             return application.isPresent() && application.get().getStatus() != ApplicationStatus.CANCELED;
         } catch (Exception e) {
             return false;
@@ -175,6 +174,18 @@ public class ApplicationService {
             return applicationRepository.findByApplicantAndPosition(user, position).orElse(null);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public List<Application> getApplicationsByPositionId(Long positionId) {
+        try {
+            Position position = positionService.findById(positionId);
+            if (position == null) {
+                return new ArrayList<>();
+            }
+            return applicationRepository.findByPosition(position);
+        } catch (Exception e) {
+            return new ArrayList<>();
         }
     }
 

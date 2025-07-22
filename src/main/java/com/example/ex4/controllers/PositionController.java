@@ -41,21 +41,16 @@ public class PositionController {
     @GetMapping("/{id}")
     public String getPosition(@PathVariable Long id, Model model, Principal principal) {
         String result = positionService.getPosition(id, model);
-        
-        // Check if user has already applied
-        if (principal != null) {
-            // בדוק אם יש מועמדות כלשהי (פעילה או מבוטלת)
-            Application userApplication = applicationService.getUserApplicationForPosition(id, principal.getName());
-            if (userApplication != null) {
-                model.addAttribute("userApplication", userApplication);
-                // hasApplied יהיה true רק אם המועמדות פעילה (לא מבוטלת)
-                boolean hasApplied = userApplication.getStatus() != com.example.ex4.models.ApplicationStatus.CANCELED;
-                model.addAttribute("hasApplied", hasApplied);
-            } else {
-                model.addAttribute("hasApplied", false);
-            }
+
+        Application userApplication = applicationService.getUserApplicationForPosition(id, principal.getName());
+        if (userApplication != null) {
+            model.addAttribute("userApplication", userApplication);
+            boolean hasApplied = userApplication.getStatus() != com.example.ex4.models.ApplicationStatus.CANCELED;
+            model.addAttribute("hasApplied", hasApplied);
+        } else {
+            model.addAttribute("hasApplied", false);
         }
-        
+
         return result;
     }
 
@@ -106,12 +101,50 @@ public class PositionController {
         return "redirect:/positions/" + id;
     }
 
-    @GetMapping("/my")
+    /*@GetMapping("/my")
     @PreAuthorize("hasAnyRole('ADMIN', 'COMMANDER')")
     public String getMyPositions(Model model, Principal principal) {
         List<Position> myPositions = positionService.getPositionsByPublisher(principal.getName());
         model.addAttribute("myPositions", myPositions);
         return "my-positions"; // תבנית חדשה
+    }*/
+
+    @GetMapping("/{id}/applicants")
+    public String viewApplicants(@PathVariable Long id, Model model, Principal principal) {
+        // בדיקה שהמשרה שייכת למשתמש הנוכחי או שהוא אדמין
+        Position position = positionService.findById(id);
+        if (position == null) {
+            return "redirect:/dashboard";
+        }
+        
+        AppUser currentUser = appUserService.getUserByUsername(principal.getName());
+        boolean isAdmin = currentUser.getRole().name().equals("ADMIN");
+        boolean isOwner = position.getPublisher().getUsername().equals(principal.getName());
+        
+        if (!isAdmin && !isOwner) {
+            return "redirect:/dashboard";
+        }
+        
+        List<Application> applications = applicationService.getApplicationsByPositionId(id);
+        model.addAttribute("applications", applications);
+        model.addAttribute("position", position);
+        return "applicants-list";
+    }
+
+    @PostMapping("/{id}/status")
+    public String changePositionStatus(@PathVariable Long id,
+                                     @RequestParam String status,
+                                     Principal principal,
+                                     RedirectAttributes redirectAttributes) {
+        boolean success = positionService.changePositionStatus(id, status, principal.getName());
+        
+        if (success) {
+            redirectAttributes.addFlashAttribute("successMessage", "סטטוס המשרה עודכן בהצלחה!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "שגיאה בעדכון סטטוס המשרה.");
+        }
+        
+        return "redirect:/dashboard";
     }
 
 }
