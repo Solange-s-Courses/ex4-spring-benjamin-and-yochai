@@ -172,22 +172,77 @@
             </div>
         </div>
 
-        <!-- Interviews Table -->
+        <!-- Unified Interviews Table -->
         <div>
             <h4 class="mb-3">ראיונות עתידיים</h4>
             <div class="table-responsive">
-                <table class="table table-striped text-center align-middle">
+                <table class="table table-striped text-center align-middle" id="interviews-table">
                     <thead>
                     <tr>
                         <th>שם משרה</th>
-                        <th>תאריך</th>
+                        <th th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')')}">מועמד</th>
+                        <th>תאריך
+                            <a href="#" class="sort-link ms-1" data-sort="date" data-table="interviews-table" data-col="2">
+                                <i class="bi bi-arrow-down-up"></i>
+                            </a>
+                        </th>
                         <th>שעה</th>
                         <th>מיקום / לינק</th>
+                        <th>אישור הראיון</th>
+                        <th>החלטה</th>
+                        <th>הערות</th>
+                        <th>סיכום ראיון</th>
+                        <th>תפקיד
+                            <a href="#" class="sort-link ms-1" data-sort="role" data-table="interviews-table" data-col="9">
+                                <i class="bi bi-arrow-down-up"></i>
+                            </a>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:if="${#lists.isEmpty(upcomingInterviews)}">
-                        <td colspan="4">אין ראיונות קרובים</td>
+                    <tr th:if="${#lists.isEmpty(relevantInterviews)}">
+                        <td colspan="9">אין ראיונות להצגה</td>
+                    </tr>
+                    <tr th:each="interview : ${relevantInterviews}">
+                        <td th:text="${interview.application.position.jobTitle}"></td>
+                        <td th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')')}" th:text="${interview.application.applicant.firstName + ' ' + interview.application.applicant.lastName}"></td>
+                        <td th:text="${#temporals.format(interview.interviewDate, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${#temporals.format(interview.interviewDate, 'HH:mm')}"></td>
+                        <td th:text="${interview.location}"></td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${interview.status.name() == 'SCHEDULED' ? 'bg-warning' : (interview.status.name() == 'CONFIRMED' ? 'bg-success' : (interview.status.name() == 'REJECTED' ? 'bg-danger' : (interview.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary')))}"
+                                  th:text="${interview.status.name() == 'SCHEDULED' ? 'ממתין לאישור' : (interview.status.name() == 'CONFIRMED' ? 'מאושר' : (interview.status.name() == 'REJECTED' ? 'נדחה' : (interview.status.name() == 'COMPLETED' ? 'אושר' : 'מבוטל')))}">
+                            </span>
+                        </td>
+                        <td>
+                            <span th:if="${interview.application.applicant.username == #authentication.name}">
+                                <span th:if="${interview.status.name() == 'COMPLETED'}" class="badge bg-success">התקבל</span>
+                                <span th:if="${interview.status.name() == 'REJECTED' || interview.status.name() == 'CANCELED'}" class="badge bg-danger">נדחה</span>
+                                <span th:if="${interview.status.name() != 'COMPLETED' && interview.status.name() != 'REJECTED' && interview.status.name() != 'CANCELED'}" class="badge bg-warning text-dark">ממתין</span>
+                            </span>
+                            <span th:if="${interview.application.applicant.username != #authentication.name}">
+                                <form th:action="@{'/interviews/' + ${interview.id} + '/decision'}" method="post" class="d-flex align-items-center gap-2 mb-0">
+                                    <select name="decision" class="form-select form-select-sm">
+                                        <option value="PENDING" th:selected="${interview.status.name() != 'COMPLETED' && interview.status.name() != 'REJECTED' && interview.status.name() != 'CANCELED'}">ממתין</option>
+                                        <option value="COMPLETED" th:selected="${interview.status.name() == 'COMPLETED'}">התקבל</option>
+                                        <option value="REJECTED" th:selected="${interview.status.name() == 'REJECTED' || interview.status.name() == 'CANCELED'}">נדחה</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">שמור</button>
+                                </form>
+                            </span>
+                        </td>
+                        <td th:text="${interview.notes}"></td>
+                        <td>
+                            <span th:if="${interview.application.applicant.username != #authentication.name}" th:text="${interview.interviewSummary}"></span>
+                            <span th:if="${interview.application.applicant.username == #authentication.name}"></span>
+                        </td>
+                        <td>
+                            <span th:if="${interview.application.applicant.username == #authentication.name}"
+                                  class="badge bg-primary">מרואיין</span>
+                            <span th:if="${interview.application.applicant.username != #authentication.name}"
+                                  class="badge bg-success">מראיין</span>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -203,5 +258,6 @@
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 <script th:src="@{/js/toasts.js}"></script>
+<script th:src="@{/js/interviewsSort.js}"></script>
 </body>
 </html>

@@ -38,6 +38,9 @@ public class HomeController {
     @Autowired
     private PositionRepository positionRepository;
 
+    @Autowired
+    private com.example.ex4.services.InterviewService interviewService;
+
     @GetMapping("/")
     public String home() {
         return "index";
@@ -54,34 +57,34 @@ public class HomeController {
         if (principal == null) {
             return "redirect:/login";
         }
-        
-        // שליפת המשתמש האמיתי
         AppUser user = appUserService.getUserByUsername(principal.getName());
         if (user == null) {
             return "redirect:/login";
         }
-
-        // שליפת המועמדויות של המשתמש
         List<Application> submittedApplications = applicationService.getUserApplications(principal.getName());
-        
-        // סטטיסטיקות
+        List<com.example.ex4.models.Interview> relevantInterviews;
+        if (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("COMMANDER")) {
+            List<com.example.ex4.models.Interview> all = interviewService.getAllInterviews();
+            relevantInterviews = all.stream()
+                .filter(i -> i.getApplication().getApplicant().getUsername().equals(user.getUsername())
+                    || i.getApplication().getPosition().getPublisher().getUsername().equals(user.getUsername()))
+                .toList();
+        } else {
+            relevantInterviews = interviewService.getInterviewsByUser(user);
+        }
         long totalApplications = submittedApplications.size();
         long pendingApplications = submittedApplications.stream()
                 .filter(app -> app.getStatus() == com.example.ex4.models.ApplicationStatus.PENDING)
                 .count();
-        long upcomingInterviewCount = 0; // לא מומש עדיין
-
-        // שליחה ל־Thymeleaf
-        //model.addAttribute("user", user);
+        long upcomingInterviewCount = relevantInterviews.stream()
+                .filter(i -> i.getStatus() == com.example.ex4.models.InterviewStatus.SCHEDULED || i.getStatus() == com.example.ex4.models.InterviewStatus.CONFIRMED)
+                .count();
         model.addAttribute("applications", submittedApplications);
-        model.addAttribute("upcomingInterviews", new ArrayList<>());
+        model.addAttribute("relevantInterviews", relevantInterviews);
         model.addAttribute("totalApplications", totalApplications);
         model.addAttribute("pendingApplications", pendingApplications);
         model.addAttribute("upcomingInterviewCount", upcomingInterviewCount);
-
-        // הוספת משרות שפורסמו ע"י המשתמש
         model.addAttribute("myPositions", positionService.getPositionsByPublisher(principal.getName()));
-
         return "dashboard";
     }
 

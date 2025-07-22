@@ -5,6 +5,7 @@ import com.example.ex4.models.Application;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.PositionService;
 import com.example.ex4.services.ApplicationService;
+import com.example.ex4.services.InterviewService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,8 @@ public class PositionController {
     private AppUserService appUserService;
     @Autowired
     private ApplicationService applicationService;
+    @Autowired
+    private InterviewService interviewService;
     @Autowired
     private PositionRepository positionRepository;
 
@@ -126,8 +129,14 @@ public class PositionController {
         }
         
         List<Application> applications = applicationService.getApplicationsByPositionId(id);
+        // הוספת ראיונות לכל מועמד
+        java.util.Map<Long, java.util.List<com.example.ex4.models.Interview>> interviewsByApplication = new java.util.HashMap<>();
+        for (Application app : applications) {
+            interviewsByApplication.put(app.getId(), interviewService.getInterviewsByApplication(app));
+        }
         model.addAttribute("applications", applications);
         model.addAttribute("position", position);
+        model.addAttribute("interviewsByApplication", interviewsByApplication);
         return "applicants-list";
     }
 
