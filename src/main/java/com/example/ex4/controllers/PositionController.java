@@ -143,7 +143,6 @@ public class PositionController {
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "שגיאה בעדכון סטטוס המשרה.");
         }
-        
         return "redirect:/dashboard";
     }
 
