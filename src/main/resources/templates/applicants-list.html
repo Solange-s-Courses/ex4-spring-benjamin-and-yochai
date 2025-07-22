@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header}"></head>
+<body class="d-flex flex-column min-vh-100">
+<!-- Navigation -->
+<nav th:replace="~{fragments/header :: navigation}"></nav>
+
+<!-- Main Content -->
+<main class="flex-grow-1">
+    <section class="container py-5 mt-4">
+        <div class="mb-4 mt-3 d-flex justify-content-between align-items-center">
+            <h2 class="fw-bold mb-0">רשימת מועמדים למשרה: <span th:text="${position.jobTitle}"></span></h2>
+            <a th:href="@{/dashboard}" class="btn btn-secondary rounded-3">
+                <i class="bi bi-arrow-right me-2"></i>
+                חזרה לדשבורד
+            </a>
+        </div>
+
+        <div class="card shadow-sm rounded-4">
+            <div class="card-header bg-white rounded-top-4 border-bottom-0">
+                <h5 class="mb-0">פרטי המשרה</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>מיקום:</strong> <span th:text="${position.location}"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>סוג שירות:</strong> <span th:text="${position.assignmentType}"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>סטטוס:</strong> 
+                        <span class="badge" 
+                              th:classappend="${position.status.name() == 'ACTIVE' ? 'bg-success' :
+                              (position.status.name() == 'CANCELED' ? 'bg-danger' :
+                              (position.status.name() == 'FULFILLED' ? 'bg-primary' :
+                              (position.status.name() == 'FROZEN' ? 'bg-secondary' : 'bg-light')))}"
+                              th:text="${position.status.name() == 'ACTIVE' ? 'פעילה' :
+                              (position.status.name() == 'CANCELED' ? 'מבוטלת' :
+                              (position.status.name() == 'FULFILLED' ? 'אוישה' :
+                              (position.status.name() == 'FROZEN' ? 'מוקפאת' : position.status.name())))}">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm rounded-4 mt-4">
+            <div class="card-header bg-white rounded-top-4 border-bottom-0">
+                <h5 class="mb-0">מועמדים (<span th:text="${#lists.size(applications)}">0</span>)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive" th:if="${!#lists.isEmpty(applications)}">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>שם מלא</th>
+                                <th>אימייל</th>
+                                <th>תאריך הגשה</th>
+                                <th>סטטוס מועמדות</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="app : ${applications}">
+                                <td th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}"></td>
+                                <td th:text="${app.applicant.email}"></td>
+                                <td th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${app.status.name() == 'PENDING' ? 'bg-warning' : 
+                                          (app.status.name() == 'APPROVED' ? 'bg-success' : 
+                                          (app.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'))}"
+                                          th:text="${app.status.name() == 'PENDING' ? 'ממתין' : 
+                                          (app.status.name() == 'APPROVED' ? 'אושר' : 
+                                          (app.status.name() == 'REJECTED' ? 'נדחה' : 'בוטל'))}">
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:if="${#lists.isEmpty(applications)}" class="alert alert-info text-center rounded-3">
+                    <i class="bi bi-info-circle me-2"></i>
+                    לא נמצאו מועמדים למשרה זו.
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{fragments/toasts :: successToast}"></div>
+<div th:replace="~{fragments/toasts :: errorToast}"></div>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:src="@{/js/toasts.js}"></script>
+</body>
+</html> 
