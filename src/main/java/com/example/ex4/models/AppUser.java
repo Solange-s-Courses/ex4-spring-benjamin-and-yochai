@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Arrays;
 
 @Entity
+@Table(name = "app_users")
 public class AppUser implements UserDetails {
     
     @Id
@@ -35,6 +36,9 @@ public class AppUser implements UserDetails {
     @Lob
     @Column(/*name = "military_id_doc",*/ columnDefinition = "MEDIUMBLOB", nullable = false)
     private byte[] militaryIdDoc;
+
+    @Column(name = "about", length = 500)
+    private String about;
 
     //@Column(name = "is_approved")
     private Boolean isApproved = false;
@@ -114,6 +118,14 @@ public class AppUser implements UserDetails {
     public RegistrationStatus getRegistrationStatus() { return registrationStatus; }
 
     public void setRegistrationStatus(RegistrationStatus registrationStatus) { this.registrationStatus = registrationStatus; }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

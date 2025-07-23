@@ -32,6 +32,10 @@ public class RegistrationForm {
     @FileSize(message = "גודל הקובץ חייב להיות עד 1MB") // לא צריך להגדיר max, יקח מ-application.properties
     private MultipartFile militaryIdDoc;
 
+    @NotBlank(message = "ספר על עצמך הוא שדה חובה")
+    @Size(max = 500, message = "תיאור על עצמך לא יכול לעלות על 500 תווים")
+    private String about;
+
     public String getUsername() {
         return username;
     }
@@ -78,5 +82,13 @@ public class RegistrationForm {
 
     public void setMilitaryIdDoc(MultipartFile militaryIdDoc) {
         this.militaryIdDoc = militaryIdDoc;
+    }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
     }
 }

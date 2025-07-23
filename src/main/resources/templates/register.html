@@ -93,6 +93,19 @@
                                             תפקיד</label>
                                     </div>
                                 </div>
+                                
+                                <div class="form-group">
+                                    <label for="about">ספר על עצמך:</label>
+                                    <textarea class="form-control" id="about" name="about" 
+                                              th:field="*{about}" rows="4" maxlength="500"
+                                              placeholder="ספר על עצמך (מקצוע אזרחי, מקצוע צבאי, קורסים אזרחיים וצבאיים שביצעת וכו')"></textarea>
+                                    <small class="form-text text-muted">
+                                        <span id="charCount">0</span>/500 תווים
+                                    </small>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('about')}" 
+                                         th:errors="*{about}"></div>
+                                    <div class="text-danger client-error" data-error="about"></div>
+                                </div>
                                 <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show"
                                      role="alert">
                                     <span th:text="${errorMessage}"></span>
