@@ -46,6 +46,7 @@
                         <th>מיקום</th>
                         <th>סוג</th>
                         <th>סטטוס</th>
+                        <th>הגשות פעילות</th>
                         <th>פעולות</th>
                     </tr>
                     </thead>
@@ -63,7 +64,7 @@
                         <td th:text="${position.location}"></td>
                         <td th:text="${position.assignmentType}"></td>
                         <td>
-                                <span class="badge"
+                                <!--span class="badge"
                                       th:classappend="${position.status.name() == 'ACTIVE' ? 'bg-success' :
                                       (position.status.name() == 'CANCELED' ? 'bg-danger' :
                                       (position.status.name() == 'FULFILLED' ? 'bg-primary' :
@@ -72,39 +73,31 @@
                                       (position.status.name() == 'CANCELED' ? 'מבוטלת' :
                                       (position.status.name() == 'FULFILLED' ? 'אוישה' :
                                       (position.status.name() == 'FROZEN' ? 'מוקפאת' : position.status.name())))}">
-                                </span>
+                                </span-->
+                            <form th:action="@{'/positions/' + ${position.id} + '/status'}" method="post" class="w-100">
+                                <div class="input-group input-group-sm">
+                                    <select name="status" class="form-select">
+                                        <option th:selected="${position.status.name() == 'ACTIVE'}" value="ACTIVE">פעילה</option>
+                                        <option th:selected="${position.status.name() == 'CANCELED'}" value="CANCELED">מבוטלת</option>
+                                        <option th:selected="${position.status.name() == 'FULFILLED'}" value="FULFILLED">אוישה</option>
+                                        <option th:selected="${position.status.name() == 'FROZEN'}" value="FROZEN">מוקפאת</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary" title="עדכן סטטוס">
+                                        עדכן סטטוס
+                                    </button>
+                                </div>
+                            </form>
                         </td>
+                        <td>--</td>
                         <td>
                             <div class="d-flex flex-column gap-2 align-items-center">
                                 <div class="btn-group" role="group">
                                     <a th:href="@{'/positions/' + ${position.id}}" class="btn btn-outline-primary btn-sm rounded-3" title="צפה">
                                         <i class="bi bi-eye"></i>
-                                        צפה
-                                    </a>
-                                    <span class="mx-1"></span>
-                                    <a href="#" class="btn btn-outline-secondary btn-sm rounded-3 disabled" title="ערוך (בקרוב)">
-                                        <i class="bi bi-pencil"></i>
-                                        ערוך
-                                    </a>
-                                    <span class="mx-1"></span>
-                                    <a th:href="@{'/positions/' + ${position.id} + '/applicants'}" class="btn btn-info btn-sm rounded-3" title="הצג מועמדים">
-                                        <i class="bi bi-people"></i>
-                                        מועמדים
+                                        נהל משרה
                                     </a>
                                 </div>
-                                <form th:action="@{'/positions/' + ${position.id} + '/status'}" method="post" class="w-100">
-                                    <div class="input-group input-group-sm align-items-center mt-1">
-                                        <select name="status" class="form-select" style="width:auto;">
-                                            <option th:selected="${position.status.name() == 'ACTIVE'}" value="ACTIVE">פעילה</option>
-                                            <option th:selected="${position.status.name() == 'CANCELED'}" value="CANCELED">מבוטלת</option>
-                                            <option th:selected="${position.status.name() == 'FULFILLED'}" value="FULFILLED">אוישה</option>
-                                            <option th:selected="${position.status.name() == 'FROZEN'}" value="FROZEN">מוקפאת</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-primary" title="עדכן סטטוס">
-                                            עדכן סטטוס
-                                        </button>
-                                    </div>
-                                </form>
+
                             </div>
                         </td>
                     </tr>
