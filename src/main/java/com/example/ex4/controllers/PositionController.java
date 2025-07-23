@@ -2,6 +2,7 @@ package com.example.ex4.controllers;
 
 import com.example.ex4.dto.PositionForm;
 import com.example.ex4.models.Application;
+import com.example.ex4.models.ApplicationStatus;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.PositionService;
 import com.example.ex4.services.ApplicationService;
@@ -64,7 +65,7 @@ public class PositionController {
         Application userApplication = applicationService.getUserApplicationForPosition(id, principal.getName());
         if (userApplication != null) {
             model.addAttribute("userApplication", userApplication);
-            boolean hasApplied = userApplication.getStatus() != com.example.ex4.models.ApplicationStatus.CANCELED;
+            boolean hasApplied = userApplication.getStatus() != ApplicationStatus.CANCELED;
             model.addAttribute("hasApplied", hasApplied);
         } else {
             model.addAttribute("hasApplied", false);
