@@ -40,6 +40,13 @@ public class RegistrationController {
         if (form.getMilitaryIdDoc() == null || form.getMilitaryIdDoc().isEmpty()) {
             result.rejectValue("militaryIdDoc", "error.militaryIdDoc", "חובה להעלות תעודת משרת מילואים!");
         }
+        else {
+            String contentType = form.getMilitaryIdDoc().getContentType();
+            String fileName = form.getMilitaryIdDoc().getOriginalFilename();
+            if (contentType == null || !contentType.equalsIgnoreCase("application/pdf") || fileName == null || !fileName.toLowerCase().endsWith(".pdf")) {
+                result.rejectValue("militaryIdDoc", "error.militaryIdDoc", "יש להעלות קובץ PDF בלבד");
+            }
+        }
 
         if (result.hasErrors()) {
             return "register";
