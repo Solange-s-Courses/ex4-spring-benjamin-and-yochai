@@ -42,22 +42,6 @@ public class PositionController {
         return positionService.getPositionsPage(model);
     }
 
-    /*@GetMapping("/{id}")
-    public String getPosition(@PathVariable Long id, Model model, Principal principal) {
-        String result = positionService.getPosition(id, model);
-
-        Application userApplication = applicationService.getUserApplicationForPosition(id, principal.getName());
-        if (userApplication != null) {
-            model.addAttribute("userApplication", userApplication);
-            boolean hasApplied = userApplication.getStatus() != com.example.ex4.models.ApplicationStatus.CANCELED;
-            model.addAttribute("hasApplied", hasApplied);
-        } else {
-            model.addAttribute("hasApplied", false);
-        }
-
-        return result;
-    }*/
-
     @GetMapping("/{id}")
     public String getPosition(@PathVariable Long id, Model model, Principal principal) {
         String result = positionService.getPosition(id, model);
@@ -99,7 +83,7 @@ public class PositionController {
         return positionService.processAddPositionForm(positionForm, model, result, principal.getName(), redirectAttributes);
     }
 
-    @PostMapping("/{id}/apply")
+    /*@PostMapping("/{id}/apply")
     public String applyForPosition(@PathVariable Long id, 
                                    Principal principal,
                                    RedirectAttributes redirectAttributes) {
@@ -117,9 +101,9 @@ public class PositionController {
         }
         
         return "redirect:/positions/" + id;
-    }
+    }*/
 
-    @PostMapping("/{id}/cancel")
+    /*@PostMapping("/{id}/cancel")
     public String cancelApplication(@PathVariable Long id, 
                                    Principal principal,
                                    RedirectAttributes redirectAttributes) {
@@ -132,7 +116,7 @@ public class PositionController {
         }
         
         return "redirect:/positions/" + id;
-    }
+    }*/
 
     /*@GetMapping("/my")
     @PreAuthorize("hasAnyRole('ADMIN', 'COMMANDER')")
@@ -142,7 +126,7 @@ public class PositionController {
         return "my-positions"; // תבנית חדשה
     }*/
 
-    @GetMapping("/{id}/applicants")
+    /*@GetMapping("/{id}/applicants")
     public String viewApplicants(@PathVariable Long id, Model model, Principal principal) {
         // בדיקה שהמשרה שייכת למשתמש הנוכחי או שהוא אדמין
         Position position = positionService.findById(id);
@@ -168,9 +152,9 @@ public class PositionController {
         model.addAttribute("position", position);
         model.addAttribute("interviewsByApplication", interviewsByApplication);
         return "applicants-list";
-    }
+    }*/
 
-    @PostMapping("/{id}/status")
+    /*@PostMapping("/{id}/status")
     public String changePositionStatus(@PathVariable Long id,
                                      @RequestParam String status,
                                      Principal principal,
@@ -183,6 +167,6 @@ public class PositionController {
             redirectAttributes.addFlashAttribute("errorMessage", "שגיאה בעדכון סטטוס המשרה.");
         }
         return "redirect:/dashboard";
-    }
+    }*/
 
 }

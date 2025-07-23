@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import com.example.ex4.models.LocationRegion;
 import com.example.ex4.models.Position;
@@ -20,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +31,8 @@ public class PositionService {
     private PositionRepository positionRepository;
     @Autowired
     private AppUserService appUserService;
+    //@Autowired
+    //private ApplicationService applicationService;
 
     public boolean existsByJobTitle(String jobTitle) {
         return positionRepository.existsByJobTitle(jobTitle);
@@ -176,6 +180,20 @@ public class PositionService {
         return positionRepository.findByPublisher(user);
     }
 
+    /*@Transactional
+    public ResponseEntity<Map<String, Object>> applyForPosition(Long id, Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            applicationService.submitApplication(id, principal.getName());
+            response.put("message", "המועמדות הוגשה בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בהגשת המועמדות.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }*/
+
     /*public String getEditPositionForm(Long id, Model model, String username) {
         Position position = findById(id);
         if (position == null || !position.getPublisher().getUsername().equals(username)) {
@@ -224,17 +242,24 @@ public class PositionService {
         return "redirect:/dashboard";
     }*/
 
-    public boolean changePositionStatus(Long id, String status, String username) {
-        Position position = findById(id);
-        if (position == null || !position.getPublisher().getUsername().equals(username)) {
-            return false;
-        }
+    public ResponseEntity<Map<String, Object>> changePositionStatus(Long id, String status, String username) {
+        Map<String, Object> response = new HashMap<>();
+        
         try {
-            position.setStatus(Enum.valueOf(com.example.ex4.models.PositionStatus.class, status));
+            Position position = findById(id);
+            if (position == null || !position.getPublisher().getUsername().equals(username)) {
+                response.put("message", "שגיאה בעדכון סטטוס המשרה.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            
+            position.setStatus(Enum.valueOf(PositionStatus.class, status));
             save(position);
-            return true;
+            
+            response.put("message", "סטטוס המשרה עודכן בהצלחה!");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return false;
+            response.put("message", "אירעה שגיאה בעדכון סטטוס המשרה.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

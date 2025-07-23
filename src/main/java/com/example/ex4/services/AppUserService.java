@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -108,10 +110,6 @@ public class AppUserService implements UserDetailsService {
         appUserRepository.save(user);
     }
 
-    public void deleteUser(Long id) {
-        appUserRepository.deleteById(id);
-    }
-
     @Transactional
     public ResponseEntity<AppUser> changeUserStatus(Long id, RegistrationStatus status) {
         Optional<AppUser> userOpt = getUserById(id);
@@ -139,4 +137,5 @@ public class AppUserService implements UserDetailsService {
 
         return ResponseEntity.ok(user);
     }
+
 }

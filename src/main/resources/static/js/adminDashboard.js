@@ -1,4 +1,3 @@
-
 const adminDashboard = ()=>{
     const POLLING = 5000;
     const renderPdfWithPdfJs = async (url, container) => {
@@ -75,8 +74,6 @@ const adminDashboard = ()=>{
         const setStatusButtons = newAccountsTable.querySelectorAll(".status-form");
         const changeStatusForms = permissionTable.querySelectorAll(".change-status-form");
         const changeRoleForms = permissionTable.querySelectorAll(".change-role-form");
-        const toastEl = document.getElementById("actionToast");
-        const toastBody = toastEl.querySelector(".toast-body");
         let pollingInterval = null;
 
         permissionSearch.addEventListener("input", ()=>{filterTable(permissionTable, permissionSearch.value)});
@@ -265,15 +262,15 @@ const adminDashboard = ()=>{
                 });
 
                 if (response.ok) {
-                    showToast("הסטטוס עודכן בהצלחה.");
+                    window.showToast("הסטטוס עודכן בהצלחה.");
                     return await response.json();
                 } else {
                     const text = await response.text();
-                    showToast("שגיאה בעדכון הסטטוס: " + text, true);
+                    window.showToast("שגיאה בעדכון הסטטוס: " + text, true);
                     return null;
                 }
             } catch (err) {
-                showToast("שגיאה בלתי צפויה.", true);
+                window.showToast("שגיאה בלתי צפויה.", true);
                 return null;
             }
 
@@ -298,15 +295,15 @@ const adminDashboard = ()=>{
                 });
 
                 if (response.ok) {
-                    showToast("התפקיד עודכן בהצלחה.");
+                    window.showToast("התפקיד עודכן בהצלחה.");
                     return await response.json();
                 } else {
                     const text = await response.text();
-                    showToast("שגיאה בעדכון התפקיד: " + text, true);
+                    window.showToast("שגיאה בעדכון התפקיד: " + text, true);
                     return null;
                 }
             } catch (err) {
-                showToast("שגיאה בלתי צפויה.", true);
+                window.showToast("שגיאה בלתי צפויה.", true);
                 return null;
             }
         }
@@ -387,6 +384,10 @@ const adminDashboard = ()=>{
 
         async function refreshData() {
             try {
+                if (window.startPolling) {
+                    window.startPolling();
+                }
+                
                 const data = await fetchAllUsers();
 
                 if (data) {
@@ -397,34 +398,17 @@ const adminDashboard = ()=>{
                     filterTable(newAccountsTable, newAccountsSearch.value);
                     filterTable(permissionTable, permissionSearch.value);
                 }
+                
+                if (window.onPollingComplete) {
+                    window.onPollingComplete();
+                }
             } catch (error) {
+                if (window.onPollingComplete) {
+                    window.onPollingComplete();
+                }
                 console.error('Error refreshing data:', error);
             }
         }
-
-        function showToast(message, isError = false) {
-            toastBody.textContent = message;
-
-            if (isError) {
-                toastBody.classList.add("text-danger");
-            } else {
-                toastBody.classList.remove("text-danger");
-            }
-
-            const toast = new bootstrap.Toast(toastEl, {
-                delay: 4000,
-                autohide: true
-            });
-            toast.show();
-        }
-
-        pdfModal.addEventListener('hide.bs.modal', function() {
-            // Remove focus from close button before hiding
-            const focusedElement = this.querySelector(':focus');
-            if (focusedElement) {
-                focusedElement.blur();
-            }
-        });
 
         pollingInterval = setInterval(refreshData, 5000);
 

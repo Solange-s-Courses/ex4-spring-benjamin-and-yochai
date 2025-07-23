@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
-
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <head th:replace="~{fragments/header :: header}"></head>
 <body class="d-flex flex-column min-vh-100">
 <!-- Navigation -->
@@ -113,7 +114,7 @@
                                 </div>
                             </div>
                             <form th:if="${userApplication.status.name() != 'CANCELED'}"
-                                  th:action="@{'/positions/' + ${position.id} + '/cancel'}" method="post">
+                                  th:action="@{'/restapi/' + ${position.id} + '/cancel'}" method="post">
                                 <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
                                     <i class="bi bi-x-circle me-1"></i>
                                     בטל מועמדות
@@ -123,20 +124,23 @@
                     </div>
                     
                     <!-- אם המשתמש ביטל את המועמדות -->
-                    <div th:if="${userApplication != null and userApplication.status.name() == 'CANCELED'}" class="alert alert-secondary rounded-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <i class="bi bi-x-circle me-2"></i>
-                                ביטלת את המועמדות למשרה זו
-                                <div class="small text-muted mt-1">
-                                    תאריך הגשה: <span th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!--                    <div th:if="${userApplication != null and userApplication.status.name() == 'CANCELED'}" class="alert alert-secondary rounded-3">-->
+<!--                        <div class="d-flex justify-content-between align-items-center">-->
+<!--                            <div>-->
+<!--                                <i class="bi bi-x-circle me-2"></i>-->
+<!--                                ביטלת את המועמדות למשרה זו-->
+<!--                                <div class="small text-muted mt-1">-->
+<!--                                    תאריך הגשה: <span th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                     
                     <!-- כפתור הגשת מועמדות -->
-                    <form th:unless="${hasApplied or position.publisher.username == #authentication.name }" th:action="@{'/positions/' + ${position.id} + '/apply'}" method="post">
+                    <form th:unless="${hasApplied or position.publisher.username == #authentication.name }" 
+                          th:action="@{'/restapi/' + ${position.id} + '/apply'}" 
+                          method="post" 
+                          class="apply-form">
                         <button type="submit" class="btn btn-success btn-lg px-5 rounded-3">
                             <i class="bi bi-send-fill me-2"></i>
                             הגש מועמדות
