@@ -49,29 +49,72 @@
     <!-- Schedule Interview Card -->
     <div class="card shadow-sm rounded-4 mb-4">
       <div class="card-header bg-white rounded-top-4 border-bottom-0">
-        <h5 class="mb-0">קביעת ראיון</h5>
+        <h5 class="mb-0">פעולות על מועמדות</h5>
       </div>
       <div class="card-body">
-        <form th:action="@{/interviews/schedule}" method="post" class="row g-3 align-items-center">
-          <input type="hidden" name="applicationId" th:value="${app.id}" />
-          <div class="col-md-4">
-            <label class="form-label">תאריך ושעה</label>
-            <input type="datetime-local" name="interviewDate" class="form-control" required />
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">מיקום/לינק</label>
-            <input type="text" name="location" class="form-control" placeholder="לינק / כתובת פיזית" required />
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">הערות</label>
-            <input type="text" name="notes" class="form-control" placeholder="הערות (אופציונלי)" />
-          </div>
-          <div class="col-12 mt-3">
-            <button type="submit" class="btn btn-primary">קבע ראיון</button>
-          </div>
-        </form>
+        <div class="row g-3">
+
+          <!-- שינוי סטטוס מועמדות -->
+          <form th:action="@{'/applications/' + ${app.id} + '/status'}" method="post" class="col-md-6">
+            <label class="form-label">שנה סטטוס</label>
+            <div class="input-group">
+              <select class="form-select" name="status">
+                <option value="PENDING" th:selected="${app.status.name() == 'PENDING'}">ממתין</option>
+                <option value="APPROVED" th:selected="${app.status.name() == 'APPROVED'}">אושר</option>
+                <option value="REJECTED" th:selected="${app.status.name() == 'REJECTED'}">נדחה</option>
+                <option value="CANCELED" th:selected="${app.status.name() == 'CANCELED'}">בוטל</option>
+              </select>
+              <button type="submit" class="btn btn-outline-primary">עדכן</button>
+            </div>
+          </form>
+
+          <!-- דחיית מועמדות -->
+          <form th:action="@{'/applications/' + ${app.id} + '/reject'}" method="post" class="col-md-6 d-flex align-items-end">
+            <button type="submit" class="btn btn-outline-danger w-100">דחה מועמדות</button>
+          </form>
+
+          <!-- קביעת ראיון -->
+          <form th:action="@{/interviews/schedule}" method="post" class="col-12 row g-3 align-items-center">
+            <input type="hidden" name="applicationId" th:value="${app.id}" />
+
+            <h5 class="mb-0">תיאום ראיון</h5>
+
+            <!-- מתג סוג הפגישה -->
+            <div class="col-md-6">
+              <label class="form-label">סוג הפגישה</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="meetingTypeSwitch" name="isVirtual" onchange="toggleMeetingType()" />
+                <label class="form-check-label" for="meetingTypeSwitch">פגישה מקוונת</label>
+              </div>
+            </div>
+
+            <!-- תאריך ושעה -->
+            <div class="col-md-6">
+              <label class="form-label">תאריך ושעה</label>
+              <input type="datetime-local" name="interviewDate" class="form-control" required />
+            </div>
+
+            <!-- מיקום או לינק -->
+            <div class="col-md-6">
+              <label class="form-label" id="locationLabel">מיקום</label>
+              <input type="text" name="location" id="locationInput" class="form-control" placeholder="מיקום פיזי" required />
+            </div>
+
+            <!-- הערות -->
+            <div class="col-md-6">
+              <label class="form-label">הערות</label>
+              <input type="text" name="notes" class="form-control" placeholder="הערות (אופציונלי)" />
+            </div>
+
+            <div class="col-12 mt-3">
+              <button type="submit" class="btn btn-primary w-100">קבע ראיון</button>
+            </div>
+          </form>
+
+        </div>
       </div>
     </div>
+
 
     <!-- Scheduled Interviews (if any) -->
     <div th:if="${interviews != null && !#lists.isEmpty(interviews)}" class="card shadow-sm rounded-4">
