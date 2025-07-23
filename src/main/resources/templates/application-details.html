@@ -22,11 +22,11 @@
         <h5 class="mb-0">פרטי משרה</h5>
       </div>
       <div class="card-body">
-        <div class="row text-center">
-          <div class="col-md-4"><strong>תפקיד:</strong> <span th:text="${app.position.jobTitle}"></span></div>
-          <div class="col-md-4"><strong>מיקום:</strong> <span th:text="${app.position.location}"></span></div>
-          <div class="col-md-4"><strong>סוג שירות:</strong> <span th:text="${app.position.assignmentType}"></span></div>
-          <div class="col-md-4"><strong>דרישות:</strong> <span th:text="${app.position.requirements}"></span></div>
+        <div class="row">
+          <div class="col-md-6"><strong>תפקיד:</strong> <span th:text="${app.position.jobTitle}"></span></div>
+          <div class="col-md-6"><strong>מיקום:</strong> <span th:text="${app.position.location}"></span></div>
+          <div class="col-md-6"><strong>סוג שירות:</strong> <span th:text="${app.position.assignmentType}"></span></div>
+          <div class="col-md-6"><strong>דרישות:</strong> <span th:text="${app.position.requirements}"></span></div>
         </div>
       </div>
     </div>
@@ -37,11 +37,11 @@
         <h5 class="mb-0">פרטי מועמד</h5>
       </div>
       <div class="card-body">
-        <div class="row text-center">
-          <div class="col-md-4"><strong>שם מלא:</strong> <span th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}"></span></div>
-          <div class="col-md-4"><strong>אימייל:</strong> <span th:text="${app.applicant.email}"></span></div>
-          <div class="col-md-4"><strong>על המועמד:</strong> <span th:text="${app.applicant.about}"></span></div>
-          <div class="col-md-4"><strong>תאריך הגשה:</strong> <span th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy HH:mm')}"></span></div>
+        <div class="row">
+          <div class="col-md-6"><strong>שם מלא:</strong> <span th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}"></span></div>
+          <div class="col-md-6"><strong>אימייל:</strong> <span th:text="${app.applicant.email}"></span></div>
+          <div class="col-md-6"><strong>על המועמד:</strong> <span th:text="${app.applicant.about}"></span></div>
+          <div class="col-md-6"><strong>תאריך הגשה:</strong> <span th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy HH:mm')}"></span></div>
         </div>
       </div>
     </div>

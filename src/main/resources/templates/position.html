@@ -137,7 +137,7 @@
                                 </div>
                             </div>
                             <form th:if="${userApplication != null and userApplication.status.name() == 'PENDING'}" 
-                                  th:action="@{'/positions/' + ${position.id} + '/cancel'}" method="post" 
+                                  th:action="@{'/positions/' + ${position.id} + '/cancel'}" method="post">
                                 <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
                                     <i class="bi bi-x-circle me-1"></i>
                                     בטל מועמדות
