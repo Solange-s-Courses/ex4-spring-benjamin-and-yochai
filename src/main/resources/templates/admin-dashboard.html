@@ -28,8 +28,8 @@
                         <thead class="table-light">
                         <tr>
                             <th>שם מלא</th>
-                            <th>דוא"ל</th>
                             <th>שם משתמש</th>
+                            <th>על המועמד</th>
                             <th>הרשאה מבוקשת</th>
                             <th>מסמך זיהוי</th>
                             <th>פעולה</th>
@@ -38,8 +38,8 @@
                         <tbody id="newAccountsTbody">
                         <tr th:each="user : ${pendingUsers}" th:attr="data-username=${user.username}">
                             <td th:text="${user.firstName + ' ' + user.lastName}"></td>
-                            <td th:text="${user.email}"></td>
                             <td th:text="${user.username}"></td>
+                            <td th:text="${user.about}"></td>
                             <td class="role-column" th:text="${user.role}"></td>
                             <td>
                                 <button class="btn btn-outline-primary btn-sm view-pdf-btn"

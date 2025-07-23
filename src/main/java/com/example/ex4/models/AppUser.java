@@ -40,9 +40,6 @@ public class AppUser implements UserDetails {
     @Column(name = "about", length = 500)
     private String about;
 
-    //@Column(name = "is_approved")
-    //private Boolean isApproved = false;
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum('ADMIN', 'COMMANDER', 'RESERVIST') DEFAULT 'RESERVIST'")
     private Role role = Role.RESERVIST;

@@ -342,8 +342,8 @@ const adminDashboard = ()=>{
 
                 newRow.innerHTML = `
                     <td>${user.firstName + ' ' + user.lastName}</td>
-                    <td>${user.email}</td>
                     <td>${user.username}</td>
+                    <td>${user.about}</td>
                     <td class="role-column">${user.role}</td>
                     <td>
                         <button class="btn btn-outline-primary btn-sm view-pdf-btn"

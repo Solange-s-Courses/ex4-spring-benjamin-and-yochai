@@ -87,6 +87,7 @@ public class AppUserService implements UserDetailsService {
         appUser.setLastName(form.getLastName().trim());
         appUser.setPassword(passwordEncoder.encode(form.getPassword()));
         appUser.setEmail(form.getEmail().trim());
+        appUser.setAbout(form.getAbout().trim());
 
         if (form.isCommander()) {
             appUser.setRole(Role.COMMANDER);
