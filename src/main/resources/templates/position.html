@@ -194,17 +194,23 @@
                             </thead>
                             <tbody>
                             <tr th:each="app : ${applications}">
-                                <td th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}"></td>
+<!--                                <td th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}"></td>-->
+                                <td>
+                                    <a th:href="@{'/application/' + ${app.id}}"
+                                       th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}">
+                                    </a>
+                                </td>
                                 <td th:text="${app.applicant.email}"></td>
                                 <td th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
                                     <span class="badge"
                                           th:classappend="${app.status.name() == 'PENDING' ? 'bg-warning' :
-                              (app.status.name() == 'APPROVED' ? 'bg-success' :
-                              (app.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'))}"
+                                          (app.status.name() == 'APPROVED' ? 'bg-success' :
+                                          (app.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'))}"
+
                                           th:text="${app.status.name() == 'PENDING' ? 'ממתין' :
-                        (app.status.name() == 'APPROVED' ? 'אושר' :
-                        (app.status.name() == 'REJECTED' ? 'נדחה' : 'בוטל'))}">
+                                          (app.status.name() == 'APPROVED' ? 'אושר' :
+                                          (app.status.name() == 'REJECTED' ? 'נדחה' : 'בוטל'))}">
                                     </span>
                                 </td>
                             </tr>
