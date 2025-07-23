@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const hebrewNameRegex = /^[\u05D0-\u05EA]{3,20}$/
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const passwordRegex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?`~]{6,20}$/
-    const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
+    const allowedTypes = ["application/pdf"];
     let maxSize = parseFileSize(window.maxFileSize || "1MB");
     let valid = true;
 
@@ -92,8 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 showError("חובה לצרף קובץ", "militaryIdDoc");
                 valid = false;
             }
-            else if (!allowedTypes.includes(file.type)) {
-                showError("יש להעלות קובץ מסוג PDF, JPG או PNG בלבד", "militaryIdDoc");
+            else if (!allowedTypes.includes(file.type) || !file.name.toLowerCase().endsWith('.pdf')) {
+                showError("יש להעלות קובץ PDF בלבד", "militaryIdDoc");
                 valid = false;
             }
             else if (file.size > maxSize) {
