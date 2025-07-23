@@ -19,11 +19,19 @@
         <div th:if="${#authorization.expression('hasRole(''ADMIN'')') or position.publisher.username == #authentication.name}">
             <h2>ניהול משרה</h2>
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <a th:href="@{/positions/edit/{id}(id=${position.id})}" class="btn btn-primary">עריכת משרה</a>
+
+                <a th:href="@{/positions/edit/{id}(id=${position.id})}" class="btn btn-primary">
+                    <i class="bi bi-pencil me-1"></i>
+                    עריכת משרה
+                </a>
                 <form th:action="@{/positions/delete/{id}(id=${position.id})}" method="post" style="display:inline;">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <button type="submit" class="btn btn-danger">מחיקת משרה</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>
+                        מחיקת משרה
+                    </button>
                 </form>
+
                 <form th:action="@{/positions/{id}/status(id=${position.id})}" method="post" class="d-flex align-items-center gap-2 mb-0">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <select name="status" class="form-select form-select-sm" style="width:auto;">
