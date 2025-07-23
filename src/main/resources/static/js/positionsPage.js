@@ -113,6 +113,11 @@ const positionsPageDom = ()=>{
 
         async function refreshData() {
             try {
+                // הוסף קריאה ל-startPolling בתחילת הפונקציה
+                if (window.startPolling) {
+                    window.startPolling();
+                }
+                
                 currentFilters.location = locationSelector.value;
                 currentFilters.serviceType = assigmentTypeSelector.value;
 
@@ -134,7 +139,16 @@ const positionsPageDom = ()=>{
 
                     filterJobs();
                 }
+                
+                // הוסף קריאה ל-onPollingComplete בסוף הפונקציה
+                if (window.onPollingComplete) {
+                    window.onPollingComplete();
+                }
             } catch (error) {
+                // הוסף קריאה ל-onPollingComplete גם במקרה של שגיאה
+                if (window.onPollingComplete) {
+                    window.onPollingComplete();
+                }
                 console.error('Error refreshing data:', error);
             }
         }

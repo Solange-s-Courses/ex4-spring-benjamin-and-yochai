@@ -1,10 +1,27 @@
+<div th:fragment="toast" th:if="${successMessage or errorMessage}">
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="actionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"
+         data-bs-autohide="true" data-bs-delay="4000">
+      <div class="toast-header">
+        <strong class="me-auto">עדכון</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <span th:if="${successMessage}" th:text="${successMessage}"></span>
+        <span th:if="${errorMessage}" th:text="${errorMessage}" class="text-danger"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Keep old fragments for backward compatibility -->
 <div th:fragment="successToast" th:if="${successMessage}">
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header bg-success text-white">
-        <i class="bi bi-check-circle-fill me-2" role="img" aria-label="Success"></i>
-        <strong class="me-auto">הצלחה!</strong>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+    <div id="actionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"
+         data-bs-autohide="true" data-bs-delay="4000">
+      <div class="toast-header">
+        <strong class="me-auto">הצלחה</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
       <div class="toast-body" th:text="${successMessage}"></div>
     </div>
@@ -13,13 +30,13 @@
 
 <div th:fragment="errorToast" th:if="${errorMessage}">
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header bg-danger text-white">
-        <i class="bi bi-exclamation-triangle-fill me-2" role="img" aria-label="Error"></i>
-        <strong class="me-auto">שגיאה!</strong>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+    <div id="actionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"
+         data-bs-autohide="true" data-bs-delay="4000">
+      <div class="toast-header">
+        <strong class="me-auto">שגיאה</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
-      <div class="toast-body" th:text="${errorMessage}"></div>
+      <div class="toast-body text-danger" th:text="${errorMessage}"></div>
     </div>
   </div>
 </div>

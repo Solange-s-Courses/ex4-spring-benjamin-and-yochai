@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Service
 public class ApplicationService {
@@ -135,13 +139,16 @@ public class ApplicationService {
         }
     }
 
-    public boolean cancelApplication(Long positionId, String username) {
+    public ResponseEntity<Map<String, Object>> cancelApplication(Long positionId, String username) {
+        Map<String, Object> response = new HashMap<>();
+        
         try {
             AppUser user = appUserService.getUserByUsername(username);
             Position position = positionService.findById(positionId);
             
             if (user == null || position == null) {
-                return false;
+                response.put("message", "שגיאה בביטול המועמדות.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
             
             Optional<Application> application = applicationRepository.findByApplicantAndPosition(user, position);
@@ -152,13 +159,17 @@ public class ApplicationService {
                 if (app.getStatus() != ApplicationStatus.CANCELED) {
                     app.setStatus(ApplicationStatus.CANCELED);
                     applicationRepository.save(app);
-                    return true;
+                    response.put("message", "המועמדות בוטלה בהצלחה!");
+                    return ResponseEntity.ok(response);
                 }
             }
             
-            return false;
+            response.put("message", "שגיאה בביטול המועמדות.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+//            מיותר?
         } catch (Exception e) {
-            return false;
+            response.put("message", "שגיאה בביטול המועמדות.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 

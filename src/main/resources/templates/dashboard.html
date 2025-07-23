@@ -152,15 +152,6 @@
                                     <i class="bi bi-eye me-1"></i>
                                     צפה
                                 </a>
-                                <form th:if="${app.status.name() == 'PENDING'}"
-                                      th:action="@{'/positions/' + ${app.position.id} + '/cancel'}"
-                                      method="post"
-                                      style="display: inline;">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
-                                        <i class="bi bi-x-circle me-1"></i>
-                                        בטל
-                                    </button>
-                                </form>
                             </div>
                         </td>
                     </tr>
