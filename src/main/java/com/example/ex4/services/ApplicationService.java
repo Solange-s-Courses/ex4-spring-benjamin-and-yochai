@@ -210,4 +210,8 @@ public class ApplicationService {
             application.getStatus()
         );
     }
+
+    public Application getApplicationById(long id){
+        return applicationRepository.findById(id).orElse(null);
+    }
 } 
