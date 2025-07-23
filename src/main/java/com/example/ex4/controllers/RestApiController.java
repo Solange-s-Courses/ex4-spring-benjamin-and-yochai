@@ -94,5 +94,13 @@ public class RestApiController {
                                 Principal principal) {
         return applicationService.cancelApplication(id, principal.getName());
     }
+
+    @PostMapping("/positions/{id}/status")
+    public ResponseEntity<Map<String, Object>> changePositionStatus(@PathVariable Long id,
+                                                                   @RequestBody Map<String, String> body,
+                                                                   Principal principal) {
+        String status = body.get("status");
+        return positionService.changePositionStatus(id, status, principal.getName());
+    }
 }
 

@@ -24,6 +24,63 @@ const PositionDom = ()=>{
             });
         }
 
+        // Handle position status change form submission
+        const statusForms = document.querySelectorAll('form[action*="/positions/"][action*="/status"]');
+        
+        statusForms.forEach(form => {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const button = this.querySelector('button[type="submit"]');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>מעדכן...';
+                button.disabled = true;
+                
+                try {
+                    const positionId = this.action.split('/positions/')[1].split('/status')[0];
+                    const statusSelect = this.querySelector('select[name="status"]');
+                    const newStatus = statusSelect.value;
+                    
+                    // בדיקה אם יש CSRF token בעמוד
+                    const csrfMeta = document.querySelector('meta[name="_csrf"]');
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+                    
+                    if (csrfMeta) {
+                        const csrfToken = csrfMeta.getAttribute('content');
+                        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                        headers[csrfHeader] = csrfToken;
+                    }
+                    
+                    const response = await fetch(`/restapi/positions/${positionId}/status`, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({ status: newStatus }),
+                        credentials: 'include'
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        showToast(data.message, false);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        showToast(data.message, true);
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('אירעה שגיאה בעדכון סטטוס המשרה.', true);
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            });
+        });
+
         const applyForm = document.querySelector('.apply-form');
 
         if (applyForm) {

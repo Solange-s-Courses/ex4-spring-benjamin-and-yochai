@@ -242,17 +242,24 @@ public class PositionService {
         return "redirect:/dashboard";
     }*/
 
-    public boolean changePositionStatus(Long id, String status, String username) {
-        Position position = findById(id);
-        if (position == null || !position.getPublisher().getUsername().equals(username)) {
-            return false;
-        }
+    public ResponseEntity<Map<String, Object>> changePositionStatus(Long id, String status, String username) {
+        Map<String, Object> response = new HashMap<>();
+        
         try {
-            position.setStatus(Enum.valueOf(com.example.ex4.models.PositionStatus.class, status));
+            Position position = findById(id);
+            if (position == null || !position.getPublisher().getUsername().equals(username)) {
+                response.put("message", "שגיאה בעדכון סטטוס המשרה.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            
+            position.setStatus(Enum.valueOf(PositionStatus.class, status));
             save(position);
-            return true;
+            
+            response.put("message", "סטטוס המשרה עודכן בהצלחה!");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return false;
+            response.put("message", "אירעה שגיאה בעדכון סטטוס המשרה.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

@@ -149,7 +149,7 @@ public class PositionController {
         return "applicants-list";
     }*/
 
-    @PostMapping("/{id}/status")
+    /*@PostMapping("/{id}/status")
     public String changePositionStatus(@PathVariable Long id,
                                      @RequestParam String status,
                                      Principal principal,
@@ -162,6 +162,6 @@ public class PositionController {
             redirectAttributes.addFlashAttribute("errorMessage", "שגיאה בעדכון סטטוס המשרה.");
         }
         return "redirect:/dashboard";
-    }
+    }*/
 
 }
