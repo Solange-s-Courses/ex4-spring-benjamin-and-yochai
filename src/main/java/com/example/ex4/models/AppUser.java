@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Arrays;
 
 @Entity
-@Table(name = "app_users")
+@Table(name = "app_user")
 public class AppUser implements UserDetails {
     
     @Id
@@ -41,7 +41,7 @@ public class AppUser implements UserDetails {
     private String about;
 
     //@Column(name = "is_approved")
-    private Boolean isApproved = false;
+    //private Boolean isApproved = false;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum('ADMIN', 'COMMANDER', 'RESERVIST') DEFAULT 'RESERVIST'")
@@ -107,13 +107,13 @@ public class AppUser implements UserDetails {
         this.militaryIdDoc = militaryIdDoc;
     }
 
-    public Boolean getIsApproved() {
+    /*public Boolean getIsApproved() {
         return isApproved;
     }
 
     public void setIsApproved(Boolean isApproved) {
         this.isApproved = isApproved;
-    }
+    }*/
 
     public RegistrationStatus getRegistrationStatus() { return registrationStatus; }
 
