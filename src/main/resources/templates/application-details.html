@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Navigation -->
+<nav th:replace="~{fragments/header :: navigation}"></nav>
+
+<main class="flex-grow-1">
+  <section class="container py-5 mt-4">
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+      <h2 class="fw-bold mb-0">פרטי מועמדות</h2>
+      <a th:href="@{/dashboard}" class="btn btn-secondary rounded-3">
+        <i class="bi bi-arrow-right me-2"></i>חזרה
+      </a>
+    </div>
+
+    <!-- Position Details Card -->
+    <div class="card shadow-sm rounded-4 mb-4">
+      <div class="card-header bg-white rounded-top-4 border-bottom-0">
+        <h5 class="mb-0">פרטי משרה</h5>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-md-4"><strong>תפקיד:</strong> <span th:text="${app.position.jobTitle}"></span></div>
+          <div class="col-md-4"><strong>מיקום:</strong> <span th:text="${app.position.location}"></span></div>
+          <div class="col-md-4"><strong>סוג שירות:</strong> <span th:text="${app.position.assignmentType}"></span></div>
+          <div class="col-md-4"><strong>דרישות:</strong> <span th:text="${app.position.requirements}"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applicant Details Card -->
+    <div class="card shadow-sm rounded-4 mb-4">
+      <div class="card-header bg-white rounded-top-4 border-bottom-0">
+        <h5 class="mb-0">פרטי מועמד</h5>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-md-4"><strong>שם מלא:</strong> <span th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}"></span></div>
+          <div class="col-md-4"><strong>אימייל:</strong> <span th:text="${app.applicant.email}"></span></div>
+          <div class="col-md-4"><strong>על המועמד:</strong> <span th:text="${app.applicant.about}"></span></div>
+          <div class="col-md-4"><strong>תאריך הגשה:</strong> <span th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy HH:mm')}"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Schedule Interview Card -->
+    <div class="card shadow-sm rounded-4 mb-4">
+      <div class="card-header bg-white rounded-top-4 border-bottom-0">
+        <h5 class="mb-0">קביעת ראיון</h5>
+      </div>
+      <div class="card-body">
+        <form th:action="@{/interviews/schedule}" method="post" class="row g-3 align-items-center">
+          <input type="hidden" name="applicationId" th:value="${app.id}" />
+          <div class="col-md-4">
+            <label class="form-label">תאריך ושעה</label>
+            <input type="datetime-local" name="interviewDate" class="form-control" required />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">מיקום/לינק</label>
+            <input type="text" name="location" class="form-control" placeholder="לינק / כתובת פיזית" required />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">הערות</label>
+            <input type="text" name="notes" class="form-control" placeholder="הערות (אופציונלי)" />
+          </div>
+          <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-primary">קבע ראיון</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Scheduled Interviews (if any) -->
+    <div th:if="${interviews != null && !#lists.isEmpty(interviews)}" class="card shadow-sm rounded-4">
+      <div class="card-header bg-white rounded-top-4 border-bottom-0">
+        <h5 class="mb-0">ראיונות שנקבעו</h5>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered text-center align-middle">
+          <thead class="table-light">
+          <tr>
+            <th>תאריך</th>
+            <th>שעה</th>
+            <th>מיקום/לינק</th>
+            <th>סטטוס</th>
+            <th>הערות</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="interview : ${interviews}">
+            <td th:text="${#temporals.format(interview.interviewDate, 'dd/MM/yyyy')}"></td>
+            <td th:text="${#temporals.format(interview.interviewDate, 'HH:mm')}"></td>
+            <td th:text="${interview.location}"></td>
+            <td>
+                                <span class="badge"
+                                      th:classappend="${interview.status.name() == 'SCHEDULED' ? 'bg-warning' :
+                                                       (interview.status.name() == 'CONFIRMED' ? 'bg-success' :
+                                                       (interview.status.name() == 'REJECTED' ? 'bg-danger' :
+                                                       (interview.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary')))}"
+                                      th:text="${interview.status.name() == 'SCHEDULED' ? 'ממתין לאישור' :
+                                               (interview.status.name() == 'CONFIRMED' ? 'מאושר' :
+                                               (interview.status.name() == 'REJECTED' ? 'נדחה' :
+                                               (interview.status.name() == 'COMPLETED' ? 'הושלם' : 'מבוטל')))}">
+                                </span>
+            </td>
+            <td th:text="${interview.notes}"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<script th:src="@{/js/toasts.js}"></script>
+</body>
+</html>

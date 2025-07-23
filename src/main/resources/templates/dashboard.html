@@ -94,13 +94,13 @@
                                 </div>
                                 <form th:action="@{'/positions/' + ${position.id} + '/status'}" method="post" class="w-100">
                                     <div class="input-group input-group-sm align-items-center mt-1">
-                                        <select name="status" class="form-select form-select-sm" style="width:auto;">
+                                        <select name="status" class="form-select" style="width:auto;">
                                             <option th:selected="${position.status.name() == 'ACTIVE'}" value="ACTIVE">פעילה</option>
                                             <option th:selected="${position.status.name() == 'CANCELED'}" value="CANCELED">מבוטלת</option>
                                             <option th:selected="${position.status.name() == 'FULFILLED'}" value="FULFILLED">אוישה</option>
                                             <option th:selected="${position.status.name() == 'FROZEN'}" value="FROZEN">מוקפאת</option>
                                         </select>
-                                        <button type="submit" class="btn btn-primary btn-sm ms-2" title="עדכן סטטוס">
+                                        <button type="submit" class="btn btn-primary" title="עדכן סטטוס">
                                             עדכן סטטוס
                                         </button>
                                     </div>
