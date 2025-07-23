@@ -82,6 +82,11 @@ public class PositionController {
         return result;
     }
 
+    /*@PutMapping("/{id")
+    public String editPosition(@PathVariable Long id, Model model, Principal principal) {
+
+    }*/
+
     @GetMapping("/add")
     public String showAddPositionForm(Model model) {
         return positionService.getAddPositionForm(model);
