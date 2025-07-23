@@ -16,37 +16,6 @@
             </a>
         </div>
 
-        <div th:if="${#authorization.expression('hasRole(''ADMIN'')') or position.publisher.username == #authentication.name}">
-            <h2>ניהול משרה</h2>
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-
-                <a th:href="@{/positions/edit/{id}(id=${position.id})}" class="btn btn-primary">
-                    <i class="bi bi-pencil me-1"></i>
-                    עריכת משרה
-                </a>
-                <form th:action="@{/positions/delete/{id}(id=${position.id})}" method="post" style="display:inline;">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash me-1"></i>
-                        מחיקת משרה
-                    </button>
-                </form>
-
-                <form th:action="@{/positions/{id}/status(id=${position.id})}" method="post" class="d-flex align-items-center gap-2 mb-0">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <select name="status" class="form-select form-select-sm" style="width:auto;">
-                        <option th:selected="${position.status.name() == 'ACTIVE'}" value="ACTIVE">פעילה</option>
-                        <option th:selected="${position.status.name() == 'CANCELED'}" value="CANCELED">מבוטלת</option>
-                        <option th:selected="${position.status.name() == 'FULFILLED'}" value="FULFILLED">אוישה</option>
-                        <option th:selected="${position.status.name() == 'FROZEN'}" value="FROZEN">מוקפאת</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary btn-sm" title="עדכן סטטוס">
-                        עדכן סטטוס
-                    </button>
-                </form>
-            </div>
-        </div>
-
         <!-- Position Details Card -->
         <div class="card shadow-sm rounded-4">
             <div class="card-header bg-primary text-white rounded-top-4">
@@ -98,8 +67,7 @@
                     </h5>
                     <div class="bg-light p-3 rounded-3">
                         <ul class="mb-0">
-                            <li th:if="${position.requirements != null}"
-                                th:each="requirement :  ${position.requirements.split(',')}"
+                            <li th:each="requirement :  ${position.requirements.split(',')}"
                                 th:text="${requirement.trim()}"
                                 class="mb-2">
                             </li>
@@ -132,9 +100,9 @@
                     </div>
                 </div>
 
+
                 <!-- Apply/Cancel Button -->
                 <div class="text-center">
-                    <!-- אם המשתמש כבר הגיש מועמדות -->
                     <div th:if="${hasApplied}" class="alert alert-info rounded-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -144,8 +112,8 @@
                                     תאריך הגשה: <span th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
                                 </div>
                             </div>
-                            <form th:if="${userApplication != null and userApplication.status.name() == 'PENDING'}" 
-                                  th:action="@{'/positions/' + ${position.id} + '/cancel'}" method="post" 
+                            <form th:if="${userApplication.status.name() != 'CANCELED'}"
+                                  th:action="@{'/positions/' + ${position.id} + '/cancel'}" method="post">
                                 <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
                                     <i class="bi bi-x-circle me-1"></i>
                                     בטל מועמדות
@@ -164,17 +132,11 @@
                                     תאריך הגשה: <span th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
                                 </div>
                             </div>
-                            <form th:action="@{'/positions/' + ${position.id} + '/apply'}" method="post">
-                                <button type="submit" class="btn btn-outline-success btn-sm rounded-3">
-                                    <i class="bi bi-arrow-clockwise me-1"></i>
-                                    הגש שוב
-                                </button>
-                            </form>
                         </div>
                     </div>
                     
                     <!-- כפתור הגשת מועמדות -->
-                    <form th:unless="${hasApplied}" th:action="@{'/positions/' + ${position.id} + '/apply'}" method="post">
+                    <form th:unless="${hasApplied or position.publisher.username == #authentication.name }" th:action="@{'/positions/' + ${position.id} + '/apply'}" method="post">
                         <button type="submit" class="btn btn-success btn-lg px-5 rounded-3">
                             <i class="bi bi-send-fill me-2"></i>
                             הגש מועמדות
@@ -183,34 +145,57 @@
                 </div>
             </div>
         </div>
-        
-        <div th:if="${applications != null}">
-            <div class="card shadow-sm rounded-4 mt-4">
-                <div class="card-header bg-white rounded-top-4 border-bottom-0">
-                    <h5 class="mb-0">מועמדים (<span th:text="${#lists.size(applications)}">0</span>)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(applications)}">
-                        <table class="table table-bordered text-center align-middle">
-                            <thead class="table-light">
-                            <tr>
-                                <th>שם מלא</th>
-                                <th>אימייל</th>
-                                <th>תאריך הגשה</th>
-                                <th>סטטוס מועמדות</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="app : ${applications}">
-<!--                                <td th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}"></td>-->
-                                <td>
-                                    <a th:href="@{'/application/' + ${app.id}}"
-                                       th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}">
-                                    </a>
-                                </td>
-                                <td th:text="${app.applicant.email}"></td>
-                                <td th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy HH:mm')}"></td>
-                                <td>
+
+        <div th:if="${#authorization.expression('hasRole(''ADMIN'')') or position.publisher.username == #authentication.name}">
+            <h2>ניהול משרה</h2>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                <a th:href="@{/positions/edit/{id}(id=${position.id})}" class="btn btn-primary">
+                    <i class="bi bi-pencil me-1"></i>
+                    עריכת משרה
+                </a>
+
+                <form th:action="@{/positions/{id}/status(id=${position.id})}" method="post" class="d-flex align-items-center gap-2 mb-0">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <select name="status" class="form-select form-select-sm" style="width:auto;">
+                        <option th:selected="${position.status.name() == 'ACTIVE'}" value="ACTIVE">פעילה</option>
+                        <option th:selected="${position.status.name() == 'CANCELED'}" value="CANCELED">מבוטלת</option>
+                        <option th:selected="${position.status.name() == 'FULFILLED'}" value="FULFILLED">אוישה</option>
+                        <option th:selected="${position.status.name() == 'FROZEN'}" value="FROZEN">מוקפאת</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm" title="עדכן סטטוס">
+                        עדכן סטטוס
+                    </button>
+                </form>
+            </div>
+
+            <div th:if="${applications != null}">
+                <div class="card shadow-sm rounded-4 mt-4">
+                    <div class="card-header bg-white rounded-top-4 border-bottom-0">
+                        <h5 class="mb-0">מועמדים (<span th:text="${#lists.size(applications)}">0</span>)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive" th:if="${!#lists.isEmpty(applications)}">
+                            <table class="table table-bordered text-center align-middle">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>שם מלא</th>
+                                    <th>אימייל</th>
+                                    <th>תאריך הגשה</th>
+                                    <th>סטטוס מועמדות</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="app : ${applications}">
+                                    <!--                                <td th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}"></td>-->
+                                    <td>
+                                        <a th:href="@{'/application/' + ${app.id}}"
+                                           th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}">
+                                        </a>
+                                    </td>
+                                    <td th:text="${app.applicant.email}"></td>
+                                    <td th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td>
                                     <span class="badge"
                                           th:classappend="${app.status.name() == 'PENDING' ? 'bg-warning' :
                                           (app.status.name() == 'APPROVED' ? 'bg-success' :
@@ -220,14 +205,15 @@
                                           (app.status.name() == 'APPROVED' ? 'אושר' :
                                           (app.status.name() == 'REJECTED' ? 'נדחה' : 'בוטל'))}">
                                     </span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div th:if="${#lists.isEmpty(applications)}" class="alert alert-info text-center rounded-3">
-                        <i class="bi bi-info-circle me-2"></i>
-                        לא נמצאו מועמדים למשרה זו.
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:if="${#lists.isEmpty(applications)}" class="alert alert-info text-center rounded-3">
+                            <i class="bi bi-info-circle me-2"></i>
+                            לא נמצאו מועמדים למשרה זו.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -246,8 +232,6 @@
                            class="btn btn-outline-primary btn-sm rounded-3">
                             שלח אימייל
                         </a>
-
-
                     </div>
                 </div>
             </div>
