@@ -41,6 +41,22 @@ public class PositionController {
         return positionService.getPositionsPage(model);
     }
 
+    /*@GetMapping("/{id}")
+    public String getPosition(@PathVariable Long id, Model model, Principal principal) {
+        String result = positionService.getPosition(id, model);
+
+        Application userApplication = applicationService.getUserApplicationForPosition(id, principal.getName());
+        if (userApplication != null) {
+            model.addAttribute("userApplication", userApplication);
+            boolean hasApplied = userApplication.getStatus() != com.example.ex4.models.ApplicationStatus.CANCELED;
+            model.addAttribute("hasApplied", hasApplied);
+        } else {
+            model.addAttribute("hasApplied", false);
+        }
+
+        return result;
+    }*/
+
     @GetMapping("/{id}")
     public String getPosition(@PathVariable Long id, Model model, Principal principal) {
         String result = positionService.getPosition(id, model);
@@ -52,6 +68,14 @@ public class PositionController {
             model.addAttribute("hasApplied", hasApplied);
         } else {
             model.addAttribute("hasApplied", false);
+        }
+        Position position = (Position) model.getAttribute("position");
+        AppUser currentUser = appUserService.getUserByUsername(principal.getName());
+        boolean isAdmin = currentUser.getRole().name().equals("ADMIN");
+        boolean isOwner = position.getPublisher().getUsername().equals(principal.getName());
+        if (isAdmin || isOwner) {
+            List<Application> applications = applicationService.getApplicationsByPositionId(id);
+            model.addAttribute("applications", applications);
         }
 
         return result;

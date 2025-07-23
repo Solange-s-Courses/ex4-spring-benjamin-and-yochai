@@ -1,12 +1,9 @@
 package com.example.ex4.controllers;
 
-import com.example.ex4.models.AppUser;
-import com.example.ex4.models.Application;
-import com.example.ex4.models.RegistrationStatus;
+import com.example.ex4.models.*;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.ApplicationService;
 import com.example.ex4.services.PositionService;
-import com.example.ex4.models.Position;
 import com.example.ex4.repositories.PositionRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -74,7 +71,7 @@ public class HomeController {
         }
         long totalApplications = submittedApplications.size();
         long pendingApplications = submittedApplications.stream()
-                .filter(app -> app.getStatus() == com.example.ex4.models.ApplicationStatus.PENDING)
+                .filter(app -> app.getStatus() == ApplicationStatus.PENDING)
                 .count();
         long upcomingInterviewCount = relevantInterviews.stream()
                 .filter(i -> i.getStatus() == com.example.ex4.models.InterviewStatus.SCHEDULED || i.getStatus() == com.example.ex4.models.InterviewStatus.CONFIRMED)

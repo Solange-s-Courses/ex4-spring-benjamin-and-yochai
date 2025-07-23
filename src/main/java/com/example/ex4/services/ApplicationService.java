@@ -149,7 +149,7 @@ public class ApplicationService {
             if (application.isPresent()) {
                 Application app = application.get();
                 // רק מועמדויות במצב PENDING יכולות להיות מבוטלות
-                if (app.getStatus() == ApplicationStatus.PENDING) {
+                if (app.getStatus() != ApplicationStatus.CANCELED) {
                     app.setStatus(ApplicationStatus.CANCELED);
                     applicationRepository.save(app);
                     return true;

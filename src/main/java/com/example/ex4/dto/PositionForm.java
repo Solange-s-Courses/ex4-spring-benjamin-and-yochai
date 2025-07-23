@@ -30,10 +30,6 @@ public class PositionForm {
     @RequirementsValidator
     private List<String> requirements = new ArrayList<>();
 
-    @NotBlank(message = "חובה לספר על עצמך")
-    @Size(min = 1,max = 500, message = "יש להזין עד 500 תווים")
-    private String about;
-
     // No-args constructor
     public PositionForm() {}
 
@@ -84,8 +80,4 @@ public class PositionForm {
     public void setRequirements(List<String> requirements) {
         this.requirements = requirements;
     }
-
-    public String getAbout() { return about; }
-
-    public void setAbout(String about) { this.about = about; }
 }
