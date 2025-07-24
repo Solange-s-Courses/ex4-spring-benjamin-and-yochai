@@ -19,4 +19,12 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
     List<Position> findByStatusOrderByJobTitleAsc(PositionStatus status);
 
     List<Position> findByPublisher(com.example.ex4.models.AppUser publisher);
+
+    List<Position> findByJobTitleContainingIgnoreCase(String jobTitle);
+
+    List<Position> findByJobTitleContainingIgnoreCaseAndLocationAndAssignmentTypeAndStatus(String jobTitle, com.example.ex4.models.LocationRegion location, String assignmentType, com.example.ex4.models.PositionStatus status);
+    List<Position> findByJobTitleContainingIgnoreCaseAndLocationAndStatus(String jobTitle, com.example.ex4.models.LocationRegion location, com.example.ex4.models.PositionStatus status);
+    List<Position> findByJobTitleContainingIgnoreCaseAndAssignmentTypeAndStatus(String jobTitle, String assignmentType, com.example.ex4.models.PositionStatus status);
+    List<Position> findByJobTitleContainingIgnoreCaseAndStatus(String jobTitle, com.example.ex4.models.PositionStatus status);
+    List<Position> findByStatus(com.example.ex4.models.PositionStatus status);
 }

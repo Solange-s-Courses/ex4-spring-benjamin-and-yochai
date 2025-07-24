@@ -24,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
+import com.example.ex4.dto.PositionDto;
 
 @Service
 public class PositionService {
@@ -178,6 +179,92 @@ public class PositionService {
     public List<Position> getPositionsByPublisher(String username) {
         AppUser user = appUserService.getUserByUsername(username);
         return positionRepository.findByPublisher(user);
+    }
+
+    public List<PositionDto> searchPositions(String title, String location, String assignmentType) {
+        // כל הפילטרים נשלחו
+        if (location != null && !location.isEmpty() && assignmentType != null && !assignmentType.isEmpty()) {
+            return positionRepository.findByJobTitleContainingIgnoreCaseAndLocationAndAssignmentTypeAndStatus(
+                    title, LocationRegion.valueOf(location), assignmentType, PositionStatus.ACTIVE)
+                .stream()
+                .map(pos -> new PositionDto(
+                    pos.getId(),
+                    pos.getJobTitle(),
+                    pos.getLocation() != null ? pos.getLocation().name() : "",
+                    pos.getAssignmentType(),
+                    pos.getDescription(),
+                    pos.getRequirements(),
+                    pos.getPublisher() != null ?
+                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
+                ))
+                .collect(Collectors.toList());
+        }
+        // רק location
+        else if (location != null && !location.isEmpty()) {
+            return positionRepository.findByJobTitleContainingIgnoreCaseAndLocationAndStatus(
+                    title, LocationRegion.valueOf(location), PositionStatus.ACTIVE)
+                .stream()
+                .map(pos -> new PositionDto(
+                    pos.getId(),
+                    pos.getJobTitle(),
+                    pos.getLocation() != null ? pos.getLocation().name() : "",
+                    pos.getAssignmentType(),
+                    pos.getDescription(),
+                    pos.getRequirements(),
+                    pos.getPublisher() != null ?
+                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
+                ))
+                .collect(Collectors.toList());
+        }
+        // רק assignmentType
+        else if (assignmentType != null && !assignmentType.isEmpty()) {
+            return positionRepository.findByJobTitleContainingIgnoreCaseAndAssignmentTypeAndStatus(
+                    title, assignmentType, PositionStatus.ACTIVE)
+                .stream()
+                .map(pos -> new PositionDto(
+                    pos.getId(),
+                    pos.getJobTitle(),
+                    pos.getLocation() != null ? pos.getLocation().name() : "",
+                    pos.getAssignmentType(),
+                    pos.getDescription(),
+                    pos.getRequirements(),
+                    pos.getPublisher() != null ?
+                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
+                ))
+                .collect(Collectors.toList());
+        }
+        // רק חיפוש טקסטואלי
+        else {
+            return positionRepository.findByJobTitleContainingIgnoreCaseAndStatus(title, PositionStatus.ACTIVE)
+                .stream()
+                .map(pos -> new PositionDto(
+                    pos.getId(),
+                    pos.getJobTitle(),
+                    pos.getLocation() != null ? pos.getLocation().name() : "",
+                    pos.getAssignmentType(),
+                    pos.getDescription(),
+                    pos.getRequirements(),
+                    pos.getPublisher() != null ?
+                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
+                ))
+                .collect(Collectors.toList());
+        }
+    }
+
+    public List<PositionDto> getAllPositions() {
+        return positionRepository.findByStatus(PositionStatus.ACTIVE)
+            .stream()
+            .map(pos -> new PositionDto(
+                pos.getId(),
+                pos.getJobTitle(),
+                pos.getLocation() != null ? pos.getLocation().name() : "",
+                pos.getAssignmentType(),
+                pos.getDescription(),
+                pos.getRequirements(),
+                pos.getPublisher() != null ?
+                    (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
+            ))
+            .collect(Collectors.toList());
     }
 
     /*@Transactional
