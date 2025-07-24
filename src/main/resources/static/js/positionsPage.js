@@ -2,62 +2,46 @@ const positionsPageDom = ()=>{
     let locationOptionsLoaded = false;
     let serviceTypeOptionsLoaded = false;
 
-    async function loadRecentSearches() {
-        try {
-            const response = await fetch('/restapi/positions/recent-searches');
-            if (!response.ok) return;
-            const searches = await response.json();
-            const container = document.getElementById("recentSearchesList");
-            container.innerHTML = "";
-            searches.forEach(s => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.className = "btn btn-sm btn-outline-secondary ms-2 mb-1";
-                let label = s.search || "";
-                if (s.location) label += ` | ${s.location}`;
-                if (s.serviceType) label += ` | ${s.serviceType}`;
-                btn.textContent = label;
-                btn.addEventListener('click', function() {
-                    searchBox.value = s.search || "";
-                    setSelectValueWhenReady(locationSelector, s.location || "", function() {
-                        setSelectValueWhenReady(assigmentTypeSelector, s.serviceType || "", function() {
-                            triggerSearch();
-                            loadRecentSearches();
-                        });
-                    });
-                });
-                container.appendChild(btn);
-            });
-        } catch (e) {}
-    }
-
-    function setSelectValueWhenReady(selector, value, callback) {
-        const maxTries = 20;
-        let tries = 0;
-        function trySet() {
-            const options = Array.from(selector.options).map(o => o.value);
-            if (value === "" || options.includes(value)) {
-                selector.value = value || "";
-                if (typeof callback === "function") callback();
-            } else if (tries < maxTries) {
-                tries++;
-                setTimeout(trySet, 50);
-            }
-        }
-        trySet();
-    }
+    // הגדרה גלובלית בתוך positionsPageDom
+    const locationSelector = document.getElementById("location");
+    const assigmentTypeSelector = document.getElementById("serviceType");
+    const searchBox = document.getElementById("searchBox");
 
     document.addEventListener('DOMContentLoaded', function () {
         const jobCardsDiv = document.getElementById("job-cards");
-        const locationSelector = document.getElementById("location");
-        const assigmentTypeSelector = document.getElementById("serviceType");
         const noPositionsMsg = document.getElementById("noPositionsMsg")
-        const searchBox = document.getElementById("searchBox");
 
         let currentFilters = {
             location: '',
             serviceType: ''
         };
+
+        async function loadRecentSearches() {
+            try {
+                const response = await fetch('/restapi/positions/recent-searches');
+                if (!response.ok) return;
+                const searches = await response.json();
+                const container = document.getElementById("recentSearchesList");
+                container.innerHTML = "";
+                searches.forEach(s => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "btn btn-sm btn-outline-secondary ms-2 mb-1";
+                    let label = s.search || "";
+                    if (s.location) label += ` | ${s.location}`;
+                    if (s.serviceType) label += ` | ${s.serviceType}`;
+                    btn.textContent = label;
+                    btn.addEventListener('click', function() {
+                        searchBox.value = s.search || "";
+                        locationSelector.value = s.location || "";
+                        assigmentTypeSelector.value = s.serviceType || "";
+                        triggerSearch();
+                        loadRecentSearches();
+                    });
+                    container.appendChild(btn);
+                });
+            } catch (e) {}
+        }
 
         function filterJobs(){
             const selectedLocation = locationSelector.value;
@@ -104,7 +88,6 @@ const positionsPageDom = ()=>{
                 selector.appendChild(optionElement);
             });
             // אם יש ערך מה-session והוא קיים ב-options, נבחר אותו
-            // הסרתי את הסימון של sessionFilters
             if (selector === locationSelector) locationOptionsLoaded = true;
             if (selector === assigmentTypeSelector) serviceTypeOptionsLoaded = true;
             // אם שני ה-selectים נטענו, בצע חיפוש
@@ -258,22 +241,26 @@ const positionsPageDom = ()=>{
             fetchPositionsBySearch(query, location, serviceType).then(renderPositions);
         }
 
-        locationSelector.addEventListener("change", function() {
-            triggerSearch();
-            loadRecentSearches();
-        });
-        assigmentTypeSelector.addEventListener("change", function() {
-            triggerSearch();
-            loadRecentSearches();
-        });
+        // locationSelector.addEventListener("change", function() {
+        //     triggerSearch();
+        //     loadRecentSearches();
+        // });
+        // assigmentTypeSelector.addEventListener("change", function() {
+        //     triggerSearch();
+        //     loadRecentSearches();
+        // });
         const pollingInterval = setInterval(triggerSearch, 10000);
-
         window.addEventListener('beforeunload', function() {
             clearInterval(pollingInterval);
         });
-
         searchBox.addEventListener("keydown", function(e) {
             if (e.key === "Enter") {
+                triggerSearch();
+                loadRecentSearches();
+            }
+        });
+        searchBox.addEventListener("input", function(e) {
+            if (searchBox.value.trim() === "") {
                 triggerSearch();
                 loadRecentSearches();
             }
