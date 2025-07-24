@@ -21,19 +21,31 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
             throws IOException, ServletException {
         String errorMessage;
 
+        // בדיקה אם זה InternalAuthenticationServiceException עם cause
         if (exception instanceof InternalAuthenticationServiceException) {
             Throwable cause = exception.getCause();
-            if (cause instanceof LockedException || cause instanceof DisabledException) {
-                errorMessage = cause.getMessage();
+            if (cause instanceof LockedException) {
+                errorMessage = "המשתמש חסום";
+            } else if (cause instanceof DisabledException) {
+                errorMessage = "יש להמתין לאישור המשתמש ע\"י מנהל המערכת";
             } else {
-                errorMessage = "תקלה בהתחברות, אנא נסו שנית במועד מאוחר יותר.";
+                errorMessage = "תקלה בהתחברות, אנא נסו שנית במועד מאוחר יותר";
             }
-        } else if (exception instanceof LockedException || exception instanceof DisabledException) {
-            errorMessage = exception.getMessage();
-        } else if (exception instanceof BadCredentialsException) {
-            errorMessage = "שם משתמש או סיסמה שגויים";
-        } else {
-            errorMessage = "תקלה בהתחברות, אנא נסו שנית במועד מאוחר יותר.";
+        }
+        // בדיקה ישירה של Exception
+        else if (exception instanceof LockedException) {
+            errorMessage = "המשתמש חסום";
+        }
+        else if (exception instanceof DisabledException) {
+            errorMessage = "יש להמתין לאישור המשתמש ע\"י מנהל המערכת";
+        }
+        // שם משתמש או סיסמא שגויים
+        else if (exception instanceof BadCredentialsException) {
+            errorMessage = "שם משתמש או סיסמא שגויים";
+        }
+        // כל שאר השגיאות - תקלה כללית
+        else {
+            errorMessage = "תקלה בהתחברות, אנא נסו שנית במועד מאוחר יותר";
         }
 
         FlashMap flashMap = new FlashMap();
