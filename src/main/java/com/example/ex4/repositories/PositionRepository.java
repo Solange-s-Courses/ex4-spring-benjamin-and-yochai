@@ -16,15 +16,25 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
 
     List<Position> findAllByOrderByJobTitleAsc();
 
+    @Query("SELECT p FROM Position p WHERE p.status = :status AND p.publisher.registrationStatus = 'APPROVED' ORDER BY p.jobTitle ASC")
     List<Position> findByStatusOrderByJobTitleAsc(PositionStatus status);
 
     List<Position> findByPublisher(com.example.ex4.models.AppUser publisher);
 
     List<Position> findByJobTitleContainingIgnoreCase(String jobTitle);
 
+    @Query("SELECT p FROM Position p WHERE p.jobTitle LIKE %:jobTitle% AND p.location = :location AND p.assignmentType = :assignmentType AND p.status = :status AND p.publisher.registrationStatus = 'APPROVED'")
     List<Position> findByJobTitleContainingIgnoreCaseAndLocationAndAssignmentTypeAndStatus(String jobTitle, com.example.ex4.models.LocationRegion location, String assignmentType, com.example.ex4.models.PositionStatus status);
+    
+    @Query("SELECT p FROM Position p WHERE p.jobTitle LIKE %:jobTitle% AND p.location = :location AND p.status = :status AND p.publisher.registrationStatus = 'APPROVED'")
     List<Position> findByJobTitleContainingIgnoreCaseAndLocationAndStatus(String jobTitle, com.example.ex4.models.LocationRegion location, com.example.ex4.models.PositionStatus status);
+    
+    @Query("SELECT p FROM Position p WHERE p.jobTitle LIKE %:jobTitle% AND p.assignmentType = :assignmentType AND p.status = :status AND p.publisher.registrationStatus = 'APPROVED'")
     List<Position> findByJobTitleContainingIgnoreCaseAndAssignmentTypeAndStatus(String jobTitle, String assignmentType, com.example.ex4.models.PositionStatus status);
+    
+    @Query("SELECT p FROM Position p WHERE p.jobTitle LIKE %:jobTitle% AND p.status = :status AND p.publisher.registrationStatus = 'APPROVED'")
     List<Position> findByJobTitleContainingIgnoreCaseAndStatus(String jobTitle, com.example.ex4.models.PositionStatus status);
+    
+    @Query("SELECT p FROM Position p WHERE p.status = :status AND p.publisher.registrationStatus = 'APPROVED'")
     List<Position> findByStatus(com.example.ex4.models.PositionStatus status);
 }
