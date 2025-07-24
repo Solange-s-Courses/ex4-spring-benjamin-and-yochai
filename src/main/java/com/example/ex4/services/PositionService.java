@@ -25,6 +25,7 @@ import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.example.ex4.dto.PositionDto;
+import jakarta.servlet.http.HttpSession;
 
 @Service
 public class PositionService {
@@ -179,6 +180,26 @@ public class PositionService {
     public List<Position> getPositionsByPublisher(String username) {
         AppUser user = appUserService.getUserByUsername(username);
         return positionRepository.findByPublisher(user);
+    }
+
+    public List<PositionDto> searchPositions(String title, String location, String assignmentType, HttpSession session) {
+        // שמירת חיפוש אחרון רק אם יש מילת חיפוש טקסטואלית
+        if (title != null && !title.isBlank()) {
+            List<String> recentSearches = (List<String>) session.getAttribute("recent_searches");
+            if (recentSearches == null) recentSearches = new LinkedList<>();
+            recentSearches.remove(title);
+            recentSearches.add(0, title);
+            if (recentSearches.size() > 5) recentSearches = recentSearches.subList(0, 5);
+            session.setAttribute("recent_searches", recentSearches);
+        }
+        
+        // החזרת התוצאות עם הפילטרים
+        return searchPositions(title, location, assignmentType);
+    }
+
+    public List<String> getRecentSearches(HttpSession session) {
+        List<String> recentSearches = (List<String>) session.getAttribute("recent_searches");
+        return recentSearches != null ? recentSearches : new LinkedList<>();
     }
 
     public List<PositionDto> searchPositions(String title, String location, String assignmentType) {

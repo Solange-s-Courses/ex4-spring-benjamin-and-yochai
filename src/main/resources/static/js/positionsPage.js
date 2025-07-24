@@ -2,7 +2,6 @@ const positionsPageDom = ()=>{
     let locationOptionsLoaded = false;
     let serviceTypeOptionsLoaded = false;
 
-    // הגדרה גלובלית בתוך positionsPageDom
     const locationSelector = document.getElementById("location");
     const assigmentTypeSelector = document.getElementById("serviceType");
     const searchBox = document.getElementById("searchBox");
@@ -23,18 +22,13 @@ const positionsPageDom = ()=>{
                 const searches = await response.json();
                 const container = document.getElementById("recentSearchesList");
                 container.innerHTML = "";
-                searches.forEach(s => {
+                searches.forEach(search => {
                     const btn = document.createElement("button");
                     btn.type = "button";
                     btn.className = "btn btn-sm btn-outline-secondary ms-2 mb-1";
-                    let label = s.search || "";
-                    if (s.location) label += ` | ${s.location}`;
-                    if (s.serviceType) label += ` | ${s.serviceType}`;
-                    btn.textContent = label;
+                    btn.textContent = search;
                     btn.addEventListener('click', function() {
-                        searchBox.value = s.search || "";
-                        locationSelector.value = s.location || "";
-                        assigmentTypeSelector.value = s.serviceType || "";
+                        searchBox.value = search;
                         triggerSearch();
                         loadRecentSearches();
                     });
@@ -78,7 +72,6 @@ const positionsPageDom = ()=>{
             selector.innerHTML = '';
             selector.appendChild(firstOption);
 
-            // Add new options
             options.forEach(option => {
                 const optionElement = document.createElement('option');
                 optionElement.value = option;
@@ -87,10 +80,8 @@ const positionsPageDom = ()=>{
 
                 selector.appendChild(optionElement);
             });
-            // אם יש ערך מה-session והוא קיים ב-options, נבחר אותו
             if (selector === locationSelector) locationOptionsLoaded = true;
             if (selector === assigmentTypeSelector) serviceTypeOptionsLoaded = true;
-            // אם שני ה-selectים נטענו, בצע חיפוש
             if (locationOptionsLoaded && serviceTypeOptionsLoaded) {
                 triggerSearch();
             }
@@ -98,7 +89,6 @@ const positionsPageDom = ()=>{
 
         async function fetchPositionsData() {
             try {
-                // You may need to adjust this endpoint based on your backend API
                 const response = await fetch('/restapi/positions/active', {
                     method: 'GET',
                     headers: {
@@ -194,7 +184,6 @@ const positionsPageDom = ()=>{
 
         async function refreshData() {
             try {
-                // הוסף קריאה ל-startPolling בתחילת הפונקציה
                 if (window.startPolling) {
                     window.startPolling();
                 }
@@ -205,7 +194,6 @@ const positionsPageDom = ()=>{
                 const data = await fetchPositionsData();
 
                 if (data) {
-                    // Update job cards
                     if (data.jobs) {
                         updateJobCards(data.jobs);
                     }
@@ -221,12 +209,10 @@ const positionsPageDom = ()=>{
                     filterJobs();
                 }
                 
-                // הוסף קריאה ל-onPollingComplete בסוף הפונקציה
                 if (window.onPollingComplete) {
                     window.onPollingComplete();
                 }
             } catch (error) {
-                // הוסף קריאה ל-onPollingComplete גם במקרה של שגיאה
                 if (window.onPollingComplete) {
                     window.onPollingComplete();
                 }
@@ -241,38 +227,40 @@ const positionsPageDom = ()=>{
             fetchPositionsBySearch(query, location, serviceType).then(renderPositions);
         }
 
-        // locationSelector.addEventListener("change", function() {
-        //     triggerSearch();
-        //     loadRecentSearches();
-        // });
-        // assigmentTypeSelector.addEventListener("change", function() {
-        //     triggerSearch();
-        //     loadRecentSearches();
-        // });
+        locationSelector.addEventListener("change", function() {
+            filterJobs();
+            triggerSearch();
+            loadRecentSearches();
+        });
+
+        assigmentTypeSelector.addEventListener("change", function() {
+            filterJobs();
+            triggerSearch();
+            loadRecentSearches();
+        });
+
         const pollingInterval = setInterval(triggerSearch, 10000);
         window.addEventListener('beforeunload', function() {
             clearInterval(pollingInterval);
         });
+
         searchBox.addEventListener("keydown", function(e) {
             if (e.key === "Enter") {
                 triggerSearch();
                 loadRecentSearches();
             }
         });
+
         searchBox.addEventListener("input", function(e) {
             if (searchBox.value.trim() === "") {
                 triggerSearch();
                 loadRecentSearches();
             }
         });
+
         triggerSearch();
         loadRecentSearches();
-        // החזרתי את הקריאה ל-triggerSearch בטעינת הדף
-
     });
-
 };
 
 positionsPageDom();
-
-// here we need to add filtration, and sorting
