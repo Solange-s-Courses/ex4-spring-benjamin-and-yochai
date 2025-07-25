@@ -126,33 +126,7 @@ public class PositionController {
         return "my-positions"; // תבנית חדשה
     }*/
 
-    /*@GetMapping("/{id}/applicants")
-    public String viewApplicants(@PathVariable Long id, Model model, Principal principal) {
-        // בדיקה שהמשרה שייכת למשתמש הנוכחי או שהוא אדמין
-        Position position = positionService.findById(id);
-        if (position == null) {
-            return "redirect:/dashboard";
-        }
-        
-        AppUser currentUser = appUserService.getUserByUsername(principal.getName());
-        boolean isAdmin = currentUser.getRole().name().equals("ADMIN");
-        boolean isOwner = position.getPublisher().getUsername().equals(principal.getName());
-        
-        if (!isAdmin && !isOwner) {
-            return "redirect:/dashboard";
-        }
-        
-        List<Application> applications = applicationService.getApplicationsByPositionId(id);
-        // הוספת ראיונות לכל מועמד
-        java.util.Map<Long, java.util.List<com.example.ex4.models.Interview>> interviewsByApplication = new java.util.HashMap<>();
-        for (Application app : applications) {
-            interviewsByApplication.put(app.getId(), interviewService.getInterviewsByApplication(app));
-        }
-        model.addAttribute("applications", applications);
-        model.addAttribute("position", position);
-        model.addAttribute("interviewsByApplication", interviewsByApplication);
-        return "applicants-list";
-    }*/
+
 
     /*@PostMapping("/{id}/status")
     public String changePositionStatus(@PathVariable Long id,

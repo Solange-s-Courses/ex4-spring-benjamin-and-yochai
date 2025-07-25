@@ -4,7 +4,6 @@
 <head th:replace="~{fragments/header :: header}"></head>
 <body class="d-flex flex-column min-vh-100">
 
-<!-- Navigation -->
 <nav th:replace="~{fragments/header :: navigation}"></nav>
 
 <main class="flex-grow-1">
@@ -16,7 +15,6 @@
       </a>
     </div>
 
-    <!-- Position Details Card -->
     <div class="card shadow-sm rounded-4 mb-4">
       <div class="card-header bg-white rounded-top-4 border-bottom-0">
         <h5 class="mb-0">פרטי משרה</h5>
@@ -31,7 +29,6 @@
       </div>
     </div>
 
-    <!-- Applicant Details Card -->
     <div class="card shadow-sm rounded-4 mb-4">
       <div class="card-header bg-white rounded-top-4 border-bottom-0">
         <h5 class="mb-0">פרטי מועמד</h5>
@@ -46,7 +43,6 @@
       </div>
     </div>
 
-    <!-- Schedule Interview Card -->
     <div class="card shadow-sm rounded-4 mb-4">
       <div class="card-header bg-white rounded-top-4 border-bottom-0">
         <h5 class="mb-0">פעולות על מועמדות</h5>
@@ -54,8 +50,8 @@
       <div class="card-body">
         <div class="row g-3">
 
-          <!-- שינוי סטטוס מועמדות -->
           <form th:action="@{'/applications/' + ${app.id} + '/status'}" method="post" class="col-md-6">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <label class="form-label">שנה סטטוס</label>
             <div class="input-group">
               <select class="form-select" name="status">
@@ -68,18 +64,17 @@
             </div>
           </form>
 
-          <!-- דחיית מועמדות -->
           <form th:action="@{'/applications/' + ${app.id} + '/reject'}" method="post" class="col-md-6 d-flex align-items-end">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <button type="submit" class="btn btn-outline-danger w-100">דחה מועמדות</button>
           </form>
 
-          <!-- קביעת ראיון -->
           <form th:action="@{/interviews/schedule}" method="post" class="col-12 row g-3 align-items-center">
             <input type="hidden" name="applicationId" th:value="${app.id}" />
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
             <h5 class="mb-0">תיאום ראיון</h5>
 
-            <!-- מתג סוג הפגישה -->
             <div class="col-md-6">
               <label class="form-label">סוג הפגישה</label>
               <div class="form-check form-switch">
@@ -88,19 +83,16 @@
               </div>
             </div>
 
-            <!-- תאריך ושעה -->
             <div class="col-md-6">
               <label class="form-label">תאריך ושעה</label>
-              <input type="datetime-local" name="interviewDate" class="form-control" required />
+              <input type="datetime-local" name="interviewDate" class="form-control" required min="" />
             </div>
 
-            <!-- מיקום או לינק -->
             <div class="col-md-6">
               <label class="form-label" id="locationLabel">מיקום</label>
               <input type="text" name="location" id="locationInput" class="form-control" placeholder="מיקום פיזי" required />
             </div>
 
-            <!-- הערות -->
             <div class="col-md-6">
               <label class="form-label">הערות</label>
               <input type="text" name="notes" class="form-control" placeholder="הערות (אופציונלי)" />
@@ -115,8 +107,6 @@
       </div>
     </div>
 
-
-    <!-- Scheduled Interviews (if any) -->
     <div th:if="${interviews != null && !#lists.isEmpty(interviews)}" class="card shadow-sm rounded-4">
       <div class="card-header bg-white rounded-top-4 border-bottom-0">
         <h5 class="mb-0">ראיונות שנקבעו</h5>
@@ -130,29 +120,129 @@
             <th>מיקום/לינק</th>
             <th>סטטוס</th>
             <th>הערות</th>
+            <th>סיכום ראיון</th>
+            <th>פעולות</th>
           </tr>
           </thead>
           <tbody>
           <tr th:each="interview : ${interviews}">
             <td th:text="${#temporals.format(interview.interviewDate, 'dd/MM/yyyy')}"></td>
             <td th:text="${#temporals.format(interview.interviewDate, 'HH:mm')}"></td>
-            <td th:text="${interview.location}"></td>
             <td>
-                                <span class="badge"
-                                      th:classappend="${interview.status.name() == 'SCHEDULED' ? 'bg-warning' :
-                                                       (interview.status.name() == 'CONFIRMED' ? 'bg-success' :
-                                                       (interview.status.name() == 'REJECTED' ? 'bg-danger' :
-                                                       (interview.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary')))}"
-                                      th:text="${interview.status.name() == 'SCHEDULED' ? 'ממתין לאישור' :
-                                               (interview.status.name() == 'CONFIRMED' ? 'מאושר' :
-                                               (interview.status.name() == 'REJECTED' ? 'נדחה' :
-                                               (interview.status.name() == 'COMPLETED' ? 'הושלם' : 'מבוטל')))}">
-                                </span>
+              <div th:if="${interview.isVirtual != null && interview.isVirtual}" class="text-center">
+                <a th:href="${interview.jitsiLink}" target="_blank" 
+                   class="btn btn-sm btn-primary">
+                  <i class="bi bi-camera-video"></i> הצטרף לפגישה
+                </a>
+              </div>
+              <span th:if="${interview.isVirtual == null || !interview.isVirtual}" 
+                    th:text="${interview.location}"></span>
+            </td>
+            <td>
+              <span class="badge"
+                    th:classappend="${interview.status.name() == 'SCHEDULED' ? 'bg-warning' :
+                                     (interview.status.name() == 'CONFIRMED' ? 'bg-success' :
+                                     (interview.status.name() == 'REJECTED' ? 'bg-danger' :
+                                     (interview.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary')))}"
+                    th:text="${interview.status.name() == 'SCHEDULED' ? 'ממתין לאישור' :
+                             (interview.status.name() == 'CONFIRMED' ? 'מאושר' :
+                             (interview.status.name() == 'REJECTED' ? 'נדחה' :
+                             (interview.status.name() == 'COMPLETED' ? 'הושלם' : 'מבוטל')))}">
+              </span>
             </td>
             <td th:text="${interview.notes}"></td>
+            <td>
+              <div th:if="${interview.interviewSummary != null && !interview.interviewSummary.isEmpty()}">
+                <span th:text="${interview.interviewSummary}"></span>
+              </div>
+              <form th:if="${interview.status.name() != 'CANCELED'}" th:action="@{'/interviews/' + ${interview.id} + '/summary'}" method="post" class="mt-2">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="input-group input-group-sm">
+                  <textarea name="summary" class="form-control form-control-sm" rows="2" 
+                            th:placeholder="'כתוב סיכום ראיון...'" 
+                            th:text="${interview.interviewSummary}"></textarea>
+                  <button type="submit" class="btn btn-outline-primary btn-sm">שמור</button>
+                </div>
+              </form>
+            </td>
+            <td>
+              <div class="btn-group-vertical btn-group-sm" role="group">
+                <button type="button"
+                        class="btn btn-outline-secondary btn-sm mb-1 edit-interview-btn"
+                        th:data-id="${interview.id}" 
+                        th:data-date="${#temporals.format(interview.interviewDate, 'yyyy-MM-dd''T''HH:mm')}" 
+                        th:data-location="${interview.location}" 
+                        th:data-notes="${interview.notes != null ? interview.notes : ''}"
+                        th:data-virtual="${interview.isVirtual != null ? interview.isVirtual : false}">
+                  <i class="bi bi-pencil"></i> ערוך
+                </button>
+                
+                <form th:action="@{'/interviews/' + ${interview.id} + '/cancel'}" method="post" 
+                      th:if="${interview.status.name() != 'CANCELED' && interview.status.name() != 'COMPLETED'}" 
+                      class="d-inline cancel-interview-form">
+                  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                  <button type="submit" class="btn btn-outline-danger btn-sm mb-1">
+                    <i class="bi bi-x-circle"></i> בטל
+                  </button>
+                </form>
+                
+                <form th:action="@{'/interviews/' + ${interview.id} + '/complete'}" method="post" 
+                      th:if="${interview.status.name() == 'CONFIRMED'}" 
+                      class="d-inline">
+                  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                  <button type="submit" class="btn btn-outline-success btn-sm">
+                    <i class="bi bi-check-circle"></i> הושלם
+                  </button>
+                </form>
+              </div>
+            </td>
           </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <div class="modal fade" id="editInterviewModal" tabindex="-1" aria-labelledby="editInterviewModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editInterviewModalLabel">עריכת ראיון</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="editInterviewForm" method="post">
+            <div class="modal-body">
+              <input type="hidden" name="applicationId" th:value="${app.id}" />
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+              
+              <div class="mb-3">
+                <label class="form-label">סוג הפגישה</label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="editMeetingTypeSwitch" name="isVirtual" />
+                  <label class="form-check-label" for="editMeetingTypeSwitch">פגישה מקוונת</label>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">תאריך ושעה</label>
+                <input type="datetime-local" name="interviewDate" id="editInterviewDate" class="form-control" required min="" />
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label" id="editLocationLabel">מיקום</label>
+                <input type="text" name="location" id="editLocationInput" class="form-control" placeholder="מיקום פיזי" required />
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">הערות</label>
+                <input type="text" name="notes" id="editInterviewNotes" class="form-control" placeholder="הערות (אופציונלי)" />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+              <button type="submit" class="btn btn-primary">שמור שינויים</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
@@ -160,6 +250,9 @@
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/toasts :: successToast}"></div>
+<div th:replace="~{fragments/toasts :: errorToast}"></div>
 <script th:src="@{/js/toasts.js}"></script>
+<script th:src="@{/js/interviewForm.js}"></script>
 </body>
 </html>

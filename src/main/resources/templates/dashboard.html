@@ -162,9 +162,8 @@
                         <th>אישור הראיון</th>
                         <th>החלטה</th>
                         <th>הערות</th>
-                        <th>סיכום ראיון</th>
                         <th>תפקיד
-                            <a href="#" class="sort-link ms-1" data-sort="role" data-table="interviews-table" data-col="9">
+                            <a href="#" class="sort-link ms-1" data-sort="role" data-table="interviews-table" data-col="8">
                                 <i class="bi bi-arrow-down-up"></i>
                             </a>
                         </th>
@@ -172,14 +171,23 @@
                     </thead>
                     <tbody>
                     <tr th:if="${#lists.isEmpty(relevantInterviews)}">
-                        <td colspan="9">אין ראיונות להצגה</td>
+                        <td colspan="8">אין ראיונות להצגה</td>
                     </tr>
                     <tr th:each="interview : ${relevantInterviews}">
                         <td th:text="${interview.application.position.jobTitle}"></td>
                         <td th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')')}" th:text="${interview.application.applicant.firstName + ' ' + interview.application.applicant.lastName}"></td>
                         <td th:text="${#temporals.format(interview.interviewDate, 'dd/MM/yyyy')}"></td>
                         <td th:text="${#temporals.format(interview.interviewDate, 'HH:mm')}"></td>
-                        <td th:text="${interview.location}"></td>
+                        <td>
+                            <div th:if="${interview.isVirtual != null && interview.isVirtual}" class="text-center">
+                                <a th:href="${interview.jitsiLink}" target="_blank" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="bi bi-camera-video"></i> הצטרף לפגישה
+                                </a>
+                            </div>
+                            <span th:if="${interview.isVirtual == null || !interview.isVirtual}" 
+                                  th:text="${interview.location}"></span>
+                        </td>
                         <td>
                             <span class="badge"
                                   th:classappend="${interview.status.name() == 'SCHEDULED' ? 'bg-warning' : (interview.status.name() == 'CONFIRMED' ? 'bg-success' : (interview.status.name() == 'REJECTED' ? 'bg-danger' : (interview.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary')))}"
@@ -205,10 +213,6 @@
                         </td>
                         <td th:text="${interview.notes}"></td>
                         <td>
-                            <span th:if="${interview.application.applicant.username != #authentication.name}" th:text="${interview.interviewSummary}"></span>
-                            <span th:if="${interview.application.applicant.username == #authentication.name}"></span>
-                        </td>
-                        <td>
                             <span th:if="${interview.application.applicant.username == #authentication.name}"
                                   class="badge bg-primary">מרואיין</span>
                             <span th:if="${interview.application.applicant.username != #authentication.name}"
@@ -230,5 +234,6 @@
 
 <script th:src="@{/js/toasts.js}"></script>
 <script th:src="@{/js/interviewsSort.js}"></script>
+<script th:src="@{/js/interviewForm.js}"></script>
 </body>
 </html>

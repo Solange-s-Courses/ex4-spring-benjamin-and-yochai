@@ -64,7 +64,7 @@ public class RegistrationController {
 
         try{
             appUserService.saveUser(form);
-            redirectAttributes.addFlashAttribute("successMessage", "נרשמת בהצלחה!");
+            redirectAttributes.addFlashAttribute("successMessage", "ההרשמה נקלטה בהצלחה! יש להמתין לקבלת אישור ממנהל המערכת.");
             return "redirect:/login";
         } catch (Exception e){
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך ההרשמה, אנא נסו שנית במועד מאוחר יותר.");

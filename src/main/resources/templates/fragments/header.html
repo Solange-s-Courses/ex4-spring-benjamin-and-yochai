@@ -37,15 +37,17 @@
                 <a sec:authorize="isAuthenticated()" class="nav-link me-3"  th:href="@{/positions}">חיפוש משרות</a>
                 <a class="nav-link me-3" th:href="@{/about}">אודות</a>
 
-                <a sec:authorize="!isAuthenticated()" class="btn btn-outline-primary rounded-pill px-4 me-2" th:href="@{/login}">
-                    <i class="bi bi-person-circle me-1"></i>
-                    התחברות
-                </a>
+                <div class="d-flex flex-column flex-sm-row gap-2">
+                    <a sec:authorize="!isAuthenticated()" class="btn btn-outline-primary rounded-pill px-4" th:href="@{/login}">
+                        <i class="bi bi-person-circle me-1"></i>
+                        התחברות
+                    </a>
 
-                <a sec:authorize="!isAuthenticated()" class="btn btn-primary rounded-pill px-4 text-white" th:href="@{/register}">
-                    <i class="bi bi-person-plus me-1"></i>
-                    הרשמה
-                </a>
+                    <a sec:authorize="!isAuthenticated()" class="btn btn-primary rounded-pill px-4 text-white" th:href="@{/register}">
+                        <i class="bi bi-person-plus me-1"></i>
+                        הרשמה
+                    </a>
+                </div>
 
                 <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
                     <button type="submit" class="btn btn-outline-primary rounded-pill px-4 me-2">

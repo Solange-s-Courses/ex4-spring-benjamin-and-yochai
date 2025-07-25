@@ -7,6 +7,10 @@ import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.ApplicationService;
 import com.example.ex4.services.PositionService;
 import com.example.ex4.dto.PositionDto;
+import com.example.ex4.dto.InterviewForm;
+import com.example.ex4.services.InterviewService;
+import com.example.ex4.repositories.ApplicationRepository;
+import com.example.ex4.models.Application;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,6 +28,9 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.servlet.http.HttpSession;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import com.example.ex4.models.Interview;
+import com.example.ex4.models.InterviewStatus;
 
 
 @Controller
@@ -35,6 +42,10 @@ public class RestApiController {
     private PositionService positionService;
     @Autowired
     private ApplicationService applicationService;
+    @Autowired
+    private InterviewService interviewService;
+    @Autowired
+    private ApplicationRepository applicationRepository;
 
     @GetMapping("/admin/document/{id}")
     public ResponseEntity<byte[]> getDocument(@PathVariable Long id) {
@@ -130,6 +141,47 @@ public class RestApiController {
         return positionService.changePositionStatus(id, status, principal.getName());
     }
 
+    @PostMapping("/interviews/schedule")
+    @ResponseBody
+    public ResponseEntity<?> scheduleInterview(@RequestBody InterviewForm form) {
+        try {
+            Application application = applicationRepository.findById(form.getApplicationId()).orElseThrow();
+            interviewService.scheduleInterview(
+                application,
+                LocalDateTime.parse(form.getInterviewDate()),
+                form.getLocation(),
+                form.getNotes(),
+                form.getIsVirtual()
+            );
+            return ResponseEntity.ok().body(Map.of("success", true, "message", "הראיון נקבע בהצלחה!"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "אירעה שגיאה בקביעת הראיון. ודא שכל השדות תקינים ונסה שוב."));
+        }
+    }
+
+    @PostMapping("/interviews/{id}/edit")
+    @ResponseBody
+    public ResponseEntity<?> editInterview(@PathVariable Long id, @RequestBody InterviewForm form) {
+        try {
+            Interview originalInterview = interviewService.getInterviewById(id);
+            if (originalInterview == null) {
+                return ResponseEntity.badRequest().body(Map.of("success", false, "message", "הראיון לא נמצא"));
+            }
+            
+            LocalDateTime newDate = LocalDateTime.parse(form.getInterviewDate());
+            Interview updatedInterview = interviewService.updateInterview(id, newDate, form.getLocation(), form.getNotes(), form.getIsVirtual());
+            
+            String message = interviewService.getUpdateMessage(originalInterview, newDate);
+            
+            return ResponseEntity.ok().body(Map.of("success", true, "message", message));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "אירעה שגיאה בעדכון הראיון"));
+        }
+    }
     
 }
 

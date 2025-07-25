@@ -26,6 +26,10 @@ public class Interview {
 
     private String interviewSummary;
 
+    private Boolean isVirtual = false;
+
+    private String jitsiLink;
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -50,4 +54,10 @@ public class Interview {
 
     public String getInterviewSummary() { return interviewSummary; }
     public void setInterviewSummary(String interviewSummary) { this.interviewSummary = interviewSummary; }
+
+    public Boolean getIsVirtual() { return isVirtual; }
+    public void setIsVirtual(Boolean isVirtual) { this.isVirtual = isVirtual; }
+
+    public String getJitsiLink() { return jitsiLink; }
+    public void setJitsiLink(String jitsiLink) { this.jitsiLink = jitsiLink; }
 } 

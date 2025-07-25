@@ -23,28 +23,17 @@ public class InterviewController {
                                     @RequestParam String interviewDate,
                                     @RequestParam String location,
                                     @RequestParam(required = false) String notes,
+                                    @RequestParam(required = false) Boolean isVirtual,
                                     RedirectAttributes redirectAttributes) {
         try {
             Application application = applicationRepository.findById(applicationId).orElseThrow();
             java.time.LocalDateTime date = java.time.LocalDateTime.parse(interviewDate);
-            interviewService.scheduleInterview(application, date, location, notes);
+            interviewService.scheduleInterview(application, date, location, notes, isVirtual);
             redirectAttributes.addFlashAttribute("successMessage", "הראיון נקבע בהצלחה!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בקביעת הראיון. ודא שכל השדות תקינים ונסה שוב.");
         }
-        // חזרה לרשימת המועמדים של המשרה
-        Long positionId = null;
-        try {
-            Application application = applicationRepository.findById(applicationId).orElse(null);
-            if (application != null && application.getPosition() != null) {
-                positionId = application.getPosition().getId();
-            }
-        } catch (Exception ignore) {}
-        if (positionId != null) {
-            return "redirect:/positions/" + positionId + "/applicants";
-        } else {
-            return "redirect:/dashboard";
-        }
+        return "redirect:/dashboard";
     }
 
     @PostMapping("/{id}/confirm")
@@ -72,11 +61,7 @@ public class InterviewController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בביטול הראיון.");
         }
-        if (positionId != null) {
-            return "redirect:/positions/" + positionId + "/applicants";
-        } else {
-            return "redirect:/dashboard";
-        }
+        return "redirect:/dashboard";
     }
 
     @PostMapping("/{id}/complete")
@@ -92,30 +77,19 @@ public class InterviewController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בסימון הראיון כהושלם.");
         }
-        if (positionId != null) {
-            return "redirect:/positions/" + positionId + "/applicants";
-        } else {
-            return "redirect:/dashboard";
-        }
+        return "redirect:/dashboard";
     }
 
     @PostMapping("/{id}/summary")
     public String updateInterviewSummary(@PathVariable Long id, @RequestParam String summary, RedirectAttributes redirectAttributes) {
-        Long positionId = null;
         try {
             Interview interview = interviewService.getInterviewById(id);
             interview.setInterviewSummary(summary);
             interviewService.saveInterview(interview);
             redirectAttributes.addFlashAttribute("successMessage", "סיכום הראיון נשמר בהצלחה.");
-            if (interview != null && interview.getApplication() != null && interview.getApplication().getPosition() != null) {
-                positionId = interview.getApplication().getPosition().getId();
-            }
+            return "redirect:/application/" + interview.getApplication().getId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בשמירת סיכום הראיון.");
-        }
-        if (positionId != null) {
-            return "redirect:/positions/" + positionId + "/applicants";
-        } else {
             return "redirect:/dashboard";
         }
     }
@@ -142,5 +116,46 @@ public class InterviewController {
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בעדכון ההחלטה.");
         }
         return "redirect:/dashboard";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String editInterview(@PathVariable Long id, 
+                               @RequestParam String interviewDate,
+                               @RequestParam String location,
+                               @RequestParam(required = false) String notes,
+                               @RequestParam(required = false) Boolean isVirtual,
+                               RedirectAttributes redirectAttributes) {
+        Long positionId = null;
+        try {
+            Interview interview = interviewService.getInterviewById(id);
+            if (interview != null) {
+                LocalDateTime newDate = LocalDateTime.parse(interviewDate);
+                boolean dateChanged = !interview.getInterviewDate().equals(newDate);
+                
+                interview.setInterviewDate(newDate);
+                interview.setLocation(location);
+                interview.setNotes(notes);
+                interview.setIsVirtual(isVirtual);
+                
+                if (dateChanged) {
+                    interview.setStatus(InterviewStatus.SCHEDULED);
+                    redirectAttributes.addFlashAttribute("successMessage", "הראיון עודכן בהצלחה. הסטטוס שונה ל'ממתין לאישור' עקב שינוי בתאריך/שעה.");
+                } else {
+                    redirectAttributes.addFlashAttribute("successMessage", "הראיון עודכן בהצלחה.");
+                }
+                
+                interviewService.saveInterview(interview);
+                if (interview.getApplication() != null && interview.getApplication().getPosition() != null) {
+                    positionId = interview.getApplication().getPosition().getId();
+                }
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בעדכון הראיון.");
+        }
+        if (positionId != null) {
+            return "redirect:/application/" + interviewService.getInterviewById(id).getApplication().getId();
+        } else {
+            return "redirect:/dashboard";
+        }
     }
 } 

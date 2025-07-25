@@ -44,8 +44,8 @@ public class SecurityConfig {
                         .requestMatchers("/register", "/login").not().authenticated()
                         .requestMatchers("/admin/**", "/restapi/admin/**").hasRole("ADMIN")
                         .requestMatchers("/positions/add**").hasAnyRole("ADMIN", "COMMANDER")
-                        .requestMatchers("/positions/*/applicants", "/positions/*/status").hasAnyRole("ADMIN", "COMMANDER")
-                        .requestMatchers("/positions/**", "/restapi**").authenticated()
+                        .requestMatchers("/positions/*/status").hasAnyRole("ADMIN", "COMMANDER")
+                        .requestMatchers("/positions/**", "/interviews/**", "/restapi**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
