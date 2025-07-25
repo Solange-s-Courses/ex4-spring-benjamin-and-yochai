@@ -5,6 +5,8 @@ import com.example.ex4.models.Application;
 import com.example.ex4.models.ApplicationStatus;
 import com.example.ex4.models.AppUser;
 import com.example.ex4.models.Position;
+import com.example.ex4.models.Interview;
+import com.example.ex4.models.InterviewStatus;
 import com.example.ex4.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,13 +26,16 @@ public class ApplicationService {
 
     @Autowired
     private ApplicationRepository applicationRepository;
-    
+
     @Autowired
     private AppUserService appUserService;
-    
+
     @Autowired
     private PositionService positionService;
 
+    @Autowired
+    private InterviewService interviewService;
+    
     public boolean submitApplication(Long positionId, String username) {
         try {
             AppUser applicant = appUserService.getUserByUsername(username);
@@ -157,16 +162,25 @@ public class ApplicationService {
                 Application app = application.get();
                 // רק מועמדויות במצב PENDING יכולות להיות מבוטלות
                 if (app.getStatus() != ApplicationStatus.CANCELED) {
+                    // ביטול המועמדות
                     app.setStatus(ApplicationStatus.CANCELED);
                     applicationRepository.save(app);
-                    response.put("message", "המועמדות בוטלה בהצלחה!");
+                    
+                    // ביטול כל הראיונות של המועמדות הזאת
+                    List<Interview> interviews = interviewService.getInterviewsByApplication(app);
+                    for (Interview interview : interviews) {
+                        if (interview.getStatus() != InterviewStatus.CANCELED) {
+                            interviewService.cancelInterview(interview.getId());
+                        }
+                    }
+                    
+                    response.put("message", "המועמדות בוטלה בהצלחה! כל הראיונות בוטלו גם כן.");
                     return ResponseEntity.ok(response);
                 }
             }
             
             response.put("message", "שגיאה בביטול המועמדות.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-//            מיותר?
         } catch (Exception e) {
             response.put("message", "שגיאה בביטול המועמדות.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
