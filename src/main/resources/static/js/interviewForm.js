@@ -140,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 window.showToast('אירעה שגיאה בעדכון הראיון', true);
             });
         });

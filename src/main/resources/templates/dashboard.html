@@ -189,23 +189,47 @@
                                   th:text="${interview.location}"></span>
                         </td>
                         <td>
-                            <span class="badge"
-                                  th:classappend="${interview.status.name() == 'SCHEDULED' ? 'bg-warning' : (interview.status.name() == 'CONFIRMED' ? 'bg-success' : (interview.status.name() == 'REJECTED' ? 'bg-danger' : (interview.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary')))}"
-                                  th:text="${interview.status.name() == 'SCHEDULED' ? 'ממתין לאישור' : (interview.status.name() == 'CONFIRMED' ? 'מאושר' : (interview.status.name() == 'REJECTED' ? 'נדחה' : (interview.status.name() == 'COMPLETED' ? 'אושר' : 'מבוטל')))}">
+                            <span th:if="${interview.application.applicant.username == #authentication.name}">
+                                <div th:if="${interview.status.name() == 'SCHEDULED'}" class="d-flex gap-2">
+                                    <form th:action="@{'/interviews/' + ${interview.id} + '/confirm'}" method="post" class="mb-0">
+                                        <button type="submit" class="btn btn-success btn-sm">אשר</button>
+                                    </form>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="'#rejectModal' + ${interview.id}">דחה</button>
+                                </div>
+                                <span th:if="${interview.status.name() == 'CONFIRMED'}" class="badge bg-success">מאושר</span>
+                                <span th:if="${interview.status.name() == 'REJECTED'}" class="badge bg-danger">נדחה</span>
+                            </span>
+                            <span th:if="${interview.application.applicant.username != #authentication.name}">
+                                <div>
+                                    <span class="badge"
+                                          th:classappend="${interview.status.name() == 'SCHEDULED' ? 'bg-warning' : (interview.status.name() == 'CONFIRMED' ? 'bg-success' : (interview.status.name() == 'REJECTED' ? 'bg-danger' : (interview.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary')))}"
+                                          th:text="${interview.status.name() == 'SCHEDULED' ? 'ממתין לאישור' : (interview.status.name() == 'CONFIRMED' ? 'מאושר' : (interview.status.name() == 'REJECTED' ? 'נדחה' : (interview.status.name() == 'COMPLETED' ? 'אושר' : 'מבוטל')))}">
+                                    </span>
+                                    <!-- הצגת סיבת הדחייה אם קיימת -->
+                                    <div th:if="${interview.status.name() == 'REJECTED' && interview.rejectionReason != null && !#strings.isEmpty(interview.rejectionReason)}" 
+                                         class="mt-1">
+                                        <small class="text-muted">
+                                            <strong>סיבה:</strong> <span th:text="${interview.rejectionReason}"></span>
+                                        </small>
+                                    </div>
+                                </div>
                             </span>
                         </td>
                         <td>
+                            <!-- עמודת החלטה - רק למפקד להחליט על תוצאת הראיון -->
                             <span th:if="${interview.application.applicant.username == #authentication.name}">
+                                <!-- המועמד רואה את החלטת המפקד -->
                                 <span th:if="${interview.status.name() == 'COMPLETED'}" class="badge bg-success">התקבל</span>
-                                <span th:if="${interview.status.name() == 'REJECTED' || interview.status.name() == 'CANCELED'}" class="badge bg-danger">נדחה</span>
-                                <span th:if="${interview.status.name() != 'COMPLETED' && interview.status.name() != 'REJECTED' && interview.status.name() != 'CANCELED'}" class="badge bg-warning text-dark">ממתין</span>
+                                <span th:if="${interview.status.name() == 'CANCELED'}" class="badge bg-danger">נדחה</span>
+                                <span th:if="${interview.status.name() != 'COMPLETED' && interview.status.name() != 'CANCELED'}" class="badge bg-warning text-dark">ממתין להחלטה</span>
                             </span>
                             <span th:if="${interview.application.applicant.username != #authentication.name}">
+                                <!-- המפקד יכול להחליט על התוצאה -->
                                 <form th:action="@{'/interviews/' + ${interview.id} + '/decision'}" method="post" class="d-flex align-items-center gap-2 mb-0">
                                     <select name="decision" class="form-select form-select-sm">
-                                        <option value="PENDING" th:selected="${interview.status.name() != 'COMPLETED' && interview.status.name() != 'REJECTED' && interview.status.name() != 'CANCELED'}">ממתין</option>
+                                        <option value="PENDING" th:selected="${interview.status.name() != 'COMPLETED' && interview.status.name() != 'CANCELED'}">ממתין להחלטה</option>
                                         <option value="COMPLETED" th:selected="${interview.status.name() == 'COMPLETED'}">התקבל</option>
-                                        <option value="REJECTED" th:selected="${interview.status.name() == 'REJECTED' || interview.status.name() == 'CANCELED'}">נדחה</option>
+                                        <option value="CANCELED" th:selected="${interview.status.name() == 'CANCELED'}">נדחה</option>
                                     </select>
                                     <button type="submit" class="btn btn-outline-primary btn-sm">שמור</button>
                                 </form>
@@ -225,6 +249,33 @@
         </div>
     </section>
 </main>
+
+<!-- Reject Interview Modals -->
+<div th:each="interview : ${relevantInterviews}" th:if="${interview.application.applicant.username == #authentication.name && interview.status.name() == 'SCHEDULED'}">
+    <div class="modal fade" th:id="'rejectModal' + ${interview.id}" tabindex="-1" aria-hidden="true" th:aria-labelledby="'rejectModalLabel' + ${interview.id}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:id="'rejectModalLabel' + ${interview.id}">דחיית ראיון</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{'/interviews/' + ${interview.id} + '/reject'}" method="post">
+                    <div class="modal-body">
+                        <p>האם אתה בטוח שברצונך לדחות את הראיון?</p>
+                        <div class="mb-3">
+                            <label th:for="'reason' + ${interview.id}" class="form-label">סיבת הדחייה (אופציונלי)</label>
+                            <textarea class="form-control" th:id="'reason' + ${interview.id}" name="reason" rows="3" placeholder="הזן סיבה לדחיית הראיון..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="submit" class="btn btn-danger">דחה ראיון</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div th:replace="~{fragments/toasts :: successToast}"></div>
 <div th:replace="~{fragments/toasts :: errorToast}"></div>

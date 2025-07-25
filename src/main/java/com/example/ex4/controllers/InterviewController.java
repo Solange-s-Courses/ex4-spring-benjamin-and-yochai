@@ -37,14 +37,26 @@ public class InterviewController {
     }
 
     @PostMapping("/{id}/confirm")
-    public String confirmInterview(@PathVariable Long id) {
-        interviewService.confirmInterview(id);
+    public String confirmInterview(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            interviewService.confirmInterview(id);
+            redirectAttributes.addFlashAttribute("successMessage", "הראיון אושר בהצלחה!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה באישור הראיון.");
+        }
         return "redirect:/dashboard";
     }
 
     @PostMapping("/{id}/reject")
-    public String rejectInterview(@PathVariable Long id, @RequestParam String reason) {
-        interviewService.rejectInterview(id, reason);
+    public String rejectInterview(@PathVariable Long id, @RequestParam(required = false) String reason, RedirectAttributes redirectAttributes) {
+        try {
+            interviewService.rejectInterview(id, reason);
+            redirectAttributes.addFlashAttribute("successMessage", "הראיון נדחה בהצלחה!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בדחיית הראיון.");
+        }
         return "redirect:/dashboard";
     }
 
@@ -101,7 +113,7 @@ public class InterviewController {
             Interview interview = interviewService.getInterviewById(id);
             if (decision.equals("COMPLETED")) {
                 interviewService.completeInterview(id);
-            } else if (decision.equals("REJECTED")) {
+            } else if (decision.equals("CANCELED")) {
                 interviewService.cancelInterview(id); // treat as rejected/canceled
             } else {
                 // Set to SCHEDULED (pending)

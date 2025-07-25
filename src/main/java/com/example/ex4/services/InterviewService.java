@@ -15,7 +15,8 @@ public class InterviewService {
     private com.example.ex4.repositories.ApplicationRepository applicationRepository;
 
     public Interview scheduleInterview(Application application, java.time.LocalDateTime interviewDate, String location, String notes, Boolean isVirtual) {
-        validateInterviewDateTime(interviewDate, application.getId());
+        // בדיקת התנגשות מול כל הראיונות של המפקד
+        validateInterviewDateTimeForCommander(interviewDate, application.getPosition().getPublisher().getId(), null);
         
         Interview interview = new Interview();
         interview.setApplication(application);
@@ -78,8 +79,26 @@ public class InterviewService {
         return "https://meet.jit.si/" + roomId;
     }
 
+    private void validateApplicantInterviewTime(java.time.LocalDateTime interviewDate, Long applicantId, Long excludeInterviewId) {
+        List<Interview> allInterviews = interviewRepository.findAll();
+        for (Interview existingInterview : allInterviews) {
+            if (excludeInterviewId != null && existingInterview.getId().equals(excludeInterviewId)) {
+                continue;
+            }
+            
+            if (existingInterview.getApplication().getApplicant().getId().equals(applicantId) && 
+                existingInterview.getStatus() == InterviewStatus.CONFIRMED &&
+                existingInterview.getInterviewDate().equals(interviewDate)) {
+                throw new IllegalArgumentException("יש לך כבר ראיון מאושר באותו זמן. אנא דחה את הראיון הקיים קודם.");
+            }
+        }
+    }
+
     public Interview confirmInterview(Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId).orElseThrow();
+        
+        validateApplicantInterviewTime(interview.getInterviewDate(), interview.getApplication().getApplicant().getId(), interviewId);
+        
         interview.setStatus(InterviewStatus.CONFIRMED);
         return interviewRepository.save(interview);
     }
@@ -147,6 +166,29 @@ public class InterviewService {
         }
     }
 
+    private void validateInterviewDateTimeForCommander(java.time.LocalDateTime interviewDate, Long commanderId, Long excludeInterviewId) {
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        
+        if (interviewDate.isBefore(now)) {
+            throw new IllegalArgumentException("לא ניתן לקבוע ראיון בזמן שחלף");
+        }
+        
+        List<Interview> allInterviews = interviewRepository.findAll();
+        for (Interview existingInterview : allInterviews) {
+            if (excludeInterviewId != null && existingInterview.getId().equals(excludeInterviewId)) {
+                continue; // דלג על הראיון הנוכחי
+            }
+            
+            // בדוק אם זה ראיון של אותו מפקד
+            if (existingInterview.getApplication().getPosition().getPublisher().getId().equals(commanderId) && 
+                existingInterview.getStatus() != InterviewStatus.CANCELED && 
+                existingInterview.getStatus() != InterviewStatus.REJECTED &&
+                existingInterview.getInterviewDate().equals(interviewDate)) {
+                throw new IllegalArgumentException("יש כבר ראיון שנקבע לזמן זה. אנא בחר זמן אחר.");
+            }
+        }
+    }
+
     public Interview updateInterview(Long interviewId, java.time.LocalDateTime newDate, String location, String notes, Boolean isVirtual) {
         Interview interview = getInterviewById(interviewId);
         if (interview == null) {
@@ -157,7 +199,7 @@ public class InterviewService {
         
         // בדיקת התנגשות ראיונות אם התאריך השתנה
         if (dateChanged) {
-            validateInterviewDateTimeForPosition(newDate, interview.getApplication().getPosition().getId(), interviewId);
+            validateInterviewDateTimeForCommander(newDate, interview.getApplication().getPosition().getPublisher().getId(), interviewId);
         }
         
         interview.setInterviewDate(newDate);
