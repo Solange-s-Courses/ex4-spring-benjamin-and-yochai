@@ -20,7 +20,6 @@ import java.util.List;
 import com.example.ex4.models.Position;
 import com.example.ex4.repositories.PositionRepository;
 import com.example.ex4.models.AppUser;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 @Controller
 @RequestMapping("/positions")
@@ -44,7 +43,7 @@ public class PositionController {
 
     @GetMapping("/{id}")
     public String getPosition(@PathVariable Long id, Model model, Principal principal) {
-        String result = positionService.getPosition(id, model);
+        String result = positionService.getPositionPage(id, model);
 
         Application userApplication = applicationService.getUserApplicationForPosition(id, principal.getName());
         if (userApplication != null) {
@@ -66,10 +65,17 @@ public class PositionController {
         return result;
     }
 
-    /*@PutMapping("/{id")
-    public String editPosition(@PathVariable Long id, Model model, Principal principal) {
+    @GetMapping("/edit/{id}")
+    public String editPositionPage(@PathVariable Long id, Model model, Principal principal) {
+        return positionService.getEditPosition(id, model, principal);
+    }
 
-    }*/
+    @PutMapping("/{id}")
+    public String editPosition(@PathVariable Long id, @Valid @ModelAttribute("positionForm") PositionForm positionForm,
+                               BindingResult result, Model model,
+                               RedirectAttributes redirectAttributes, Principal principal) {
+        return positionService.processEditPositionForm(id ,positionForm, model, result, principal.getName(), redirectAttributes);
+    }
 
     @GetMapping("/add")
     public String showAddPositionForm(Model model) {

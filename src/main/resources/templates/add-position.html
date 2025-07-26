@@ -24,7 +24,7 @@
                         <div class="card-body">
                             <form th:action="${editMode} ? @{'/positions/' + ${positionId}} : @{/positions/add}" th:object="${positionForm}" method="post" id="addPositionForm">
                                 <!-- Job Title Selection -->
-                                <!--input th:if="${editMode}" type="hidden" name="_method" value="put"/-->
+                                <input th:if="${editMode}" type="hidden" name="_method" value="put"/>
 
                                 <div class="mb-4">
                                     <div class="d-flex align-items-center gap-2 mb-1">

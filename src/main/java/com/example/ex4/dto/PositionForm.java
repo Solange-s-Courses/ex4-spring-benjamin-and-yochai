@@ -1,6 +1,7 @@
 package com.example.ex4.dto;
 
 import com.example.ex4.models.LocationRegion;
+import com.example.ex4.models.Position;
 import com.example.ex4.validation.OtherJobTitleValidator;
 import jakarta.validation.constraints.*;
 import com.example.ex4.validation.RequirementsValidator;
@@ -32,6 +33,14 @@ public class PositionForm {
 
     // No-args constructor
     public PositionForm() {}
+
+    public PositionForm(Position position){
+        this.jobTitle = position.getJobTitle();
+        this.location = position.getLocation();
+        this.assignmentType = position.getAssignmentType();
+        this.description = position.getDescription();
+        this.requirements = List.of(position.getRequirements().split(", "));
+    }
 
     public String getJobTitle() {
         return jobTitle;

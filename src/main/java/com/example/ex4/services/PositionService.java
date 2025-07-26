@@ -3,12 +3,9 @@ package com.example.ex4.services;
 import com.example.ex4.dto.PositionForm;
 import com.example.ex4.models.AppUser;
 import com.example.ex4.models.PositionStatus;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import com.example.ex4.models.LocationRegion;
 import com.example.ex4.models.Position;
@@ -18,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -110,7 +106,7 @@ public class PositionService {
         return "positions-page";
     }
 
-    public String getPosition(Long id, Model model) {
+    public String getPositionPage(Long id, Model model) {
         Position position = positionRepository.findById(id).orElseThrow(() -> new RuntimeException("Position not found"));
         model.addAttribute("position", position);
         return "position";
@@ -138,24 +134,8 @@ public class PositionService {
             return "add-position";
         }
 
-        Position position = new Position();
-        // Handle jobTitle/otherJobTitle logic
-        if (StringUtils.hasText(form.getOtherJobTitle())) {
-            position.setJobTitle(form.getOtherJobTitle());
-        } else {
-            position.setJobTitle(form.getJobTitle());
-        }
-        position.setLocation(form.getLocation());
-        position.setAssignmentType(form.getAssignmentType());
-        position.setDescription(form.getDescription());
-
-        String processedRequirements = processRequirements(form.getRequirements());
-        position.setRequirements(processedRequirements);
-
         AppUser publisher = appUserService.getUserByUsername(username);
-        position.setPublisher(publisher);
-
-        position.setStatus(PositionStatus.ACTIVE);
+        Position position = new Position(form, publisher);
 
         try{
             save(position);
@@ -368,6 +348,46 @@ public class PositionService {
         } catch (Exception e) {
             response.put("message", "אירעה שגיאה בעדכון סטטוס המשרה.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    public String getEditPosition(Long id, Model model, Principal principal) {
+        Position position = findById(id);
+        if (position == null || !position.getPublisher().getUsername().equals(principal.getName())) {
+            return "error";
+        }
+
+        PositionForm form = new PositionForm(position);
+
+        List<String> jobTitles = getAllDistinctJobTitles();
+
+        model.addAttribute("positionForm", form);
+        model.addAttribute("positionId", id);
+        model.addAttribute("jobTitles", jobTitles);
+        model.addAttribute("editMode", true);
+
+        return "add-position";
+    }
+
+    public String processEditPositionForm(Long id, @Valid PositionForm positionForm,
+                                          Model model, BindingResult result, String username,
+                                          RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "add-position";
+        }
+
+        AppUser publisher = appUserService.getUserByUsername(username);
+        Position position = new Position(positionForm, publisher);
+
+        position.setId(id);
+
+        try{
+            save(position);
+            redirectAttributes.addFlashAttribute("successMessage", "המשרה עודכנה בהצלחה!");
+            return "redirect:/positions/" + id;
+        } catch (Exception e){
+            redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך השמירה, אנא נסו שנית במועד מאוחר יותר.");
+            return "add-position";
         }
     }
 }

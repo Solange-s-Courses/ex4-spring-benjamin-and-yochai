@@ -1,6 +1,10 @@
 package com.example.ex4.models;
 
+import com.example.ex4.dto.PositionForm;
 import jakarta.persistence.*;
+import org.springframework.util.StringUtils;
+
+import java.util.stream.Collectors;
 
 @Entity
 public class Position {
@@ -26,6 +30,29 @@ public class Position {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private AppUser publisher;
+
+    public Position() {}
+
+    public Position(PositionForm positionForm, AppUser publisher) {
+        if (StringUtils.hasText(positionForm.getOtherJobTitle())) {
+            this.jobTitle = positionForm.getOtherJobTitle();
+        } else {
+            this.jobTitle = positionForm.getJobTitle();
+        }
+
+        this.location = positionForm.getLocation();
+        this.assignmentType = positionForm.getAssignmentType();
+        this.description = positionForm.getDescription();
+
+        this.requirements = positionForm.getRequirements().stream()
+                .filter(req -> req != null && !req.trim().isEmpty())
+                .collect(Collectors.joining(", "));
+
+        this.publisher = publisher;
+
+        this.status = PositionStatus.ACTIVE;
+
+    }
 
     public Long getId() {
         return id;
