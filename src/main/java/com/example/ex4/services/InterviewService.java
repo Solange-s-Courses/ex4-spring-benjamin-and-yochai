@@ -130,6 +130,7 @@ public class InterviewService {
     public Interview cancelInterview(Long id) {
         Interview interview = interviewRepository.findById(id).orElseThrow();
         interview.setStatus(InterviewStatus.CANCELED);
+        interview.setInterviewSummary("מועמדות בוטלה");
         return interviewRepository.save(interview);
     }
 

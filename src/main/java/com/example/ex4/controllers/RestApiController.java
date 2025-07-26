@@ -127,7 +127,7 @@ public class RestApiController {
         }
     }
 
-    @PostMapping("/{id}/cancel")
+    @PostMapping("/application/{id}/cancel")
     public ResponseEntity<Map<String, Object>> cancelApplication(@PathVariable Long id,
                                 Principal principal) {
         return applicationService.cancelApplication(id, principal.getName());
