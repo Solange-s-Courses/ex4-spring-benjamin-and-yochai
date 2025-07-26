@@ -7,6 +7,7 @@ import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.PositionService;
 import com.example.ex4.services.ApplicationService;
 import com.example.ex4.services.InterviewService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,8 +43,8 @@ public class PositionController {
     }
 
     @GetMapping("/{id}")
-    public String getPosition(@PathVariable Long id, Model model, Principal principal) {
-        String result = positionService.getPositionPage(id, model);
+    public String getPosition(@PathVariable Long id, Model model, Principal principal, HttpServletRequest request) {
+        String result = positionService.getPositionPage(id, model, request);
 
         Application userApplication = applicationService.getUserApplicationForPosition(id, principal.getName());
         if (userApplication != null) {

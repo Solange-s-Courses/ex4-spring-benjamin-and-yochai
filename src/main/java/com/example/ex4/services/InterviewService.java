@@ -71,8 +71,8 @@ public class InterviewService {
 
     private String generateJitsiLink(Interview interview) {
         String roomId = "interview-" + interview.getApplication().getPosition().getId() + 
-                       "-" + interview.getApplication().getApplicant().getId() + 
-                       "-" + interview.getId();
+                       "-" + interview.getApplication().getApplicant().getUsername() +
+                       "-" + interview.getApplication().getPosition().getPublisher().getUsername();
         
         roomId = roomId.replaceAll("[^a-zA-Z0-9-]", "");
         

@@ -3,6 +3,7 @@ package com.example.ex4.services;
 import com.example.ex4.dto.PositionForm;
 import com.example.ex4.models.AppUser;
 import com.example.ex4.models.PositionStatus;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URI;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -106,8 +108,9 @@ public class PositionService {
         return "positions-page";
     }
 
-    public String getPositionPage(Long id, Model model) {
+    public String getPositionPage(Long id, Model model, HttpServletRequest request) {
         Position position = positionRepository.findById(id).orElseThrow(() -> new RuntimeException("Position not found"));
+
         model.addAttribute("position", position);
         return "position";
     }
