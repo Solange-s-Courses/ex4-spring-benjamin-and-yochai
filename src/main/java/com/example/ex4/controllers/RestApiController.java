@@ -113,7 +113,7 @@ public class RestApiController {
         return positionService.reloadPositions(searchTerm, session);
     }
 
-    @PostMapping("/{id}/apply")
+    @GetMapping("/application/{id}/apply")
     public ResponseEntity<Map<String, Object>> applyForPosition(@PathVariable Long id,
                                    Principal principal) {
         //return positionService.applyForPosition(id, principal);
@@ -129,7 +129,7 @@ public class RestApiController {
         }
     }
 
-    @PostMapping("/application/{id}/cancel")
+    @GetMapping("/application/{id}/cancel")
     public ResponseEntity<Map<String, Object>> cancelApplication(@PathVariable Long id,
                                 Principal principal) {
         return applicationService.cancelApplication(id, principal.getName());

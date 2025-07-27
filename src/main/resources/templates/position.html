@@ -101,73 +101,90 @@
                     </div>
                 </div>
 
+                <!------------------------------------------------------------------------------------------------------------>
+                <div th:if="${position.publisher.username != #authentication.name}" class="text-center">
 
-                <!-- Apply/Cancel Button -->
-                <div class="text-center">
-                    <div th:if="${hasApplied}" class="alert alert-info rounded-3">
+                    <!-- ✅ Case 1: Application APPROVED / REJECTED -->
+                    <div id="applicationFinalStatus"
+                         class="alert rounded-3"
+                         th:classappend="${userApplication == null or (userApplication.status.name() != 'APPROVED' and userApplication.status.name() != 'REJECTED') ? 'd-none' :
+                         (userApplication.status.name() == 'APPROVED' ? 'alert-success' : 'alert-danger')}">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <span th:text="${userApplication != null and userApplication.status.name() == 'APPROVED' ? 'המועמדות שלך אושרה!' : 'המועמדות שלך נדחתה.'}"></span>
+                        <div class="small text-muted mt-1">
+                            תאריך הגשה:
+                            <span class="date" th:if="${userApplication!=null}"
+                                  th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
+                        </div>
+                    </div>
+
+                    <!-- ✅ Case 2: Application PENDING -->
+                    <div id="applicationPendingStatus"
+                         class="alert alert-info rounded-3"
+                         th:classappend="${userApplication == null or userApplication.status.name() != 'PENDING' ? 'd-none' : ''}">
+                        <i class="bi bi-hourglass-split me-2"></i>
+                        המועמדות שלך ממתינה לאישור.
+                        <div class="small text-muted mt-1">
+                            תאריך הגשה:
+                            <span class="date" th:if="${userApplication!=null}"
+                                  th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
+                        </div>
+                        <button th:data-position-id="${position.id}" th:data-action="cancel"
+                                class="btn btn-outline-danger btn-sm rounded-3 mt-2"
+                                id="cancel-application-btn">
+                            <i class="bi bi-x-circle me-1"></i>
+                            בטל מועמדות
+                        </button>
+                    </div>
+
+                    <!-- ✅ Case 3: No Application -->
+                    <div id="noApplicationStatus"
+                         th:classappend="${userApplication != null ? 'd-none' : ''}">
+                        <button th:data-position-id="${position.id}" th:data-action="apply"
+                                class="btn btn-success btn-lg px-5 rounded-3"
+                                id="apply-position-btn">
+                            <i class="bi bi-send-fill me-2"></i>
+                            הגש מועמדות
+                        </button>
+                    </div>
+
+                </div>
+
+
+                <!------------------------------------------------------------------------------------------------------------ >
+                <! -- Apply/Cancel Button -- >
+                <div th:unless="${position.publisher.username == #authentication.name }" class="text-center">
+
+
+                    <div id="hasAppliedDiv" th:class="alert alert-info rounded-3 ${hasApplied? '': 'd-none'}">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <i class="bi bi-info-circle me-2"></i>
                                 כבר הגשת מועמדות למשרה זו
                                 <div class="small text-muted mt-1" th:if="${userApplication != null}">
-                                    תאריך הגשה: <span th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                    תאריך הגשה: <span class="date" th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
                                 </div>
                             </div>
-                            <!-- OLD FORM - COMMENTED OUT -->
-                            <!-- <form th:if="${userApplication.status.name() != 'CANCELED'}"
-                                  th:action="@{'/restapi/application/' + ${position.id} + '/cancel'}" method="post">
-                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
-                                    <i class="bi bi-x-circle me-1"></i>
-                                    בטל מועמדות
-                                </button>
-                            </form> -->
-                            
-                            <!-- NEW BUTTON WITH EVENT LISTENER -->
-                            <button th:if="${userApplication.status.name() != 'CANCELED'}"
-                                    th:data-position-id="${position.id}"
+                            <button th:data-position-id="${position.id}"
                                     class="btn btn-outline-danger btn-sm rounded-3 cancel-application-btn">
                                 <i class="bi bi-x-circle me-1"></i>
                                 בטל מועמדות
                             </button>
                         </div>
                     </div>
-                    
-                    <!-- אם המשתמש ביטל את המועמדות -->
-<!--                    <div th:if="${userApplication != null and userApplication.status.name() == 'CANCELED'}" class="alert alert-secondary rounded-3">-->
-<!--                        <div class="d-flex justify-content-between align-items-center">-->
-<!--                            <div>-->
-<!--                                <i class="bi bi-x-circle me-2"></i>-->
-<!--                                ביטלת את המועמדות למשרה זו-->
-<!--                                <div class="small text-muted mt-1">-->
-<!--                                    תאריך הגשה: <span th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div> -->
-                    
-                    <!-- OLD FORM - COMMENTED OUT -->
-                    <!-- <form th:unless="${hasApplied or position.publisher.username == #authentication.name }" 
-                          th:action="@{'/restapi/' + ${position.id} + '/apply'}" 
-                          method="post" 
-                          class="apply-form">
-                        <button type="submit" class="btn btn-success btn-lg px-5 rounded-3">
-                            <i class="bi bi-send-fill me-2"></i>
-                            הגש מועמדות
-                        </button>
-                    </form> -->
-                    
-                    <!-- NEW BUTTON WITH EVENT LISTENER -->
-                    <button th:unless="${hasApplied or position.publisher.username == #authentication.name }" 
-                            th:data-position-id="${position.id}"
-                            class="btn btn-success btn-lg px-5 rounded-3 apply-position-btn">
+
+                    <!- - NEW BUTTON WITH EVENT LISTENER - ->
+                    <button th:data-position-id="${position.id}"
+                            th:class="btn btn-success btn-lg px-5 rounded-3 apply-position-btn ${hasApplied? 'd-none': ''}"">
                         <i class="bi bi-send-fill me-2"></i>
                         הגש מועמדות
                     </button>
                 </div>
+                <------------------------------------------------------------------------------------------------------------>
             </div>
         </div>
 
-        <div th:if="${#authorization.expression('hasRole(''ADMIN'')') or position.publisher.username == #authentication.name}">
+        <div class="mt-3" th:if="${position.publisher.username == #authentication.name}">
             <h2>ניהול משרה</h2>
             <div class="d-flex align-items-center gap-2 flex-wrap">
 
@@ -298,7 +315,7 @@
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
-<script th:src="@{/js/position.js}"></script>
+<script type="module" th:src="@{/js/position.js}"></script>
 
 </body>
 </html>

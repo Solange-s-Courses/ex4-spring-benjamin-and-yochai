@@ -48,21 +48,23 @@ public class PositionController {
         String result = positionService.getPositionPage(id, model, request);
 
         Application userApplication = applicationService.getUserApplicationForPosition(id, principal.getName());
-        if (userApplication != null) {
+
+        if (userApplication != null && userApplication.getStatus() != ApplicationStatus.CANCELED) {
             model.addAttribute("userApplication", userApplication);
-            boolean hasApplied = userApplication.getStatus() != ApplicationStatus.CANCELED;
-            model.addAttribute("hasApplied", hasApplied);
-        } else {
-            model.addAttribute("hasApplied", false);
         }
-        Position position = (Position) model.getAttribute("position");
-        AppUser currentUser = appUserService.getUserByUsername(principal.getName());
-        boolean isAdmin = currentUser.getRole().name().equals("ADMIN");
-        boolean isOwner = position.getPublisher().getUsername().equals(principal.getName());
-        if (isAdmin || isOwner) {
-            List<Application> applications = applicationService.getApplicationsByPositionId(id);
-            model.addAttribute("applications", applications);
-        }
+
+        List<Application> applications = applicationService.getApplicationsByPositionId(id);
+        model.addAttribute("applications", applications);
+
+        //model.addAttribute("hasApplied", true);
+//        Position position = (Position) model.getAttribute("position");
+//        AppUser currentUser = appUserService.getUserByUsername(principal.getName());
+//        boolean isAdmin = currentUser.getRole().name().equals("ADMIN");
+//        boolean isOwner = position.getPublisher().getUsername().equals(principal.getName());
+//        if (isAdmin || isOwner) {
+//            List<Application> applications = applicationService.getApplicationsByPositionId(id);
+//            model.addAttribute("applications", applications);
+//        }
 
         return result;
     }
