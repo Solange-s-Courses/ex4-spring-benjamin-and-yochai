@@ -4,6 +4,7 @@ import com.example.ex4.dto.PositionForm;
 import com.example.ex4.models.*;
 import com.example.ex4.repositories.ApplicationRepository;
 import com.example.ex4.repositories.InterviewRepository;
+import com.example.ex4.models.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import com.example.ex4.dto.PositionDto;
 import jakarta.servlet.http.HttpSession;
+import com.example.ex4.repositories.ApplicationRepository;
 
 @Service
 public class PositionService {
@@ -174,6 +176,24 @@ public class PositionService {
     public List<Position> getPositionsByPublisher(String username) {
         AppUser user = appUserService.getUserByUsername(username);
         return positionRepository.findByPublisher(user);
+    }
+
+    public List<Map<String, Object>> getPositionsWithActiveApplicationCounts(String username) {
+        AppUser user = appUserService.getUserByUsername(username);
+        List<Position> positions = positionRepository.findByPublisher(user);
+
+        return positions.stream().map(position -> {
+            Map<String, Object> positionData = new HashMap<>();
+            positionData.put("position", position);
+
+            // Count active applications (PENDING status) for this position using repository directly
+            long activeApplications = applicationRepository.findByPosition(position).stream()
+                .filter(app -> app.getStatus() == ApplicationStatus.PENDING)
+                .count();
+
+            positionData.put("activeApplications", activeApplications);
+            return positionData;
+        }).collect(Collectors.toList());
     }
 
     private List<String> handleRecentSearches(String searchTerm, HttpSession session) {
@@ -389,7 +409,7 @@ public class PositionService {
             applicationRepository.saveAll(applications);
 
 
-            
+
             response.put("message", "סטטוס המשרה עודכן בהצלחה! כל המועמדויות בוטלו.");
             return ResponseEntity.ok(response);
         } catch (Exception e) {

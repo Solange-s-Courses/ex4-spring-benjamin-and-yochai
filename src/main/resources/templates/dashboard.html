@@ -54,32 +54,34 @@
                     <tr th:if="${#lists.isEmpty(myPositions)}">
                         <td colspan="6">לא נמצאו משרות שפרסמת</td>
                     </tr>
-                    <tr th:each="position : ${myPositions}">
+                    <tr th:each="positionData : ${myPositions}">
                         <td>
-                            <a th:href="@{'/positions/' + ${position.id}}"
-                               th:text="${position.jobTitle}"
+                            <a th:href="@{'/positions/' + ${positionData.position.id}}"
+                               th:text="${positionData.position.jobTitle}"
                                class="text-decoration-none">
                             </a>
                         </td>
-                        <td th:text="${position.location}"></td>
-                        <td th:text="${position.assignmentType}"></td>
+                        <td th:text="${positionData.position.location}"></td>
+                        <td th:text="${positionData.position.assignmentType}"></td>
                         <td>
                             <span class="badge"
-                                  th:classappend="${position.status.name() == 'ACTIVE' ? 'bg-success' :
-                                  (position.status.name() == 'CANCELED' ? 'bg-danger' :
-                                  (position.status.name() == 'FULFILLED' ? 'bg-primary' :
-                                  (position.status.name() == 'FROZEN' ? 'bg-secondary' : 'bg-light')))}"
-                                  th:text="${position.status.name() == 'ACTIVE' ? 'פעילה' :
-                                  (position.status.name() == 'CANCELED' ? 'מבוטלת' :
-                                  (position.status.name() == 'FULFILLED' ? 'אוישה' :
-                                  (position.status.name() == 'FROZEN' ? 'מוקפאת' : position.status.name())))}">
+                                  th:classappend="${positionData.position.status.name() == 'ACTIVE' ? 'bg-success' :
+                                  (positionData.position.status.name() == 'CANCELED' ? 'bg-danger' :
+                                  (positionData.position.status.name() == 'FULFILLED' ? 'bg-primary' :
+                                  (positionData.position.status.name() == 'FROZEN' ? 'bg-secondary' : 'bg-light')))}"
+                                  th:text="${positionData.position.status.name() == 'ACTIVE' ? 'פעילה' :
+                                  (positionData.position.status.name() == 'CANCELED' ? 'מבוטלת' :
+                                  (positionData.position.status.name() == 'FULFILLED' ? 'אוישה' :
+                                  (positionData.position.status.name() == 'FROZEN' ? 'מוקפאת' : positionData.position.status.name())))}">
                             </span>
                         </td>
-                        <td>--</td>
+                        <td>
+                            <span class="badge bg-info" th:text="${positionData.activeApplications}">0</span>
+                        </td>
                         <td>
                             <div class="d-flex flex-column gap-2 align-items-center">
                                 <div class="btn-group" role="group">
-                                    <a th:href="@{'/positions/' + ${position.id}}" class="btn btn-outline-primary btn-sm rounded-3" title="צפה">
+                                    <a th:href="@{'/positions/' + ${positionData.position.id}}" class="btn btn-outline-primary btn-sm rounded-3" title="צפה">
                                         <i class="bi bi-eye"></i>
                                         נהל משרה
                                     </a>
