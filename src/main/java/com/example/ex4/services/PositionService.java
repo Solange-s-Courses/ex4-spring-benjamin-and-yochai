@@ -1,15 +1,12 @@
 package com.example.ex4.services;
 
 import com.example.ex4.dto.PositionForm;
-import com.example.ex4.models.AppUser;
-import com.example.ex4.models.PositionStatus;
+import com.example.ex4.models.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import com.example.ex4.models.LocationRegion;
-import com.example.ex4.models.Position;
 import com.example.ex4.repositories.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import com.example.ex4.dto.PositionDto;
 import jakarta.servlet.http.HttpSession;
+import com.example.ex4.repositories.ApplicationRepository;
 
 @Service
 public class PositionService {
@@ -31,8 +29,8 @@ public class PositionService {
     private PositionRepository positionRepository;
     @Autowired
     private AppUserService appUserService;
-    //@Autowired
-    //private ApplicationService applicationService;
+    @Autowired
+    private ApplicationRepository applicationRepository;
 
     public boolean existsByJobTitle(String jobTitle) {
         return positionRepository.existsByJobTitle(jobTitle);
@@ -171,6 +169,24 @@ public class PositionService {
     public List<Position> getPositionsByPublisher(String username) {
         AppUser user = appUserService.getUserByUsername(username);
         return positionRepository.findByPublisher(user);
+    }
+
+    public List<Map<String, Object>> getPositionsWithActiveApplicationCounts(String username) {
+        AppUser user = appUserService.getUserByUsername(username);
+        List<Position> positions = positionRepository.findByPublisher(user);
+        
+        return positions.stream().map(position -> {
+            Map<String, Object> positionData = new HashMap<>();
+            positionData.put("position", position);
+            
+            // Count active applications (PENDING status) for this position using repository directly
+            long activeApplications = applicationRepository.findByPosition(position).stream()
+                .filter(app -> app.getStatus() == ApplicationStatus.PENDING)
+                .count();
+            
+            positionData.put("activeApplications", activeApplications);
+            return positionData;
+        }).collect(Collectors.toList());
     }
 
     private List<String> handleRecentSearches(String searchTerm, HttpSession session) {

@@ -3,6 +3,7 @@ package com.example.ex4.controllers;
 import com.example.ex4.models.*;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.ApplicationService;
+import com.example.ex4.services.InterviewService;
 import com.example.ex4.services.PositionService;
 import com.example.ex4.repositories.PositionRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,7 @@ public class HomeController {
     private PositionRepository positionRepository;
 
     @Autowired
-    private com.example.ex4.services.InterviewService interviewService;
+    private InterviewService interviewService;
 
     @GetMapping("/")
     public String home() {
@@ -59,9 +60,9 @@ public class HomeController {
             return "redirect:/login";
         }
         List<Application> submittedApplications = applicationService.getUserApplications(principal.getName());
-        List<com.example.ex4.models.Interview> relevantInterviews;
+        List<Interview> relevantInterviews;
         if (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("COMMANDER")) {
-            List<com.example.ex4.models.Interview> all = interviewService.getAllInterviews();
+            List<Interview> all = interviewService.getAllInterviews();
             relevantInterviews = all.stream()
                 .filter(i -> i.getApplication().getApplicant().getUsername().equals(user.getUsername())
                     || i.getApplication().getPosition().getPublisher().getUsername().equals(user.getUsername()))
@@ -74,14 +75,14 @@ public class HomeController {
                 .filter(app -> app.getStatus() == ApplicationStatus.PENDING)
                 .count();
         long upcomingInterviewCount = relevantInterviews.stream()
-                .filter(i -> i.getStatus() == com.example.ex4.models.InterviewStatus.SCHEDULED || i.getStatus() == com.example.ex4.models.InterviewStatus.CONFIRMED)
+                .filter(i -> i.getStatus() == InterviewStatus.SCHEDULED || i.getStatus() == InterviewStatus.CONFIRMED)
                 .count();
         model.addAttribute("applications", submittedApplications);
         model.addAttribute("relevantInterviews", relevantInterviews);
         model.addAttribute("totalApplications", totalApplications);
         model.addAttribute("pendingApplications", pendingApplications);
         model.addAttribute("upcomingInterviewCount", upcomingInterviewCount);
-        model.addAttribute("myPositions", positionService.getPositionsByPublisher(principal.getName()));
+        model.addAttribute("myPositions", positionService.getPositionsWithActiveApplicationCounts(principal.getName()));
         return "dashboard";
     }
 
