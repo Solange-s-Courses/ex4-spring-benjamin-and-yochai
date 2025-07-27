@@ -1,10 +1,21 @@
 package com.example.ex4.dto;
 
+import jakarta.validation.constraints.*;
+
 public class InterviewForm {
+    @NotNull()
     private Long applicationId;
-    private String interviewDate; // ISO string, to be parsed to LocalDateTime
+
+    @NotBlank(message = "תאריך ראיון הוא שדה חובה")
+    private String interviewDate;
+
+    @NotBlank(message = "מיקום ראיון הוא שדה חובה")
     private String location;
+
+    @Size(max = 1000, message = "הערות לא יכולות לעלות על 1000 תווים")
     private String notes;
+
+    @NotNull(message = "חובה לציין אם הראיון וירטואלי")
     private Boolean isVirtual;
 
     public InterviewForm() {}
