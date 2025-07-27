@@ -153,9 +153,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Apply position button
         const applyBtn = document.querySelector('.apply-position-btn');
         if (applyBtn) {
-            applyBtn.addEventListener('click', () => {
+            applyBtn.addEventListener('click', async () => {
                 const positionId = applyBtn.dataset.positionId;
-                handleFormSubmission(`/restapi/${positionId}/apply`, {
+                await handleFormSubmission(`/restapi/${positionId}/apply`, {
                     fallbackErrorMessage: 'שגיאה בלתי צפויה.',
                     reloadDelay: 4000,
                     button: applyBtn
@@ -166,9 +166,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Cancel application button
         const cancelBtn = document.querySelector('.cancel-application-btn');
         if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => {
+            cancelBtn.addEventListener('click', async () => {
                 const positionId = cancelBtn.dataset.positionId;
-                handleFormSubmission(`/restapi/application/${positionId}/cancel`, {
+                await handleFormSubmission(`/restapi/application/${positionId}/cancel`, {
                     fallbackErrorMessage: 'אירעה שגיאה בביטול המועמדות.',
                     reloadDelay: 1500,
                     button: cancelBtn
@@ -179,12 +179,12 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update status button
         const updateStatusBtn = document.querySelector('.update-status-btn');
         if (updateStatusBtn) {
-            updateStatusBtn.addEventListener('click', () => {
+            updateStatusBtn.addEventListener('click', async () => {
                 const positionId = updateStatusBtn.dataset.positionId;
                 const statusSelect = document.querySelector('.status-select');
                 if (!statusSelect) return;
                 
-                handleFormSubmission(`/restapi/positions/${positionId}/status`, {
+                await handleFormSubmission(`/restapi/positions/${positionId}/status`, {
                     fallbackErrorMessage: 'אירעה שגיאה בעדכון סטטוס המשרה.',
                     body: { status: statusSelect.value },
                     reloadDelay: 1500,
