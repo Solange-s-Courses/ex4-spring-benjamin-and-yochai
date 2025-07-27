@@ -397,14 +397,21 @@ public class PositionService {
 
             List<Application>applications = applicationRepository.getApplicationsByPosition(position);
             for (Application application : applications) {
-                application.setStatus(ApplicationStatus.CANCELED);
+                if (application.getStatus() == ApplicationStatus.PENDING) {
+                    application.setStatus(ApplicationStatus.CANCELED);
 
-                List<Interview>interviews = interviewRepository.findByApplication(application);
-                for (Interview interview : interviews) {
-                    interview.setStatus(InterviewStatus.CANCELED);
-                    interview.setRejectionReason("המשרה לא רלוונטית");
+                    List<Interview>interviews = interviewRepository.findByApplication(application);
+                    for (Interview interview : interviews) {
+                        if (interview.getStatus() == InterviewStatus.SCHEDULED ||
+                            interview.getStatus() == InterviewStatus.CONFIRMED)
+                        {
+                            interview.setStatus(InterviewStatus.CANCELED);
+                            interview.setRejectionReason("המשרה לא רלוונטית");
+                        }
+                    }
+                    interviewRepository.saveAll(interviews);
                 }
-                interviewRepository.saveAll(interviews);
+
             }
             applicationRepository.saveAll(applications);
 
