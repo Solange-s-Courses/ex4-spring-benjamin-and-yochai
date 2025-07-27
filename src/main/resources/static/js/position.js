@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelApplicationBtn = document.getElementById("cancel-application-btn");
     const applyPositionBtn = document.getElementById("apply-position-btn");
     //commander
+    const changeStatusForm = document.getElementById("changeStatusForm")
 
     const sendReq = async(btn, divToHide, divToShow)=>{
         try{
@@ -60,6 +61,37 @@ document.addEventListener("DOMContentLoaded", () => {
         
         return headers;
     };
+
+    if (changeStatusForm){
+        const selector = changeStatusForm.querySelector("select");
+
+        changeStatusForm.addEventListener("submit", async (e)=>{
+            e.preventDefault();
+            const originalStatus = selector.dataset.status;
+            const choosenStatus = selector.value;
+            const positionId = selector.dataset.positionId;
+
+            if (originalStatus === choosenStatus) return;
+
+            try{
+                const response = await fetch(`/restapi/positions/${positionId}/status`,{
+                    method: "PUT",
+                    headers: getCSRFHeaders(),
+                    body: JSON.stringify({ status: choosenStatus })
+                })
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                showToast(data.message);
+                selector.dataset.status = choosenStatus;
+            }catch(e){
+                showToast(e.message || "שגיאה בעדכון סטטוס המשרה", "danger")
+            }
+        })
+    }
 
     // const handleFormSubmission = async (url, options = {}) => {
     //     const {
@@ -225,23 +257,23 @@ document.addEventListener("DOMContentLoaded", () => {
     //         });
     //     }
 
-        // Update status button  -------------------------------------------------------------------------------------------------
-        // const updateStatusBtn = document.querySelector('.update-status-btn');
-        // if (updateStatusBtn) {
-        //     updateStatusBtn.addEventListener('click', async () => {
-        //         const positionId = updateStatusBtn.dataset.positionId;
-        //         const statusSelect = document.querySelector('.status-select');
-        //         if (!statusSelect) return;
-        //
-        //         await handleFormSubmission(`/restapi/positions/${positionId}/status`, {
-        //             fallbackErrorMessage: 'אירעה שגיאה בעדכון סטטוס המשרה.',
-        //             body: { status: statusSelect.value },
-        //             reloadDelay: 1500,
-        //             button: updateStatusBtn
-        //         });
-        //     });
-        // }
-//    };
+    //Update status button  -------------------------------------------------------------------------------------------------
+    // const updateStatusBtn = document.querySelector('.update-status-btn');
+    // if (updateStatusBtn) {
+    //     updateStatusBtn.addEventListener('click', async () => {
+    //         const positionId = updateStatusBtn.dataset.positionId;
+    //         const statusSelect = document.querySelector('.status-select');
+    //         if (!statusSelect) return;
+    //
+    //         await handleFormSubmission(`/restapi/positions/${positionId}/status`, {
+    //             fallbackErrorMessage: 'אירעה שגיאה בעדכון סטטוס המשרה.',
+    //             body: { status: statusSelect.value },
+    //             reloadDelay: 1500,
+    //             button: updateStatusBtn
+    //         });
+    //     });
+    // }
+
 
     initShareButton();
     //initButtonHandlers();

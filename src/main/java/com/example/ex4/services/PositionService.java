@@ -1,15 +1,14 @@
 package com.example.ex4.services;
 
 import com.example.ex4.dto.PositionForm;
-import com.example.ex4.models.AppUser;
-import com.example.ex4.models.PositionStatus;
+import com.example.ex4.models.*;
+import com.example.ex4.repositories.ApplicationRepository;
+import com.example.ex4.repositories.InterviewRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import com.example.ex4.models.LocationRegion;
-import com.example.ex4.models.Position;
 import com.example.ex4.repositories.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,6 +30,10 @@ public class PositionService {
     private PositionRepository positionRepository;
     @Autowired
     private AppUserService appUserService;
+    @Autowired
+    private ApplicationRepository applicationRepository;
+    @Autowired
+    private InterviewRepository interviewRepository;
     //@Autowired
     //private ApplicationService applicationService;
 
@@ -371,8 +374,23 @@ public class PositionService {
             
             position.setStatus(Enum.valueOf(PositionStatus.class, status));
             save(position);
+
+            List<Application>applications = applicationRepository.getApplicationsByPosition(position);
+            for (Application application : applications) {
+                application.setStatus(ApplicationStatus.CANCELED);
+
+                List<Interview>interviews = interviewRepository.findByApplication(application);
+                for (Interview interview : interviews) {
+                    interview.setStatus(InterviewStatus.CANCELED);
+                    interview.setRejectionReason("המשרה לא רלוונטית");
+                }
+                interviewRepository.saveAll(interviews);
+            }
+            applicationRepository.saveAll(applications);
+
+
             
-            response.put("message", "סטטוס המשרה עודכן בהצלחה!");
+            response.put("message", "סטטוס המשרה עודכן בהצלחה! כל המועמדויות בוטלו.");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("message", "אירעה שגיאה בעדכון סטטוס המשרה.");

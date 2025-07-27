@@ -22,4 +22,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     List<Application> findByStatus(com.example.ex4.models.ApplicationStatus status);
 
     Optional<Application> findByApplicantAndPositionAndStatus(AppUser user, Position position, ApplicationStatus applicationStatus);
-} 
+
+    List<Application> getApplicationsByPosition(Position position);
+}

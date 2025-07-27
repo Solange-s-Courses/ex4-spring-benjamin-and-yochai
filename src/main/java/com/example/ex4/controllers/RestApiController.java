@@ -116,17 +116,17 @@ public class RestApiController {
     @GetMapping("/application/{id}/apply")
     public ResponseEntity<Map<String, Object>> applyForPosition(@PathVariable Long id,
                                    Principal principal) {
-        //return positionService.applyForPosition(id, principal);
-        Map<String, Object> response = new HashMap<>();
-
-        try {
-            applicationService.submitApplication(id, principal.getName());
-            response.put("message", "המועמדות הוגשה בהצלחה!");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("message", "אירעה שגיאה בהגשת המועמדות.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        return applicationService.submitApplication(id, principal.getName());
+//        Map<String, Object> response = new HashMap<>();
+//
+//        try {
+//            applicationService.submitApplication(id, principal.getName());
+//            response.put("message", "המועמדות הוגשה בהצלחה!");
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            response.put("message", "אירעה שגיאה בהגשת המועמדות.");
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//        }
     }
 
     @GetMapping("/application/{id}/cancel")
@@ -135,7 +135,7 @@ public class RestApiController {
         return applicationService.cancelApplication(id, principal.getName());
     }
 
-    @PostMapping("/positions/{id}/status")
+    @PutMapping("/positions/{id}/status")
     public ResponseEntity<Map<String, Object>> changePositionStatus(@PathVariable Long id,
                                                                    @RequestBody Map<String, String> body,
                                                                    Principal principal) {

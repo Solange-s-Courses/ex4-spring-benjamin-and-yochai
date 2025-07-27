@@ -208,8 +208,9 @@
                 </form> -->
                 
                 <!-- NEW STATUS UPDATE WITH EVENT LISTENER -->
-                <div class="d-flex align-items-center gap-2 mb-0">
-                    <select th:data-position-id="${position.id}" class="form-select form-select-sm status-select" style="width:auto;">
+                <form class="d-flex align-items-center gap-2 mb-0" id="changeStatusForm">
+                    <select th:data-position-id="${position.id}" th:data-status="${position.status.name()}"
+                            class="form-select form-select-sm status-select" style="width:auto;">
                         <option th:selected="${position.status.name() == 'ACTIVE'}" value="ACTIVE">פעילה</option>
                         <option th:selected="${position.status.name() == 'CANCELED'}" value="CANCELED">מבוטלת</option>
                         <option th:selected="${position.status.name() == 'FULFILLED'}" value="FULFILLED">אוישה</option>
@@ -217,10 +218,10 @@
                     </select>
                     <button th:data-position-id="${position.id}" 
                             class="btn btn-primary btn-sm update-status-btn" 
-                            title="עדכן סטטוס">
+                            title="עדכן סטטוס" type="submit">
                         עדכן סטטוס
                     </button>
-                </div>
+                </form>
             </div>
 
             <div th:if="${applications != null}">

@@ -36,16 +36,22 @@ public class ApplicationService {
     @Autowired
     private InterviewService interviewService;
     
-    public boolean submitApplication(Long positionId, String username) {
+    public ResponseEntity<Map<String, Object>> submitApplication(Long positionId, String username) {
+        Map<String, Object> response = new HashMap<>();
         try {
             AppUser applicant = appUserService.getUserByUsername(username);
             Position position = positionService.findById(positionId);
             
             if (applicant == null || position == null) {
-                return false;
+                response.put("message", "אירעה שגיאה בהגשת המועמדות.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            if (applicant == position.getPublisher()){
+                response.put("message", "לא ניתן להגיש מועמדות למשרה שלך.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
             }
             
-            Optional<Application> existingApplication = 
+            Optional<Application> existingApplication =
                 applicationRepository.findByApplicantAndPosition(applicant, position);
             
             if (existingApplication.isPresent()) {
@@ -55,38 +61,43 @@ public class ApplicationService {
                     existing.setStatus(ApplicationStatus.PENDING);
                     existing.setApplicationDate(LocalDateTime.now());
                     applicationRepository.save(existing);
-                    return true;
+                    response.put("message", "המועמדות הוגשה בהצלחה");
+                    return ResponseEntity.ok(response);
                 }
-                return false;
+                response.put("message", "קיימת מועמדות למשרה זו.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
             
             Application application = new Application(applicant, position);
             applicationRepository.save(application);
-            
-            return true;
+
+            response.put("message", "המועמדות הוגשה בהצלחה");
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            return false;
+            response.put("message", "המועמדות הוגשה בהצלחה");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
-    public boolean isResubmission(Long positionId, String username) {
-        try {
-            AppUser applicant = appUserService.getUserByUsername(username);
-            Position position = positionService.findById(positionId);
-            
-            if (applicant == null || position == null) {
-                return false;
-            }
-            
-            Optional<Application> existingApplication = 
-                applicationRepository.findByApplicantAndPosition(applicant, position);
-            
-            return existingApplication.isPresent() && 
-                   existingApplication.get().getStatus() == ApplicationStatus.CANCELED;
-        } catch (Exception e) {
-            return false;
-        }
-    }
+//    public boolean isResubmission(Long positionId, String username) {
+//        try {
+//            AppUser applicant = appUserService.getUserByUsername(username);
+//            Position position = positionService.findById(positionId);
+//
+//            if (applicant == null || position == null) {
+//                return false;
+//            }
+//
+//            Optional<Application> existingApplication =
+//                applicationRepository.findByApplicantAndPosition(applicant, position);
+//
+//            return existingApplication.isPresent() &&
+//                   existingApplication.get().getStatus() == ApplicationStatus.CANCELED;
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
 
     public List<Application> getUserApplications(String username) {
         try {
@@ -161,7 +172,7 @@ public class ApplicationService {
             if (application.isPresent()) {
                 Application app = application.get();
                 // רק מועמדויות במצב PENDING יכולות להיות מבוטלות
-                if (app.getStatus() != ApplicationStatus.CANCELED) {
+                if (app.getStatus() == ApplicationStatus.PENDING) {
                     // ביטול המועמדות
                     app.setStatus(ApplicationStatus.CANCELED);
                     applicationRepository.save(app);
@@ -186,6 +197,7 @@ public class ApplicationService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+
 
     public Application getUserApplicationForPosition(Long positionId, String username) {
         try {
