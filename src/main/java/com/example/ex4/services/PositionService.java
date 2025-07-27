@@ -50,23 +50,28 @@ public class PositionService {
         return positionRepository.findDistinctJobTitles();
     }
 
-    public String processRequirements(List<String> requirements) {
-        if (requirements == null || requirements.isEmpty()) {
-            return "";
+//    public String processRequirements(List<String> requirements) {
+//        if (requirements == null || requirements.isEmpty()) {
+//            return "";
+//        }
+//
+//        return requirements.stream()
+//                .filter(req -> req != null && !req.trim().isEmpty())
+//                .collect(Collectors.joining(", "));
+//    }
+
+    private List<Position> searchPositionsByStatus(String searchTerm, PositionStatus status) {
+        List<Position> jobs;
+        if (searchTerm == null || searchTerm.isBlank()){
+            jobs = positionRepository.findByStatusOrderByJobTitleAsc(status);
+        }else{
+            jobs = positionRepository.findByJobTitleContainingIgnoreCaseAndStatusOrderByJobTitleAsc(searchTerm, status);
         }
-
-        return requirements.stream()
-                .filter(req -> req != null && !req.trim().isEmpty())
-                .collect(Collectors.joining(", "));
-    }
-
-    private List<Position> getPositionsByStatus(PositionStatus status) {
-        List<Position> jobs = positionRepository.findByStatusOrderByJobTitleAsc(status);
         return jobs;
     }
 
-    private Map<String, Object> getActivePositionsWithStringFilters() {
-        List<Position> jobs = getPositionsByStatus(PositionStatus.ACTIVE);
+    private Map<String, Object> getActivePositionsWithStringFilters(String searchTerm) {
+        List<Position> jobs = searchPositionsByStatus(searchTerm, PositionStatus.ACTIVE);
 
         List<String> sortedLocationStrings = new ArrayList<>();
         List<String> sortedServiceTypes = new ArrayList<>();
@@ -98,12 +103,13 @@ public class PositionService {
         return result;
     }
 
-    public String getPositionsPage(Model model) {
-        Map<String, Object> result = getActivePositionsWithStringFilters();
+    public String getPositionsPage(Model model, HttpSession session) {
+        Map<String, Object> result = getActivePositionsWithStringFilters("");
 
         model.addAttribute("jobs", result.get("jobs"));
         model.addAttribute("locations", result.get("locations"));
         model.addAttribute("serviceTypes", result.get("serviceTypes"));
+        model.addAttribute("recentSearches", handleRecentSearches(null, session));
 
         return "positions-page";
     }
@@ -150,9 +156,11 @@ public class PositionService {
         }
     }
 
-    public ResponseEntity<Map<String, Object>> reloadPositions() {
+    public ResponseEntity<Map<String, Object>> reloadPositions(String searchTerm, HttpSession session) {
          try {
-            Map<String, Object> response = getActivePositionsWithStringFilters();
+            Map<String, Object> response = getActivePositionsWithStringFilters(searchTerm);
+
+            response.put("recentSearches", handleRecentSearches(searchTerm, session));
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -165,111 +173,129 @@ public class PositionService {
         return positionRepository.findByPublisher(user);
     }
 
-    public List<PositionDto> searchPositions(String title, String location, String assignmentType, HttpSession session) {
-        // שמירת חיפוש אחרון רק אם יש מילת חיפוש טקסטואלית
-        if (title != null && !title.isBlank()) {
-            List<String> recentSearches = (List<String>) session.getAttribute("recent_searches");
-            if (recentSearches == null) recentSearches = new LinkedList<>();
-            recentSearches.remove(title);
-            recentSearches.add(0, title);
-            if (recentSearches.size() > 5) recentSearches = recentSearches.subList(0, 5);
+    private List<String> handleRecentSearches(String searchTerm, HttpSession session) {
+        List<String> recentSearches = (List<String>) session.getAttribute("recent_searches");
+        if (recentSearches == null) {
+            recentSearches = new LinkedList<>();
+        }
+        if (searchTerm != null && !searchTerm.isBlank()){
+            recentSearches.remove(searchTerm.trim());
+            recentSearches.add(0, searchTerm.trim());
+            if (recentSearches.size() > 5) {
+                recentSearches = recentSearches.subList(0, 5);
+            }
             session.setAttribute("recent_searches", recentSearches);
         }
-        
-        // החזרת התוצאות עם הפילטרים
-        return searchPositions(title, location, assignmentType);
+
+        return recentSearches;
     }
 
-    public List<String> getRecentSearches(HttpSession session) {
-        List<String> recentSearches = (List<String>) session.getAttribute("recent_searches");
-        return recentSearches != null ? recentSearches : new LinkedList<>();
-    }
+//    public List<PositionDto> searchPositions(String title, String location, String assignmentType, HttpSession session) {
+//        // שמירת חיפוש אחרון רק אם יש מילת חיפוש טקסטואלית
+//        if (title != null && !title.isBlank()) {
+//            List<String> recentSearches = (List<String>) session.getAttribute("recent_searches");
+//            if (recentSearches == null) recentSearches = new LinkedList<>();
+//            recentSearches.remove(title);
+//            recentSearches.add(0, title);
+//            if (recentSearches.size() > 5) recentSearches = recentSearches.subList(0, 5);
+//            session.setAttribute("recent_searches", recentSearches);
+//        }
+//
+//        // החזרת התוצאות עם הפילטרים
+//        return new LinkedList<>();
+//        //return searchPositions(title, location, assignmentType);
+//    }
 
-    public List<PositionDto> searchPositions(String title, String location, String assignmentType) {
-        // כל הפילטרים נשלחו
-        if (location != null && !location.isEmpty() && assignmentType != null && !assignmentType.isEmpty()) {
-            return positionRepository.findByJobTitleContainingIgnoreCaseAndLocationAndAssignmentTypeAndStatus(
-                    title, LocationRegion.valueOf(location), assignmentType, PositionStatus.ACTIVE)
-                .stream()
-                .map(pos -> new PositionDto(
-                    pos.getId(),
-                    pos.getJobTitle(),
-                    pos.getLocation() != null ? pos.getLocation().name() : "",
-                    pos.getAssignmentType(),
-                    pos.getDescription(),
-                    pos.getRequirements(),
-                    pos.getPublisher() != null ?
-                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
-                ))
-                .collect(Collectors.toList());
-        }
-        // רק location
-        else if (location != null && !location.isEmpty()) {
-            return positionRepository.findByJobTitleContainingIgnoreCaseAndLocationAndStatus(
-                    title, LocationRegion.valueOf(location), PositionStatus.ACTIVE)
-                .stream()
-                .map(pos -> new PositionDto(
-                    pos.getId(),
-                    pos.getJobTitle(),
-                    pos.getLocation() != null ? pos.getLocation().name() : "",
-                    pos.getAssignmentType(),
-                    pos.getDescription(),
-                    pos.getRequirements(),
-                    pos.getPublisher() != null ?
-                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
-                ))
-                .collect(Collectors.toList());
-        }
-        // רק assignmentType
-        else if (assignmentType != null && !assignmentType.isEmpty()) {
-            return positionRepository.findByJobTitleContainingIgnoreCaseAndAssignmentTypeAndStatus(
-                    title, assignmentType, PositionStatus.ACTIVE)
-                .stream()
-                .map(pos -> new PositionDto(
-                    pos.getId(),
-                    pos.getJobTitle(),
-                    pos.getLocation() != null ? pos.getLocation().name() : "",
-                    pos.getAssignmentType(),
-                    pos.getDescription(),
-                    pos.getRequirements(),
-                    pos.getPublisher() != null ?
-                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
-                ))
-                .collect(Collectors.toList());
-        }
-        // רק חיפוש טקסטואלי
-        else {
-            return positionRepository.findByJobTitleContainingIgnoreCaseAndStatus(title, PositionStatus.ACTIVE)
-                .stream()
-                .map(pos -> new PositionDto(
-                    pos.getId(),
-                    pos.getJobTitle(),
-                    pos.getLocation() != null ? pos.getLocation().name() : "",
-                    pos.getAssignmentType(),
-                    pos.getDescription(),
-                    pos.getRequirements(),
-                    pos.getPublisher() != null ?
-                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
-                ))
-                .collect(Collectors.toList());
-        }
-    }
+//    public List<String> getRecentSearches(HttpSession session) {
+//        List<String> recentSearches = (List<String>) session.getAttribute("recent_searches");
+//        return recentSearches != null ? recentSearches : new LinkedList<>();
+//    }
 
-    public List<PositionDto> getAllPositions() {
-        return positionRepository.findByStatus(PositionStatus.ACTIVE)
-            .stream()
-            .map(pos -> new PositionDto(
-                pos.getId(),
-                pos.getJobTitle(),
-                pos.getLocation() != null ? pos.getLocation().name() : "",
-                pos.getAssignmentType(),
-                pos.getDescription(),
-                pos.getRequirements(),
-                pos.getPublisher() != null ?
-                    (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
-            ))
-            .collect(Collectors.toList());
-    }
+//    public List<PositionDto> searchPositions(String title, String location, String assignmentType) {
+//        // כל הפילטרים נשלחו
+//        if (location != null && !location.isEmpty() && assignmentType != null && !assignmentType.isEmpty()) {
+//            return positionRepository.findByJobTitleContainingIgnoreCaseAndLocationAndAssignmentTypeAndStatus(
+//                    title, LocationRegion.valueOf(location), assignmentType, PositionStatus.ACTIVE)
+//                .stream()
+//                .map(pos -> new PositionDto(
+//                    pos.getId(),
+//                    pos.getJobTitle(),
+//                    pos.getLocation() != null ? pos.getLocation().name() : "",
+//                    pos.getAssignmentType(),
+//                    pos.getDescription(),
+//                    pos.getRequirements(),
+//                    pos.getPublisher() != null ?
+//                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
+//                ))
+//                .collect(Collectors.toList());
+//        }
+//        // רק location
+//        else if (location != null && !location.isEmpty()) {
+//            return positionRepository.findByJobTitleContainingIgnoreCaseAndLocationAndStatus(
+//                    title, LocationRegion.valueOf(location), PositionStatus.ACTIVE)
+//                .stream()
+//                .map(pos -> new PositionDto(
+//                    pos.getId(),
+//                    pos.getJobTitle(),
+//                    pos.getLocation() != null ? pos.getLocation().name() : "",
+//                    pos.getAssignmentType(),
+//                    pos.getDescription(),
+//                    pos.getRequirements(),
+//                    pos.getPublisher() != null ?
+//                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
+//                ))
+//                .collect(Collectors.toList());
+//        }
+//        // רק assignmentType
+//        else if (assignmentType != null && !assignmentType.isEmpty()) {
+//            return positionRepository.findByJobTitleContainingIgnoreCaseAndAssignmentTypeAndStatus(
+//                    title, assignmentType, PositionStatus.ACTIVE)
+//                .stream()
+//                .map(pos -> new PositionDto(
+//                    pos.getId(),
+//                    pos.getJobTitle(),
+//                    pos.getLocation() != null ? pos.getLocation().name() : "",
+//                    pos.getAssignmentType(),
+//                    pos.getDescription(),
+//                    pos.getRequirements(),
+//                    pos.getPublisher() != null ?
+//                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
+//                ))
+//                .collect(Collectors.toList());
+//        }
+//        // רק חיפוש טקסטואלי
+//        else {
+//            return positionRepository.findByJobTitleContainingIgnoreCaseAndStatus(title, PositionStatus.ACTIVE)
+//                .stream()
+//                .map(pos -> new PositionDto(
+//                    pos.getId(),
+//                    pos.getJobTitle(),
+//                    pos.getLocation() != null ? pos.getLocation().name() : "",
+//                    pos.getAssignmentType(),
+//                    pos.getDescription(),
+//                    pos.getRequirements(),
+//                    pos.getPublisher() != null ?
+//                        (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
+//                ))
+//                .collect(Collectors.toList());
+//        }
+//    }
+
+//    public List<PositionDto> getAllPositions() {
+//        return positionRepository.findByStatus(PositionStatus.ACTIVE)
+//            .stream()
+//            .map(pos -> new PositionDto(
+//                pos.getId(),
+//                pos.getJobTitle(),
+//                pos.getLocation() != null ? pos.getLocation().name() : "",
+//                pos.getAssignmentType(),
+//                pos.getDescription(),
+//                pos.getRequirements(),
+//                pos.getPublisher() != null ?
+//                    (pos.getPublisher().getFirstName() + " " + pos.getPublisher().getLastName()) : ""
+//            ))
+//            .collect(Collectors.toList());
+//    }
 
     /*@Transactional
     public ResponseEntity<Map<String, Object>> applyForPosition(Long id, Principal principal) {

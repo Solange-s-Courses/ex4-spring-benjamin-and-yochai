@@ -83,32 +83,34 @@ public class RestApiController {
         return appUserService.changeUserRole(userId, Role.valueOf(newRole));
     }
 
-    @GetMapping("/positions")
-    @ResponseBody
-    public ResponseEntity<List<PositionDto>> searchPositions(
-            @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "location", required = false) String location,
-            @RequestParam(value = "serviceType", required = false) String assignmentType,
-            HttpSession session) {
-        
-        List<PositionDto> positions = positionService.searchPositions(
-            search != null ? search : "",
-            location,
-            assignmentType,
-            session
-        );
-        return ResponseEntity.ok(positions);
-    }
-
-    @GetMapping("/positions/recent-searches")
-    @ResponseBody
-    public List<String> getRecentSearches(HttpSession session) {
-        return positionService.getRecentSearches(session);
-    }
+//    @GetMapping("/positions")
+//    @ResponseBody
+//    public ResponseEntity<List<PositionDto>> searchPositions(
+//            @RequestParam(value = "search", required = false) String search,
+//            @RequestParam(value = "location", required = false) String location,
+//            @RequestParam(value = "serviceType", required = false) String assignmentType,
+//            HttpSession session) {
+//
+//        List<PositionDto> positions = positionService.searchPositions(
+//            search != null ? search : "",
+//            location,
+//            assignmentType,
+//            session
+//        );
+//        return ResponseEntity.ok(positions);
+//    }
+//
+//    @GetMapping("/positions/recent-searches")
+//    @ResponseBody
+//    public List<String> getRecentSearches(HttpSession session) {
+//        return positionService.getRecentSearches(session);
+//    }
 
     @GetMapping("/positions/active")
-    public ResponseEntity<Map<String, Object>> getPositionsData() {
-        return positionService.reloadPositions();
+    public ResponseEntity<Map<String, Object>> getPositionsData(
+            @RequestParam(value = "search", required = false) String searchTerm,
+            HttpSession session) {
+        return positionService.reloadPositions(searchTerm, session);
     }
 
     @PostMapping("/{id}/apply")

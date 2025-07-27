@@ -46,11 +46,19 @@
 
         <div class="input-group mb-4">
             <input type="text" id="searchBox" class="form-control" placeholder="חפש משרה לפי שם...">
-            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <button class="input-group-text" id="searchButton" type="button">
+                <i class="bi bi-search"></i>
+            </button>
         </div>
         <div id="recentSearches" class="mb-3">
             <strong>חיפושים אחרונים:</strong>
-            <span id="recentSearchesList"></span>
+            <span id="recentSearchesList">
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary ms-2 mb-1 recentSearchBtn"
+                        th:each="recentSearch : ${recentSearches}"
+                        th:text="${recentSearch}">
+                </button>
+            </span>
         </div>
 
         <div id="noPositionsMsg" class="alert alert-warning text-center rounded-3 shadow-sm d-none">
@@ -72,6 +80,7 @@
                         </p>
                         <p class="card-text text-muted flex-grow-1"
                            th:text="${#strings.abbreviate(job.description, 100)}"></p>
+                        <p class="mb-1"><strong>מפורסם ע"י:</strong> <span th:text="${job.publisher.username}"></span></p>
                         <a th:href="@{'/positions/' + ${job.id}}" class="btn btn-outline-primary mt-3 rounded-3">לפרטי
                             המשרה</a>
                     </div>

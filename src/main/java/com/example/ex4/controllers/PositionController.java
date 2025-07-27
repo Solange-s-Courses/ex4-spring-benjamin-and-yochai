@@ -8,6 +8,7 @@ import com.example.ex4.services.PositionService;
 import com.example.ex4.services.ApplicationService;
 import com.example.ex4.services.InterviewService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,8 +39,8 @@ public class PositionController {
     private PositionRepository positionRepository;
 
     @GetMapping("")
-    public String positionsPage(Model model, Principal principal) {
-        return positionService.getPositionsPage(model);
+    public String positionsPage(Model model, HttpSession session) {
+        return positionService.getPositionsPage(model, session);
     }
 
     @GetMapping("/{id}")
