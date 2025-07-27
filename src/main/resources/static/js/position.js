@@ -12,20 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return headers;
     };
 
-    const setButtonLoading = (button, loadingText) => {
-        button.dataset.originalText = button.innerHTML;
-        button.innerHTML = `<i class="bi bi-hourglass-split me-2"></i>${loadingText}`;
-        button.disabled = true;
-    };
-
-    const resetButton = (button) => {
-        button.innerHTML = button.dataset.originalText;
-        button.disabled = false;
-    };
-
     const handleFormSubmission = async (url, options = {}) => {
         const {
-            loadingText = 'שולח...',
             fallbackErrorMessage = 'אירעה שגיאה',
             reloadDelay = 1500,
             body = null,
@@ -33,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } = options;
 
         if (button) {
-            setButtonLoading(button, loadingText);
+            button.disabled = true;
         }
 
         try {
@@ -60,13 +48,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 const errorMessage = data.message || fallbackErrorMessage;
                 showToast(errorMessage, true);
                 if (button) {
-                    resetButton(button);
+                    button.disabled = false;
                 }
             }
         } catch (error) {
             showToast(fallbackErrorMessage, true);
             if (button) {
-                resetButton(button);
+                button.disabled = false;
             }
         }
     };
@@ -102,6 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
+    // OLD FORM HANDLERS - COMMENTED OUT
+    /*
     const initFormHandlers = () => {
         // Status change forms
         const statusForms = document.querySelectorAll('form[action*="/positions/"][action*="/status"]');
@@ -156,7 +146,54 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     };
+    */
+
+    // NEW BUTTON HANDLERS
+    const initButtonHandlers = () => {
+        // Apply position button
+        const applyBtn = document.querySelector('.apply-position-btn');
+        if (applyBtn) {
+            applyBtn.addEventListener('click', () => {
+                const positionId = applyBtn.dataset.positionId;
+                handleFormSubmission(`/restapi/${positionId}/apply`, {
+                    fallbackErrorMessage: 'שגיאה בלתי צפויה.',
+                    reloadDelay: 4000,
+                    button: applyBtn
+                });
+            });
+        }
+
+        // Cancel application button
+        const cancelBtn = document.querySelector('.cancel-application-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                const positionId = cancelBtn.dataset.positionId;
+                handleFormSubmission(`/restapi/application/${positionId}/cancel`, {
+                    fallbackErrorMessage: 'אירעה שגיאה בביטול המועמדות.',
+                    reloadDelay: 1500,
+                    button: cancelBtn
+                });
+            });
+        }
+
+        // Update status button
+        const updateStatusBtn = document.querySelector('.update-status-btn');
+        if (updateStatusBtn) {
+            updateStatusBtn.addEventListener('click', () => {
+                const positionId = updateStatusBtn.dataset.positionId;
+                const statusSelect = document.querySelector('.status-select');
+                if (!statusSelect) return;
+                
+                handleFormSubmission(`/restapi/positions/${positionId}/status`, {
+                    fallbackErrorMessage: 'אירעה שגיאה בעדכון סטטוס המשרה.',
+                    body: { status: statusSelect.value },
+                    reloadDelay: 1500,
+                    button: updateStatusBtn
+                });
+            });
+        }
+    };
 
     initShareButton();
-    initFormHandlers();
+    initButtonHandlers();
 });

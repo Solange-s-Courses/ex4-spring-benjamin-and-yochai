@@ -113,13 +113,22 @@
                                     תאריך הגשה: <span th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
                                 </div>
                             </div>
-                            <form th:if="${userApplication.status.name() != 'CANCELED'}"
+                            <!-- OLD FORM - COMMENTED OUT -->
+                            <!-- <form th:if="${userApplication.status.name() != 'CANCELED'}"
                                   th:action="@{'/restapi/application/' + ${position.id} + '/cancel'}" method="post">
                                 <button type="submit" class="btn btn-outline-danger btn-sm rounded-3">
                                     <i class="bi bi-x-circle me-1"></i>
                                     בטל מועמדות
                                 </button>
-                            </form>
+                            </form> -->
+                            
+                            <!-- NEW BUTTON WITH EVENT LISTENER -->
+                            <button th:if="${userApplication.status.name() != 'CANCELED'}"
+                                    th:data-position-id="${position.id}"
+                                    class="btn btn-outline-danger btn-sm rounded-3 cancel-application-btn">
+                                <i class="bi bi-x-circle me-1"></i>
+                                בטל מועמדות
+                            </button>
                         </div>
                     </div>
                     
@@ -134,10 +143,10 @@
 <!--                                </div>-->
 <!--                            </div>-->
 <!--                        </div>-->
-<!--                    </div>-->
+<!--                    </div> -->
                     
-                    <!-- כפתור הגשת מועמדות -->
-                    <form th:unless="${hasApplied or position.publisher.username == #authentication.name }" 
+                    <!-- OLD FORM - COMMENTED OUT -->
+                    <!-- <form th:unless="${hasApplied or position.publisher.username == #authentication.name }" 
                           th:action="@{'/restapi/' + ${position.id} + '/apply'}" 
                           method="post" 
                           class="apply-form">
@@ -145,7 +154,15 @@
                             <i class="bi bi-send-fill me-2"></i>
                             הגש מועמדות
                         </button>
-                    </form>
+                    </form> -->
+                    
+                    <!-- NEW BUTTON WITH EVENT LISTENER -->
+                    <button th:unless="${hasApplied or position.publisher.username == #authentication.name }" 
+                            th:data-position-id="${position.id}"
+                            class="btn btn-success btn-lg px-5 rounded-3 apply-position-btn">
+                        <i class="bi bi-send-fill me-2"></i>
+                        הגש מועמדות
+                    </button>
                 </div>
             </div>
         </div>
@@ -159,7 +176,8 @@
                     עריכת משרה
                 </a>
 
-                <form th:action="@{/positions/{id}/status(id=${position.id})}" method="post" class="d-flex align-items-center gap-2 mb-0">
+                <!-- OLD FORM - COMMENTED OUT -->
+                <!-- <form th:action="@{/positions/{id}/status(id=${position.id})}" method="post" class="d-flex align-items-center gap-2 mb-0">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <select name="status" class="form-select form-select-sm" style="width:auto;">
                         <option th:selected="${position.status.name() == 'ACTIVE'}" value="ACTIVE">פעילה</option>
@@ -170,7 +188,22 @@
                     <button type="submit" class="btn btn-primary btn-sm" title="עדכן סטטוס">
                         עדכן סטטוס
                     </button>
-                </form>
+                </form> -->
+                
+                <!-- NEW STATUS UPDATE WITH EVENT LISTENER -->
+                <div class="d-flex align-items-center gap-2 mb-0">
+                    <select th:data-position-id="${position.id}" class="form-select form-select-sm status-select" style="width:auto;">
+                        <option th:selected="${position.status.name() == 'ACTIVE'}" value="ACTIVE">פעילה</option>
+                        <option th:selected="${position.status.name() == 'CANCELED'}" value="CANCELED">מבוטלת</option>
+                        <option th:selected="${position.status.name() == 'FULFILLED'}" value="FULFILLED">אוישה</option>
+                        <option th:selected="${position.status.name() == 'FROZEN'}" value="FROZEN">מוקפאת</option>
+                    </select>
+                    <button th:data-position-id="${position.id}" 
+                            class="btn btn-primary btn-sm update-status-btn" 
+                            title="עדכן סטטוס">
+                        עדכן סטטוס
+                    </button>
+                </div>
             </div>
 
             <div th:if="${applications != null}">
