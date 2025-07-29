@@ -259,4 +259,74 @@ public class InterviewService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+    
+    public ResponseEntity<Map<String, Object>> completeInterviewApi(Long interviewId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            completeInterview(interviewId);
+            response.put("message", "הראיון הושלם בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בהשלמת הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    public ResponseEntity<Map<String, Object>> updateInterviewSummaryApi(Long interviewId, String summary) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Interview interview = getInterviewById(interviewId);
+            if (interview == null) {
+                response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            interview.setInterviewSummary(summary);
+            saveInterview(interview);
+            
+            response.put("message", "סיכום הראיון עודכן בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בעדכון סיכום הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    public ResponseEntity<Map<String, Object>> changeInterviewDecisionApi(Long interviewId, String newStatus, String reason) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Interview interview = getInterviewById(interviewId);
+            if (interview == null) {
+                response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            switch (newStatus) {
+                case "CONFIRMED":
+                    confirmInterview(interviewId);
+                    break;
+                case "REJECTED":
+                    rejectInterview(interviewId, reason);
+                    break;
+                case "COMPLETED":
+                    completeInterview(interviewId);
+                    break;
+                default:
+                    response.put("message", "סטטוס לא תקין");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            
+            response.put("message", "סטטוס הראיון שונה בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בשינוי סטטוס הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 } 

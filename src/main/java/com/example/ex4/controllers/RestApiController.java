@@ -207,5 +207,20 @@ public class RestApiController {
         return interviewService.rejectInterviewApi(id, body.get("reason"));
     }
     
+    @PostMapping("/interviews/{id}/complete")
+    public ResponseEntity<Map<String, Object>> completeInterview(@PathVariable Long id) {
+        return interviewService.completeInterviewApi(id);
+    }
+    
+    @PostMapping("/interviews/{id}/summary")
+    public ResponseEntity<Map<String, Object>> updateInterviewSummary(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        return interviewService.updateInterviewSummaryApi(id, body.get("summary"));
+    }
+    
+    @PostMapping("/interviews/{id}/change-decision")
+    public ResponseEntity<Map<String, Object>> changeInterviewDecision(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        return interviewService.changeInterviewDecisionApi(id, body.get("status"), body.get("reason"));
+    }
+    
 }
 

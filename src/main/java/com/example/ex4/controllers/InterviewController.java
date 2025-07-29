@@ -76,7 +76,7 @@ public class InterviewController {
         return "redirect:/dashboard";
     }*/
 
-    @PostMapping("/{id}/complete")
+    /*@PostMapping("/{id}/complete")
     public String completeInterview(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         Long positionId = null;
         try {
@@ -128,7 +128,7 @@ public class InterviewController {
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בעדכון ההחלטה.");
         }
         return "redirect:/dashboard";
-    }
+    }*/
 
     /*@PostMapping("/{id}/edit")
     public String editInterview(@PathVariable Long id, 

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <head th:replace="~{fragments/header :: header}"></head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -159,7 +161,7 @@
               <div th:if="${interview.interviewSummary != null && !interview.interviewSummary.isEmpty()}">
                 <span th:text="${interview.interviewSummary}"></span>
               </div>
-              <form th:if="${interview.status.name() != 'CANCELED'}" th:action="@{'/interviews/' + ${interview.id} + '/summary'}" method="post" class="mt-2">
+              <form th:if="${interview.status.name() != 'CANCELED'}" class="mt-2 update-summary-form" th:attr="data-interview-id=${interview.id}">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <div class="input-group input-group-sm">
                   <textarea name="summary" class="form-control form-control-sm" rows="2" 
@@ -190,9 +192,7 @@
                   </button>
                 </form>
                 
-                <form th:action="@{'/interviews/' + ${interview.id} + '/complete'}" method="post" 
-                      th:if="${interview.status.name() == 'CONFIRMED'}" 
-                      class="d-inline">
+                <form th:if="${interview.status.name() == 'CONFIRMED'}" class="d-inline complete-interview-form" th:attr="data-interview-id=${interview.id}">
                   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                   <button type="submit" class="btn btn-outline-success btn-sm">
                     <i class="bi bi-check-circle"></i> הושלם
@@ -259,5 +259,6 @@
 <script th:src="@{/js/toasts.js}"></script>
 <script th:src="@{/js/interviewForm.js}"></script>
 <script th:src="@{/js/interviewsSort.js}"></script>
+<script th:src="@{/js/application-details.js}"></script>
 </body>
 </html>
