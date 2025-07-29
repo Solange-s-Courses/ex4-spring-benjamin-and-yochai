@@ -1,3 +1,5 @@
+import {showToast} from "./toastUtils";
+
 const adminDashboard = ()=>{
     const POLLING = 5000;
     const renderPdfWithPdfJs = async (url, container) => {
@@ -262,15 +264,15 @@ const adminDashboard = ()=>{
                 });
 
                 if (response.ok) {
-                    window.showToast("הסטטוס עודכן בהצלחה.");
+                    showToast("הסטטוס עודכן בהצלחה.");
                     return await response.json();
                 } else {
                     const text = await response.text();
-                    window.showToast("שגיאה בעדכון הסטטוס: " + text, true);
+                    showToast("שגיאה בעדכון הסטטוס: " + text, "danger");
                     return null;
                 }
             } catch (err) {
-                window.showToast("שגיאה בלתי צפויה.", true);
+                showToast("שגיאה בלתי צפויה.", "danger");
                 return null;
             }
 
@@ -295,15 +297,15 @@ const adminDashboard = ()=>{
                 });
 
                 if (response.ok) {
-                    window.showToast("התפקיד עודכן בהצלחה.");
+                    showToast("התפקיד עודכן בהצלחה.");
                     return await response.json();
                 } else {
                     const text = await response.text();
-                    window.showToast("שגיאה בעדכון התפקיד: " + text, true);
+                    showToast("שגיאה בעדכון התפקיד: " + text, "danger");
                     return null;
                 }
             } catch (err) {
-                window.showToast("שגיאה בלתי צפויה.", true);
+                showToast("שגיאה בלתי צפויה.", "danger");
                 return null;
             }
         }
