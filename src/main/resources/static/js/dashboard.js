@@ -169,9 +169,52 @@ const dashboardDom = function (){
             cols[8]*/
         }
 
-        function addInterviewRow(data, tbody){
+        // function addInterviewRow(data, tbody){
+        //
+        //     const newConfirmForms = newRow.querySelectorAll('.confirm-interview-form');
+        //     newConfirmForms.forEach(form => {
+        //         form.addEventListener('submit', async (event) => {
+        //             await setConfirmInterviewListener(form, event);
+        //         });
+        //     });
+        // }
 
+        async function confirmInterview(interviewId) {
+            try {
+                const response = await fetch(`/restapi/interviews/${interviewId}/confirm`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.showToast(data.message);
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    window.showToast(data.message, true);
+                }
+            } catch (error) {
+                window.showToast("אירעה שגיאה באישור הראיון", true);
+            }
         }
+
+        async function setConfirmInterviewListener(form, event) {
+            event.preventDefault();
+            const interviewId = form.dataset.interviewId;
+            await confirmInterview(interviewId);
+        }
+
+        const confirmForms = document.querySelectorAll('.confirm-interview-form');
+        confirmForms.forEach(form => {
+            form.addEventListener('submit', async (event) => {
+                await setConfirmInterviewListener(form, event);
+            });
+        });
+
 
         async function refreshData(){
             try{
