@@ -36,7 +36,7 @@ public class InterviewController {
         return "redirect:/dashboard";
     }*/
 
-    @PostMapping("/{id}/confirm")
+    /*@PostMapping("/{id}/confirm")
     public String confirmInterview(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             interviewService.confirmInterview(id);
@@ -47,7 +47,7 @@ public class InterviewController {
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה באישור הראיון.");
         }
         return "redirect:/dashboard";
-    }
+    }*/
 
     @PostMapping("/{id}/reject")
     public String rejectInterview(@PathVariable Long id, @RequestParam(required = false) String reason, RedirectAttributes redirectAttributes) {

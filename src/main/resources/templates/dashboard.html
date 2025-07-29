@@ -199,7 +199,10 @@
                         <td>
                             <span th:if="${interview.application.applicant.username == #authentication.name}">
                                 <div th:if="${interview.status.name() == 'SCHEDULED'}" class="d-flex gap-2">
-                                    <form th:action="@{'/interviews/' + ${interview.id} + '/confirm'}" method="post" class="mb-0">
+<!--                                    <form th:action="@{'/interviews/' + ${interview.id} + '/confirm'}" method="post" class="mb-0">-->
+<!--                                        <button type="submit" class="btn btn-success btn-sm">אשר</button>-->
+<!--                                    </form>-->
+                                    <form method="post" class="mb-0" th:attr="data-interview-id=${interview.id}">
                                         <button type="submit" class="btn btn-success btn-sm">אשר</button>
                                     </form>
                                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="'#rejectModal' + ${interview.id}">דחה</button>

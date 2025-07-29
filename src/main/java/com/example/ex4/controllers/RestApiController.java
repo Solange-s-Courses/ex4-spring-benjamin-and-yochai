@@ -196,6 +196,11 @@ public class RestApiController {
             return ResponseEntity.ok(response);
         }
     }
+
+    @PostMapping("/interviews/{id}/confirm")
+    public ResponseEntity<Map<String, Object>> confirmInterview(@PathVariable Long id) {
+        return interviewService.confirmInterviewApi(id);
+    }
     
 }
 

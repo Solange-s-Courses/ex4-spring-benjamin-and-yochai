@@ -5,6 +5,10 @@ import com.example.ex4.repositories.InterviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class InterviewService {
@@ -224,5 +228,21 @@ public class InterviewService {
 
     public java.util.List<Interview> getAllInterviews() {
         return interviewRepository.findAll();
+    }
+
+    public ResponseEntity<Map<String, Object>> confirmInterviewApi(Long interviewId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Interview confirmedInterview = confirmInterview(interviewId);
+            response.put("message", "הראיון אושר בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה באישור הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 } 
