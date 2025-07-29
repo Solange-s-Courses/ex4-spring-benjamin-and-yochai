@@ -1,8 +1,6 @@
 package com.example.ex4.controllers;
 
-import com.example.ex4.models.AppUser;
-import com.example.ex4.models.RegistrationStatus;
-import com.example.ex4.models.Role;
+import com.example.ex4.models.*;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.ApplicationService;
 import com.example.ex4.services.PositionService;
@@ -10,7 +8,6 @@ import com.example.ex4.services.PositionService;
 import com.example.ex4.dto.InterviewForm;
 import com.example.ex4.services.InterviewService;
 import com.example.ex4.repositories.ApplicationRepository;
-import com.example.ex4.models.Application;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,8 +26,6 @@ import java.util.Optional;
 import jakarta.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import com.example.ex4.models.Interview;
-import com.example.ex4.models.InterviewStatus;
 
 
 @Controller
@@ -201,6 +196,45 @@ public class RestApiController {
     public ResponseEntity<Map<String, Object>> confirmInterview(@PathVariable Long id) {
         return interviewService.confirmInterviewApi(id);
     }
-    
+
+
+    @GetMapping("/dashboard/poll")
+    public ResponseEntity<Map<String, Object>> refreshDashboard(Principal principal) {
+        AppUser user = appUserService.getUserByUsername(principal.getName());
+        Map<String, Object> response = new HashMap<>();
+
+        // Applications
+        List<Application> submittedApplications = applicationService.getUserApplications(user.getUsername());
+        response.put("myApplication", submittedApplications);
+
+        // Interviews
+        List<Interview> relevantInterviews;
+        if (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("COMMANDER")) {
+            List<Interview> all = interviewService.getAllInterviews();
+            relevantInterviews = all.stream()
+                    .filter(i -> i.getApplication().getApplicant().getUsername().equals(user.getUsername())
+                            || i.getApplication().getPosition().getPublisher().getUsername().equals(user.getUsername()))
+                    .toList();
+        } else {
+            relevantInterviews = interviewService.getInterviewsByUser(user);
+        }
+        response.put("interviews", relevantInterviews);
+
+        // Stats
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalApplicationsCount", submittedApplications.size());
+        stats.put("pendingApplicationsCount", submittedApplications.stream()
+                .filter(app -> app.getStatus() == ApplicationStatus.PENDING)
+                .count());
+        stats.put("upcomingInterviewCount", relevantInterviews.stream()
+                .filter(i -> i.getStatus() == InterviewStatus.SCHEDULED || i.getStatus() == InterviewStatus.CONFIRMED)
+                .count());
+        response.put("stats", stats);
+
+        // Positions (with active application counts)
+        List<Map<String, Object>> myPositions = positionService.getPositionsWithActiveApplicationCounts(user.getUsername());
+        response.put("myPositions", myPositions);
+
+        return ResponseEntity.ok(response);}
 }
 
