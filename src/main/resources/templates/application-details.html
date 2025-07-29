@@ -112,10 +112,14 @@
         <h5 class="mb-0">ראיונות שנקבעו</h5>
       </div>
       <div class="card-body">
-        <table class="table table-bordered text-center align-middle">
+        <table class="table table-bordered text-center align-middle" id="interviews-table">
           <thead class="table-light">
           <tr>
-            <th>תאריך</th>
+            <th>תאריך
+              <a href="#" class="sort-link ms-1" data-sort="date" data-table="interviews-table" data-col="0">
+                <i class="bi bi-arrow-down-up"></i>
+              </a>
+            </th>
             <th>שעה</th>
             <th>מיקום/לינק</th>
             <th>סטטוס</th>
@@ -254,5 +258,6 @@
 <div th:replace="~{fragments/toasts :: errorToast}"></div>
 <script th:src="@{/js/toasts.js}"></script>
 <script th:src="@{/js/interviewForm.js}"></script>
+<script th:src="@{/js/interviewsSort.js}"></script>
 </body>
 </html>

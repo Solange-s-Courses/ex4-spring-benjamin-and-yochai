@@ -18,7 +18,6 @@ public class Interview {
     @NotNull
     private LocalDateTime interviewDate;
 
-    @NotBlank
     private String location;
 
     @NotNull

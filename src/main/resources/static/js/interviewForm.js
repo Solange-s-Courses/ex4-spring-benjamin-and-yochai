@@ -179,10 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.body.addEventListener('submit', function (e) {
-        const form = e.target.closest('.cancel-interview-form');
-        if (form && !confirm('האם אתה בטוח שברצונך לבטל את הראיון?')) {
-            e.preventDefault();
-        }
-    });
+    // document.body.addEventListener('submit', function (e) {
+    //     const form = e.target.closest('.cancel-interview-form');
+    //     if (form && !confirm('האם אתה בטוח שברצונך לבטל את הראיון?')) {
+    //         e.preventDefault();
+    //     }
+    // });
 }); 
