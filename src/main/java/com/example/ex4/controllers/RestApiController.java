@@ -202,5 +202,10 @@ public class RestApiController {
         return interviewService.confirmInterviewApi(id);
     }
     
+    @PostMapping("/interviews/{id}/reject")
+    public ResponseEntity<Map<String, Object>> rejectInterview(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        return interviewService.rejectInterviewApi(id, body.get("reason"));
+    }
+    
 }
 

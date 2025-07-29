@@ -202,6 +202,30 @@ const dashboardDom = function (){
             }
         }
 
+        async function rejectInterview(interviewId) {
+            try {
+                const response = await fetch(`/restapi/interviews/${interviewId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({ reason: null })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.showToast(data.message);
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    window.showToast(data.message, true);
+                }
+            } catch (error) {
+                window.showToast("אירעה שגיאה בדחיית הראיון", true);
+            }
+        }
+
         async function setConfirmInterviewListener(form, event) {
             event.preventDefault();
             const interviewId = form.dataset.interviewId;
@@ -212,6 +236,15 @@ const dashboardDom = function (){
         confirmForms.forEach(form => {
             form.addEventListener('submit', async (event) => {
                 await setConfirmInterviewListener(form, event);
+            });
+        });
+
+        const rejectButtons = document.querySelectorAll('.reject-interview-btn');
+        rejectButtons.forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault();
+                const interviewId = button.dataset.interviewId;
+                await rejectInterview(interviewId);
             });
         });
 

@@ -1,6 +1,7 @@
 package com.example.ex4.services;
 
 import com.example.ex4.models.*;
+import com.example.ex4.repositories.ApplicationRepository;
 import com.example.ex4.repositories.InterviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class InterviewService {
     private InterviewRepository interviewRepository;
 
     @Autowired
-    private com.example.ex4.repositories.ApplicationRepository applicationRepository;
+    private ApplicationRepository applicationRepository;
 
     public Interview scheduleInterview(Application application, java.time.LocalDateTime interviewDate, String location, String notes, Boolean isVirtual) {
         // בדיקת התנגשות מול כל הראיונות של המפקד
@@ -98,20 +99,20 @@ public class InterviewService {
         }
     }
 
-    public Interview confirmInterview(Long interviewId) {
+    public void confirmInterview(Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId).orElseThrow();
         
         validateApplicantInterviewTime(interview.getInterviewDate(), interview.getApplication().getApplicant().getId(), interviewId);
         
         interview.setStatus(InterviewStatus.CONFIRMED);
-        return interviewRepository.save(interview);
+        interviewRepository.save(interview);
     }
 
-    public Interview rejectInterview(Long interviewId, String reason) {
+    public void rejectInterview(Long interviewId, String reason) {
         Interview interview = interviewRepository.findById(interviewId).orElseThrow();
         interview.setStatus(InterviewStatus.REJECTED);
         interview.setRejectionReason(reason);
-        return interviewRepository.save(interview);
+        interviewRepository.save(interview);
     }
 
     public List<Interview> getInterviewsByApplication(Application application) {
@@ -234,7 +235,7 @@ public class InterviewService {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            Interview confirmedInterview = confirmInterview(interviewId);
+            confirmInterview(interviewId);
             response.put("message", "הראיון אושר בהצלחה!");
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
@@ -242,6 +243,19 @@ public class InterviewService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
             response.put("message", "אירעה שגיאה באישור הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    public ResponseEntity<Map<String, Object>> rejectInterviewApi(Long interviewId, String reason) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            rejectInterview(interviewId, reason);
+            response.put("message", "הראיון נדחה בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בדחיית הראיון.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
