@@ -1,3 +1,4 @@
+import {showToast} from "./toastUtils";
 
 const dashboardDom = function (){
     function formatDate(isoString) {
@@ -321,13 +322,13 @@ const dashboardDom = function (){
                 const data = await response.json();
 
                 if (response.ok) {
-                    window.showToast(data.message);
+                    showToast(data.message);
                     setTimeout(() => window.location.reload(), 1500);
                 } else {
-                    window.showToast(data.message, true);
+                    showToast(data.message, "danger");
                 }
             } catch (error) {
-                window.showToast("אירעה שגיאה באישור הראיון", true);
+                showToast("אירעה שגיאה באישור הראיון", "danger");
             }
         }
 
@@ -351,13 +352,13 @@ const dashboardDom = function (){
                 const data = await response.json();
 
                 if (response.ok) {
-                    window.showToast(data.message);
+                    showToast(data.message);
                     setTimeout(() => window.location.reload(), 1500);
                 } else {
-                    window.showToast(data.message, true);
+                    showToast(data.message, "danger");
                 }
             } catch (error) {
-                window.showToast("אירעה שגיאה בדחיית הראיון", true);
+                showToast("אירעה שגיאה בדחיית הראיון", "danger");
             }
         }
 
