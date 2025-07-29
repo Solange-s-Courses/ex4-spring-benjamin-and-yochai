@@ -1,6 +1,7 @@
 package com.example.ex4.services;
 
 import com.example.ex4.models.*;
+import com.example.ex4.repositories.ApplicationRepository;
 import com.example.ex4.repositories.InterviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class InterviewService {
@@ -15,7 +20,7 @@ public class InterviewService {
     private InterviewRepository interviewRepository;
 
     @Autowired
-    private com.example.ex4.repositories.ApplicationRepository applicationRepository;
+    private ApplicationRepository applicationRepository;
 
     public Interview scheduleInterview(Application application, java.time.LocalDateTime interviewDate, String location, String notes, Boolean isVirtual) {
         // בדיקת התנגשות מול כל הראיונות של המפקד
@@ -97,20 +102,20 @@ public class InterviewService {
         }
     }
 
-    public Interview confirmInterview(Long interviewId) {
+    public void confirmInterview(Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId).orElseThrow();
         
         validateApplicantInterviewTime(interview.getInterviewDate(), interview.getApplication().getApplicant().getId(), interviewId);
         
         interview.setStatus(InterviewStatus.CONFIRMED);
-        return interviewRepository.save(interview);
+        interviewRepository.save(interview);
     }
 
-    public Interview rejectInterview(Long interviewId, String reason) {
+    public void rejectInterview(Long interviewId, String reason) {
         Interview interview = interviewRepository.findById(interviewId).orElseThrow();
         interview.setStatus(InterviewStatus.REJECTED);
         interview.setRejectionReason(reason);
-        return interviewRepository.save(interview);
+        interviewRepository.save(interview);
     }
 
     public List<Interview> getInterviewsByApplication(Application application) {
@@ -228,5 +233,104 @@ public class InterviewService {
 
     public java.util.List<Interview> getAllInterviews() {
         return interviewRepository.findAll();
+    }
+
+    public ResponseEntity<Map<String, Object>> confirmInterviewApi(Long interviewId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            confirmInterview(interviewId);
+            response.put("message", "הראיון אושר בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה באישור הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    public ResponseEntity<Map<String, Object>> rejectInterviewApi(Long interviewId, String reason) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            rejectInterview(interviewId, reason);
+            response.put("message", "הראיון נדחה בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בדחיית הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    public ResponseEntity<Map<String, Object>> completeInterviewApi(Long interviewId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            completeInterview(interviewId);
+            response.put("message", "הראיון הושלם בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בהשלמת הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    public ResponseEntity<Map<String, Object>> updateInterviewSummaryApi(Long interviewId, String summary) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Interview interview = getInterviewById(interviewId);
+            if (interview == null) {
+                response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            interview.setInterviewSummary(summary);
+            saveInterview(interview);
+            
+            response.put("message", "סיכום הראיון עודכן בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בעדכון סיכום הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    public ResponseEntity<Map<String, Object>> changeInterviewDecisionApi(Long interviewId, String newStatus, String reason) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Interview interview = getInterviewById(interviewId);
+            if (interview == null) {
+                response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            switch (newStatus) {
+                case "CONFIRMED":
+                    confirmInterview(interviewId);
+                    break;
+                case "REJECTED":
+                    rejectInterview(interviewId, reason);
+                    break;
+                case "COMPLETED":
+                    completeInterview(interviewId);
+                    break;
+                default:
+                    response.put("message", "סטטוס לא תקין");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            
+            response.put("message", "סטטוס הראיון שונה בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בשינוי סטטוס הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 } 

@@ -36,7 +36,7 @@ public class InterviewController {
         return "redirect:/dashboard";
     }*/
 
-    @PostMapping("/{id}/confirm")
+    /*@PostMapping("/{id}/confirm")
     public String confirmInterview(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             interviewService.confirmInterview(id);
@@ -47,9 +47,9 @@ public class InterviewController {
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה באישור הראיון.");
         }
         return "redirect:/dashboard";
-    }
+    }*/
 
-    @PostMapping("/{id}/reject")
+    /*@PostMapping("/{id}/reject")
     public String rejectInterview(@PathVariable Long id, @RequestParam(required = false) String reason, RedirectAttributes redirectAttributes) {
         try {
             interviewService.rejectInterview(id, reason);
@@ -58,7 +58,7 @@ public class InterviewController {
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בדחיית הראיון.");
         }
         return "redirect:/dashboard";
-    }
+    }*/
 
     /*@PostMapping("/{id}/cancel")
     public String cancelInterview(@PathVariable Long id, RedirectAttributes redirectAttributes) {
@@ -76,7 +76,7 @@ public class InterviewController {
         return "redirect:/dashboard";
     }*/
 
-    @PostMapping("/{id}/complete")
+    /*@PostMapping("/{id}/complete")
     public String completeInterview(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         Long positionId = null;
         try {
@@ -128,7 +128,7 @@ public class InterviewController {
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בעדכון ההחלטה.");
         }
         return "redirect:/dashboard";
-    }
+    }*/
 
     /*@PostMapping("/{id}/edit")
     public String editInterview(@PathVariable Long id, 
