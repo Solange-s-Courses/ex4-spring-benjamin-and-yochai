@@ -114,7 +114,7 @@ public class InterviewController {
             if (decision.equals("COMPLETED")) {
                 interviewService.completeInterview(id);
             } else if (decision.equals("CANCELED")) {
-                interviewService.cancelInterview(id); // treat as rejected/canceled
+                interviewService.cancelInterview(interview); // treat as rejected/canceled
             } else {
                 // Set to SCHEDULED (pending)
                 interview.setStatus(InterviewStatus.SCHEDULED);

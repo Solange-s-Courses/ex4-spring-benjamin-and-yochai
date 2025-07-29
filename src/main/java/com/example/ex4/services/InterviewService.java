@@ -2,8 +2,11 @@ package com.example.ex4.services;
 
 import com.example.ex4.models.*;
 import com.example.ex4.repositories.InterviewRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -127,12 +130,13 @@ public class InterviewService {
         return interviewRepository.findById(id).orElse(null);
     }
 
-    public Interview cancelInterview(Long id) {
-        Interview interview = interviewRepository.findById(id).orElseThrow();
+
+    public void cancelInterview(Interview interview) {
         interview.setStatus(InterviewStatus.CANCELED);
         interview.setInterviewSummary("מועמדות בוטלה");
-        return interviewRepository.save(interview);
+        interviewRepository.save(interview);
     }
+
 
     public Interview completeInterview(Long id) {
         Interview interview = interviewRepository.findById(id).orElseThrow();

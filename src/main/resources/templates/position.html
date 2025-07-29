@@ -124,9 +124,10 @@
                          th:classappend="${userApplication == null or userApplication.status.name() != 'PENDING' ? 'd-none' : ''}">
                         <i class="bi bi-hourglass-split me-2"></i>
                         המועמדות שלך ממתינה לאישור.
-                        <div class="small text-muted mt-1">
+                        <br>
+                        <div class="small text-muted mt-1" th:if="${userApplication!=null}">
                             תאריך הגשה:
-                            <span class="date" th:if="${userApplication!=null}"
+                            <span class="date"
                                   th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
                         </div>
                         <button th:data-position-id="${position.id}" th:data-action="cancel"

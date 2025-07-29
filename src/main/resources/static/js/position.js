@@ -17,11 +17,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 {
                     method: "GET"
                 });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+
+            let data;
+
+            try {
+                data = await response.json(); // תנסה לקרוא את התגובה כ-JSON בכל מקרה
+            } catch (jsonError) {
+                data = {};
             }
 
-            const data = await response.json();
+            if (!response.ok) {
+                const serverMessage = data.message || `שגיאה בשרת (status: ${response.status})`;
+                throw new Error(serverMessage);
+            }
+
             const msg = data.message;
 
             divToHide.classList.add("d-none");

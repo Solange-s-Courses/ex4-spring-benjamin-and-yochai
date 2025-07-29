@@ -1,5 +1,21 @@
 
 const dashboardDom = function (){
+    function formatDate(isoString) {
+        const date = new Date(isoString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    function formatTime(isoString){
+        const date = new Date(isoString);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        return `${hours}:${minutes}`;
+    }
+
     function getPositionStatusInfo(status) {
         const statusName = status?.name?.() || status; // Handle both enum and string
 
@@ -109,7 +125,8 @@ const dashboardDom = function (){
             });
 
             data.forEach(item => {
-                const itemId = item.id.toString();
+                const itemId = (item?.id ?? item.position.id).toString();
+
                 const existingRow = existingRowsMap.get(itemId);
 
                 if (existingRow) {
@@ -130,7 +147,38 @@ const dashboardDom = function (){
         }
 
         function addPositionRow(data, tbody){
+            const row = document.createElement("tr");
+            row.setAttribute("data-id", data.position.id);
 
+            const statusInfo = getPositionStatusInfo(data.position.status);
+
+            row.innerHTML = `
+                <td>
+                    <a href="/positions/${data.position.id}" class="text-decoration-none">
+                        ${data.position.jobTitle}
+                    </a>
+                </td>
+                <td>${data.position.location}</td>
+                <td>${data.position.assignmentType}</td>
+                <td>
+                    <span class="badge ${statusInfo.css}">
+                        ${statusInfo.label}
+                    </span>
+                </td>
+                <td>${data.activeApplications}</td>
+                <td>
+                    <div class="d-flex flex-column gap-2 align-items-center">
+                        <div class="btn-group" role="group">
+                            <a href="/positions/${data.position.id}" class="btn btn-outline-primary btn-sm rounded-3" title="צפה">
+                                <i class="bi bi-eye"></i>
+                                נהל משרה
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            `;
+
+            tbody.appendChild(row);
         }
 
         function compareApplicationRows(application, row){
@@ -138,13 +186,43 @@ const dashboardDom = function (){
             cols[0].querySelector("a").textContent = application.position.jobTitle;
             cols[1].textContent = application.position.location;
             cols[2].textContent = application.position.assignmentType;
-            const date = new Date(application.applicationDate);
-            cols[3].textContent = date.toLocaleDateString('en-GB');
+            cols[3].textContent = formatDate(application.applicationDate);
             cols[4].innerHTML = `<span class="badge ${getApplicationStatusInfo(application.status).cssClass}">${getApplicationStatusInfo(application.status).text}</span>`
         }
 
-        function addApplicationRow(data, tbody){
+        function addApplicationRow(application, tbody){
+            const row = document.createElement("tr");
+            row.setAttribute("data-id", application.id);
 
+            const statusInfo = getApplicationStatusInfo(application.status);
+
+            row.innerHTML = `
+                <td>
+                    <a href='/positions/${application.position.id}'
+                        class="text-decoration-none">
+                            ${application.position.jobTitle}
+                    </a>
+                </td>
+                <td>${application.position.location}</td>
+                <td>${application.position.assignmentType}</td>
+                <td>${formatDate(application.applicationDate)}</td>
+                <td>
+                    <span class="badge" class="${statusInfo.cssClass}">
+                        ${statusInfo.text}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a href="/positions/${application.position.id}"
+                            class="btn btn-outline-primary btn-sm rounded-3">
+                            <i class="bi bi-eye me-1"></i>
+                            צפה
+                        </a>
+                    </div>
+                </td>
+            `;
+
+            tbody.appendChild(row);
         }
 
         function compareInterviewRows(interview, row){
@@ -169,8 +247,55 @@ const dashboardDom = function (){
             cols[8]*/
         }
 
-        function addInterviewRow(data, tbody){
+        function addInterviewRow(interview, tbody){
+            const row = document.createElement("tr");
+            row.setAttribute("data-id", interview.id);
 
+            const formattedDate = formatDate(interview.interviewDate)
+            const formattedTime = formatTime(interview.interviewDate)
+            const statusInfo = getInterviewStatusInfo(interview.status);
+
+            let locationHtml = '';
+            if (interview.isVirtual) {
+                locationHtml = `
+                    <div class="text-center">
+                        <a href="${interview.jitsiLink}" target="_blank" class="btn btn-sm btn-primary">
+                            <i class="bi bi-camera-video"></i> הצטרף לפגישה
+                        </a>
+                    </div>
+                `;
+            } else {
+                locationHtml = `<span>${interview.location}</span>`;
+            }
+
+            const rejectionHtml = (interview.status === 'REJECTED' && interview.rejectionReason)
+                ? `<div class="mt-1"><small class="text-muted"><strong>סיבה:</strong> ${interview.rejectionReason}</small></div>`
+                : '';
+
+            row.innerHTML = `
+                <td>${interview.application.position.jobTitle}</td>
+                <td>${interview.application.applicant.firstName} ${interview.application.applicant.lastName}</td>
+                <td>${formattedDate}</td>
+                <td>${formattedTime}</td>
+                <td>${locationHtml}</td>
+                <td>
+                    <span class="badge ${statusInfo.cssClass}">${statusInfo.text}</span>
+                    ${rejectionHtml}
+                </td>
+                <td>
+                <span class="badge ${statusInfo.cssClass}">
+                    ${statusInfo.text}
+                </span>
+                </td>
+                <td>${interview.notes || ''}</td>
+                <td>
+                    <span class="badge ${interview.application.applicant.username === username ? 'bg-primary' : 'bg-success'}">
+                        ${interview.application.applicant.username === username ? 'מרואיין' : 'מראיין'}
+                    </span>
+                </td>
+            `;
+
+            tbody.appendChild(row);
         }
 
         async function refreshData(){

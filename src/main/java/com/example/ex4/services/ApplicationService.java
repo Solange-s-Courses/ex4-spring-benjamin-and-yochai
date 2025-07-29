@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ApplicationService {
@@ -155,6 +156,8 @@ public class ApplicationService {
         }
     }
 
+
+    @Transactional
     public ResponseEntity<Map<String, Object>> cancelApplication(Long positionId, String username) {
         Map<String, Object> response = new HashMap<>();
         
@@ -164,7 +167,7 @@ public class ApplicationService {
             
             if (user == null || position == null) {
                 response.put("message", "שגיאה בביטול המועמדות.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
             
             Optional<Application> application = applicationRepository.findByApplicantAndPosition(user, position);
@@ -181,7 +184,7 @@ public class ApplicationService {
                     List<Interview> interviews = interviewService.getInterviewsByApplication(app);
                     for (Interview interview : interviews) {
                         if (interview.getStatus() != InterviewStatus.CANCELED) {
-                            interviewService.cancelInterview(interview.getId());
+                            interviewService.cancelInterview(interview); //causing error-----------------------
                         }
                     }
                     
@@ -189,9 +192,8 @@ public class ApplicationService {
                     return ResponseEntity.ok(response);
                 }
             }
-            
             response.put("message", "שגיאה בביטול המועמדות.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
             response.put("message", "שגיאה בביטול המועמדות.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
