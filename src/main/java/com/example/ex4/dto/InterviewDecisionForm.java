@@ -1,4 +1,4 @@
-package com.example.ex4.dto;
+/*package com.example.ex4.dto;
 
 public class InterviewDecisionForm {
     private Long interviewId;
@@ -13,4 +13,4 @@ public class InterviewDecisionForm {
 
     public String getRejectionReason() { return rejectionReason; }
     public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
-} 
+} */

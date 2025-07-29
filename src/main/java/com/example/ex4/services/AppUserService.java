@@ -83,24 +83,8 @@ public class AppUserService implements UserDetailsService {
 
     @Transactional
     public void saveUser(RegistrationForm form) throws IOException {
-        AppUser appUser = new AppUser();
-        appUser.setUsername(form.getUsername().trim());
-        appUser.setFirstName(form.getFirstName().trim());
-        appUser.setLastName(form.getLastName().trim());
-        appUser.setPassword(passwordEncoder.encode(form.getPassword()));
-        appUser.setEmail(form.getEmail().trim());
-        appUser.setAbout(form.getAbout().trim());
-
-        if (form.isCommander()) {
-            appUser.setRole(Role.COMMANDER);
-        } else {
-            appUser.setRole(Role.RESERVIST);
-        }
-
-        MultipartFile file = form.getMilitaryIdDoc();
-        if (file != null && !file.isEmpty()) {
-            appUser.setMilitaryIdDoc(file.getBytes());
-        }
+        form.setPassword(passwordEncoder.encode(form.getPassword()));
+        AppUser appUser = new AppUser(form);
 
         appUserRepository.save(appUser);
     }

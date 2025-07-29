@@ -4,7 +4,7 @@ import com.example.ex4.models.*;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.ApplicationService;
 import com.example.ex4.services.PositionService;
-import com.example.ex4.dto.PositionDto;
+//import com.example.ex4.dto.PositionDto;
 import com.example.ex4.dto.InterviewForm;
 import com.example.ex4.services.InterviewService;
 import com.example.ex4.repositories.ApplicationRepository;

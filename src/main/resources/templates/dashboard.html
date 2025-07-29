@@ -154,8 +154,14 @@
                         <th>שם משרה</th>
                         <th th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')')}">מועמד</th>
                         <!--th th:unless="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')')}"> </th-->
+<!--                        <th>תאריך-->
+<!--                            <a href="#" class="sort-link ms-1" data-sort="date" data-table="interviews-table" data-col="2">-->
+<!--                                <i class="bi bi-arrow-down-up"></i>-->
+<!--                            </a>-->
+<!--                        </th>-->
                         <th>תאריך
-                            <a href="#" class="sort-link ms-1" data-sort="date" data-table="interviews-table" data-col="2">
+                            <a href="#" class="sort-link ms-1" data-sort="date" data-table="interviews-table"
+                               th:data-col="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')') ? '2' : '1'}">
                                 <i class="bi bi-arrow-down-up"></i>
                             </a>
                         </th>

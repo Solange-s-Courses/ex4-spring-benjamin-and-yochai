@@ -1,6 +1,6 @@
 package com.example.ex4.services;
 
-import com.example.ex4.dto.ApplicationDto;
+//import com.example.ex4.dto.ApplicationDto;
 import com.example.ex4.models.Application;
 import com.example.ex4.models.ApplicationStatus;
 import com.example.ex4.models.AppUser;
@@ -111,7 +111,7 @@ public class ApplicationService {
         }
     }
 
-    public List<ApplicationDto> getPositionApplications(Long positionId) {
+    /*public List<ApplicationDto> getPositionApplications(Long positionId) {
         Position position = positionService.findById(positionId);
         if (position == null) {
             return new ArrayList<>();
@@ -121,7 +121,7 @@ public class ApplicationService {
         return applications.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
-    }
+    }*/
 
     public boolean updateApplicationStatus(Long applicationId, ApplicationStatus status) {
         try {
@@ -226,7 +226,7 @@ public class ApplicationService {
         }
     }
 
-    private ApplicationDto convertToDto(Application application) {
+    /*private ApplicationDto convertToDto(Application application) {
         String location = "-";
         if (application.getPosition().getLocation() != null) {
             location = application.getPosition().getLocation().name();
@@ -246,7 +246,7 @@ public class ApplicationService {
             application.getApplicationDate(),
             application.getStatus()
         );
-    }
+    }*/
 
     public Application getApplicationById(long id){
         return applicationRepository.findById(id).orElse(null);

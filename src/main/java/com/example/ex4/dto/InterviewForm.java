@@ -3,13 +3,13 @@ package com.example.ex4.dto;
 import jakarta.validation.constraints.*;
 
 public class InterviewForm {
-    @NotNull()
+    //@NotNull(message = "מספר מועמדות הוא שדה חובה")
     private Long applicationId;
 
     @NotBlank(message = "תאריך ראיון הוא שדה חובה")
     private String interviewDate;
 
-    @NotBlank(message = "מיקום ראיון הוא שדה חובה")
+    //@NotBlank(message = "מיקום ראיון הוא שדה חובה")
     private String location;
 
     @Size(max = 1000, message = "הערות לא יכולות לעלות על 1000 תווים")
