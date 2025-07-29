@@ -222,5 +222,15 @@ public class RestApiController {
         return interviewService.changeInterviewDecisionApi(id, body.get("status"), body.get("reason"));
     }
     
+    @PostMapping("/applications/{id}/approve")
+    public ResponseEntity<Map<String, Object>> approveApplication(@PathVariable Long id) {
+        return applicationService.approveApplicationApi(id);
+    }
+    
+    @PostMapping("/applications/{id}/reject")
+    public ResponseEntity<Map<String, Object>> rejectApplication(@PathVariable Long id) {
+        return applicationService.rejectApplicationApi(id);
+    }
+    
 }
 

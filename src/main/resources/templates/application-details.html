@@ -52,21 +52,12 @@
       <div class="card-body">
         <div class="row g-3">
 
-          <form th:action="@{'/applications/' + ${app.id} + '/status'}" method="post" class="col-md-6">
+          <form class="col-md-6 d-flex align-items-end approve-application-form" th:attr="data-application-id=${app.id}">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <label class="form-label">שנה סטטוס</label>
-            <div class="input-group">
-              <select class="form-select" name="status">
-                <option value="PENDING" th:selected="${app.status.name() == 'PENDING'}">ממתין</option>
-                <option value="APPROVED" th:selected="${app.status.name() == 'APPROVED'}">אושר</option>
-                <option value="REJECTED" th:selected="${app.status.name() == 'REJECTED'}">נדחה</option>
-                <option value="CANCELED" th:selected="${app.status.name() == 'CANCELED'}">בוטל</option>
-              </select>
-              <button type="submit" class="btn btn-outline-primary">עדכן</button>
-            </div>
+            <button type="submit" class="btn btn-outline-success w-100">קבל מועמדות</button>
           </form>
 
-          <form th:action="@{'/applications/' + ${app.id} + '/reject'}" method="post" class="col-md-6 d-flex align-items-end">
+          <form class="col-md-6 d-flex align-items-end reject-application-form" th:attr="data-application-id=${app.id}">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <button type="submit" class="btn btn-outline-danger w-100">דחה מועמדות</button>
           </form>

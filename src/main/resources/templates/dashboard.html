@@ -170,7 +170,6 @@
                         <th>שעה</th>
                         <th>מיקום / לינק</th>
                         <th>אישור הראיון</th>
-                        <th>החלטה</th>
                         <th>הערות</th>
                         <th>תפקיד
                             <a href="#" class="sort-link ms-1" data-sort="role" data-table="interviews-table" data-col="8">
@@ -181,7 +180,7 @@
                     </thead>
                     <tbody id="futureInterviewsTbody">
                     <tr th:classappend="${#lists.isEmpty(relevantInterviews)?'':'d-none'}">
-                        <td colspan="8">אין ראיונות להצגה</td>
+                        <td colspan="7">אין ראיונות להצגה</td>
                     </tr>
                     <tr th:each="interview : ${relevantInterviews}" th:data-id="${interview.id}">
                         <td th:text="${interview.application.position.jobTitle}"></td>
@@ -229,32 +228,6 @@
                                             </small>
                                         </div>
                                     </div>
-                                </span>
-                        </td>
-                        <td>
-                            <!-- עמודת החלטה - רק למפקד להחליט על תוצאת הראיון -->
-                            <span th:if="${interview.application.applicant.username == #authentication.name}">
-                                    <!-- המועמד רואה את החלטת המפקד -->
-                                    <span th:if="${interview.status.name() == 'COMPLETED'}"
-                                          class="badge bg-success">התקבל</span>
-                                    <span th:if="${interview.status.name() == 'CANCELED'}"
-                                          class="badge bg-danger">נדחה</span>
-                                    <span th:if="${interview.status.name() != 'COMPLETED' && interview.status.name() != 'CANCELED'}"
-                                          class="badge bg-warning text-dark">ממתין להחלטה</span>
-                                </span>
-                            <span th:if="${interview.application.applicant.username != #authentication.name}">
-                                    <!-- המפקד יכול להחליט על התוצאה -->
-                                    <form th:action="@{'/interviews/' + ${interview.id} + '/decision'}" method="post"
-                                          class="d-flex align-items-center gap-2 mb-0">
-                                        <select name="decision" class="form-select form-select-sm">
-                                            <option value="PENDING"
-                                                    th:selected="${interview.status.name() != 'COMPLETED' && interview.status.name() != 'CANCELED'}">ממתין להחלטה</option>
-                                            <option value="COMPLETED"
-                                                    th:selected="${interview.status.name() == 'COMPLETED'}">התקבל</option>
-                                            <option value="CANCELED" th:selected="${interview.status.name() == 'CANCELED'}">נדחה</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-outline-primary btn-sm">שמור</button>
-                                    </form>
                                 </span>
                         </td>
                         <td th:text="${interview.notes}"></td>

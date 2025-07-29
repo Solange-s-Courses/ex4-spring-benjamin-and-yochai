@@ -253,4 +253,40 @@ public class ApplicationService {
     public Application getApplicationById(long id){
         return applicationRepository.findById(id).orElse(null);
     }
+
+    public ResponseEntity<Map<String, Object>> approveApplicationApi(Long applicationId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            boolean success = updateApplicationStatus(applicationId, ApplicationStatus.APPROVED);
+            if (success) {
+                response.put("message", "המועמדות אושרה בהצלחה!");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("message", "שגיאה באישור המועמדות.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            response.put("message", "שגיאה באישור המועמדות.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    public ResponseEntity<Map<String, Object>> rejectApplicationApi(Long applicationId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            boolean success = updateApplicationStatus(applicationId, ApplicationStatus.REJECTED);
+            if (success) {
+                response.put("message", "המועמדות נדחתה בהצלחה!");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("message", "שגיאה בדחיית המועמדות.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            response.put("message", "שגיאה בדחיית המועמדות.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 } 
