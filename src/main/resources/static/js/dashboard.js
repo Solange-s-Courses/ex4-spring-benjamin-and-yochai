@@ -323,7 +323,7 @@ const dashboardDom = function (){
 
                 if (response.ok) {
                     showToast(data.message);
-                    setTimeout(() => window.location.reload(), 1500);
+                    //setTimeout(() => window.location.reload(), 1500);
                 } else {
                     showToast(data.message, "danger");
                 }
@@ -353,7 +353,7 @@ const dashboardDom = function (){
 
                 if (response.ok) {
                     showToast(data.message);
-                    setTimeout(() => window.location.reload(), 1500);
+                    //setTimeout(() => window.location.reload(), 1500);
                 } else {
                     showToast(data.message, "danger");
                 }

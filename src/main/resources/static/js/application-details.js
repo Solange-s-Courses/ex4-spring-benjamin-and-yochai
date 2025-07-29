@@ -1,3 +1,5 @@
+import {showToast} from "./toastUtils";
+
 const applicationDetailsDom = function() {
     
     document.addEventListener('DOMContentLoaded', function () {
@@ -21,13 +23,13 @@ const applicationDetailsDom = function() {
                 const data = await response.json();
 
                 if (response.ok) {
-                    window.showToast(data.message);
-                    setTimeout(() => window.location.reload(), 1500);
+                    showToast(data.message);
+                    //setTimeout(() => window.location.reload(), 1500);
                 } else {
-                    window.showToast(data.message, true);
+                    showToast(data.message, "danger");
                 }
             } catch (error) {
-                window.showToast("אירעה שגיאה בהשלמת הראיון", true);
+                showToast("אירעה שגיאה בהשלמת הראיון", "danger");
             }
         }
 
@@ -51,13 +53,13 @@ const applicationDetailsDom = function() {
                 const data = await response.json();
 
                 if (response.ok) {
-                    window.showToast(data.message);
-                    setTimeout(() => window.location.reload(), 1500);
+                    showToast(data.message);
+                    //setTimeout(() => window.location.reload(), 1500);
                 } else {
-                    window.showToast(data.message, true);
+                    showToast(data.message, "danger");
                 }
             } catch (error) {
-                window.showToast("אירעה שגיאה בעדכון סיכום הראיון", true);
+                showToast("אירעה שגיאה בעדכון סיכום הראיון", "danger");
             }
         }
 

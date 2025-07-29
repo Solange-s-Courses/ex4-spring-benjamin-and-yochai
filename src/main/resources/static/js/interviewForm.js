@@ -1,3 +1,5 @@
+import {showToast} from "./toastUtils";
+
 function toggleMeetingType() {
     const isVirtual = document.getElementById('meetingTypeSwitch').checked;
     const locationLabel = document.getElementById('locationLabel');
@@ -73,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
             };
             
             if (data.interviewDate && new Date(data.interviewDate) < new Date()) {
-                window.showToast('לא ניתן לקבוע ראיון בזמן שחלף', true);
+                showToast('לא ניתן לקבוע ראיון בזמן שחלף', "danger");
                 return;
             }
             
@@ -88,15 +90,14 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
-                    window.showToast(result.message);
-                    setTimeout(() => window.location.reload(), 1500);
+                    showToast(result.message);
+                    //setTimeout(() => window.location.reload(), 1500);
                 } else {
-                    window.showToast(result.message, true);
+                    showToast(result.message, "danger");
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                window.showToast('אירעה שגיאה בקביעת הראיון', true);
+                showToast('אירעה שגיאה בקביעת הראיון', "danger");
             });
         });
     }
@@ -116,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
             };
             
             if (data.interviewDate && new Date(data.interviewDate) < new Date()) {
-                window.showToast('לא ניתן לקבוע ראיון בזמן שחלף', true);
+                showToast('לא ניתן לקבוע ראיון בזמן שחלף', "danger");
                 return;
             }
             
@@ -131,16 +132,16 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
-                    window.showToast(result.message);
+                    showToast(result.message);
                     const modal = bootstrap.Modal.getInstance(document.getElementById('editInterviewModal'));
                     modal.hide();
-                    setTimeout(() => window.location.reload(), 1500);
+                    //setTimeout(() => window.location.reload(), 1500);
                 } else {
-                    window.showToast(result.message, true);
+                    showToast(result.message, "danger");
                 }
             })
             .catch(error => {
-                window.showToast('אירעה שגיאה בעדכון הראיון', true);
+                showToast('אירעה שגיאה בעדכון הראיון', "danger");
             });
         });
     }
