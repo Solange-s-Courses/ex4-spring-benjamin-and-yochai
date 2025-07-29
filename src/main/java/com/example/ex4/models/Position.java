@@ -2,6 +2,8 @@ package com.example.ex4.models;
 
 import com.example.ex4.dto.PositionForm;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.util.StringUtils;
 
 import java.util.stream.Collectors;
@@ -12,15 +14,20 @@ public class Position {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String jobTitle;
-    
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     private LocationRegion location;
-    
+
+    @NotBlank
     private String assignmentType;
-    
+
+    @NotBlank
     private String description;
-    
+
+    @NotBlank
     private String requirements;
 
     @Enumerated(EnumType.STRING)

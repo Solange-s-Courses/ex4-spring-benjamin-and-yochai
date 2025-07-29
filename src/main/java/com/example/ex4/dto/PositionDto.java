@@ -1,5 +1,5 @@
 package com.example.ex4.dto;
-
+/*
 public class PositionDto {
     private Long id;
     private String jobTitle;
@@ -26,4 +26,4 @@ public class PositionDto {
     public String getDescription() { return description; }
     public String getRequirements() { return requirements; }
     public String getPublisherName() { return publisherName; }
-} 
+} */

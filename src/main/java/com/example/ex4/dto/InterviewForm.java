@@ -3,7 +3,7 @@ package com.example.ex4.dto;
 import jakarta.validation.constraints.*;
 
 public class InterviewForm {
-    @NotNull()
+    @NotNull(message = "מספר מועמדות הוא שדה חובה")
     private Long applicationId;
 
     @NotBlank(message = "תאריך ראיון הוא שדה חובה")

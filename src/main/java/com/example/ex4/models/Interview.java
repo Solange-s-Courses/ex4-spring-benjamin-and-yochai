@@ -1,6 +1,8 @@
 package com.example.ex4.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -13,10 +15,13 @@ public class Interview {
     @ManyToOne(optional = false)
     private Application application;
 
+    @NotNull
     private LocalDateTime interviewDate;
 
+    @NotBlank
     private String location;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private InterviewStatus status;
 
@@ -26,6 +31,7 @@ public class Interview {
 
     private String interviewSummary;
 
+    @NotNull
     private Boolean isVirtual = false;
 
     private String jitsiLink;

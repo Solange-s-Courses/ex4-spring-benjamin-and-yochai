@@ -1,11 +1,15 @@
 package com.example.ex4.models;
 
+import com.example.ex4.dto.RegistrationForm;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Arrays;
@@ -18,25 +22,26 @@ public class AppUser implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty
+    @NotBlank
     private String username;
 
-    @NotEmpty
+    @NotBlank
     private String firstName;
 
-    @NotEmpty
+    @NotBlank
     private String lastName;
 
-    @NotEmpty
+    @NotBlank
     private String password;
 
-    @NotEmpty
+    @NotBlank
     private String email;
 
     @Lob
     @Column(/*name = "military_id_doc",*/ columnDefinition = "MEDIUMBLOB", nullable = false)
     private byte[] militaryIdDoc;
 
+    @NotBlank
     @Column(name = "about", length = 500)
     private String about;
 
@@ -47,6 +52,29 @@ public class AppUser implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum('PENDING', 'APPROVED', 'BLOCKED') DEFAULT 'PENDING'")
     private RegistrationStatus registrationStatus = RegistrationStatus.PENDING;
+
+    public AppUser() {}
+
+    public AppUser(RegistrationForm form) throws IOException {
+        this.username = form.getUsername();
+        this.firstName = form.getFirstName();
+        this.lastName = form.getLastName();
+        this.password = form.getPassword();
+        this.email = form.getEmail();
+        this.about = form.getAbout();
+
+        if (form.isCommander()) {
+            this.role = Role.COMMANDER;
+        } else {
+            this.role = Role.RESERVIST;
+        }
+
+        MultipartFile file = form.getMilitaryIdDoc();
+        if (file != null && !file.isEmpty()) {
+            this.militaryIdDoc = file.getBytes();
+        }
+
+    }
 
     public Long getId() {
         return id;

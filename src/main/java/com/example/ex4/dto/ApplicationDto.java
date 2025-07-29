@@ -1,4 +1,4 @@
-package com.example.ex4.dto;
+/*package com.example.ex4.dto;
 
 import com.example.ex4.models.ApplicationStatus;
 import java.time.LocalDateTime;
@@ -102,4 +102,4 @@ public class ApplicationDto {
     public void setStatus(ApplicationStatus status) {
         this.status = status;
     }
-} 
+} */
