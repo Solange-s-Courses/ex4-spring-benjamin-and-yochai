@@ -54,7 +54,7 @@ const dashboardDom = function (){
             },
             'APPROVED': {
                 cssClass: 'bg-success',
-                text: 'אושר'
+                text: 'התקבל'
             },
             'REJECTED': {
                 cssClass: 'bg-danger',
@@ -208,8 +208,9 @@ const dashboardDom = function (){
                 <td>${application.position.assignmentType}</td>
                 <td>${formatDate(application.applicationDate)}</td>
                 <td>
-                    <span class="badge" class="${statusInfo.cssClass}">
-                        ${statusInfo.text}
+                    <span class="badge"
+                          th:classappend="${application.status.name() == 'PENDING' ? 'bg-warning' : (application.status.name() == 'APPROVED' ? 'bg-success' : (application.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'))}"
+                          th:text="${application.status.name() == 'PENDING' ? 'ממתין' : (application.status.name() == 'APPROVED' ? 'התקבל' : (application.status.name() == 'REJECTED' ? 'נדחה' : 'בוטל'))}">
                     </span>
                 </td>
                 <td>

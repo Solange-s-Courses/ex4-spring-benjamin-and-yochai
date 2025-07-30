@@ -19,6 +19,8 @@ function toggleMeetingType() {
     }
 }
 
+window.toggleMeetingType = toggleMeetingType;
+
 function openJitsiLink(link) {
     window.open(link, '_blank', 'width=1200,height=800');
 } 
@@ -93,7 +95,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message || 'אירעה שגיאה בקביעת הראיון');
+                    });
+                }
+                return response.json();
+            })
             .then(result => {
                 if (result.success) {
                     showToast(result.message);
@@ -103,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(error => {
-                showToast('אירעה שגיאה בקביעת הראיון', "danger");
+                showToast(error.message || 'אירעה שגיאה בקביעת הראיון', "danger");
             });
         });
     }
@@ -135,7 +144,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message || 'אירעה שגיאה בעדכון הראיון');
+                    });
+                }
+                return response.json();
+            })
             .then(result => {
                 if (result.success) {
                     showToast(result.message);
@@ -147,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(error => {
-                showToast('אירעה שגיאה בעדכון הראיון', "danger");
+                showToast(error.message || 'אירעה שגיאה בעדכון הראיון', "danger");
             });
         });
     }
@@ -170,4 +186,68 @@ document.addEventListener('DOMContentLoaded', function () {
     //         e.preventDefault();
     //     }
     // });
+
+    const approveForm = document.querySelector('.approve-application-form');
+    if (approveForm) {
+        approveForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const applicationId = approveForm.dataset.applicationId;
+            
+            try {
+                const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                
+                const response = await fetch(`/restapi/applications/${applicationId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast(data.message);
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    showToast(data.message, "danger");
+                }
+            } catch (error) {
+                showToast("אירעה שגיאה באישור המועמדות", "danger");
+            }
+        });
+    }
+    
+    const rejectForm = document.querySelector('.reject-application-form');
+    if (rejectForm) {
+        rejectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const applicationId = rejectForm.dataset.applicationId;
+            
+            try {
+                const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                
+                const response = await fetch(`/restapi/applications/${applicationId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast(data.message);
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    showToast(data.message, "danger");
+                }
+            } catch (error) {
+                showToast("אירעה שגיאה בדחיית המועמדות", "danger");
+            }
+        });
+    }
 }); 

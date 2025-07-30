@@ -110,7 +110,7 @@
                          th:classappend="${userApplication == null or (userApplication.status.name() != 'APPROVED' and userApplication.status.name() != 'REJECTED') ? 'd-none' :
                          (userApplication.status.name() == 'APPROVED' ? 'alert-success' : 'alert-danger')}">
                         <i class="bi bi-info-circle me-2"></i>
-                        <span th:text="${userApplication != null and userApplication.status.name() == 'APPROVED' ? 'המועמדות שלך אושרה!' : 'המועמדות שלך נדחתה.'}"></span>
+                        <span th:text="${userApplication != null and userApplication.status.name() == 'APPROVED' ? 'המועמדות שלך התקבלה!' : 'המועמדות שלך נדחתה.'}"></span>
                         <div class="small text-muted mt-1">
                             תאריך הגשה:
                             <span class="date" th:if="${userApplication!=null}"
@@ -258,7 +258,7 @@
                                           (app.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'))}"
 
                                           th:text="${app.status.name() == 'PENDING' ? 'ממתין' :
-                                          (app.status.name() == 'APPROVED' ? 'אושר' :
+                                          (app.status.name() == 'APPROVED' ? 'התקבל' :
                                           (app.status.name() == 'REJECTED' ? 'נדחה' : 'בוטל'))}">
                                     </span>
                                     </td>
