@@ -29,6 +29,7 @@ public class DefaultAdminInitializer {
             admin.setFirstName("מנהל");
             admin.setLastName("מערכת");
             admin.setRole(Role.ADMIN);
+            admin.setAbout("מנהל מערכת ראשי");
             admin.setMilitaryIdDoc(new byte[0]);
             admin.setRegistrationStatus(com.example.ex4.models.RegistrationStatus.APPROVED);
 

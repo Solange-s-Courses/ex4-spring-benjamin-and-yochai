@@ -61,7 +61,7 @@
                                             th:field="*{location}">
                                         <option value="" selected>בחר אזור</option>
                                         <option th:each="region : ${T(com.example.ex4.models.LocationRegion).values()}"
-                                                th:value="${region}" th:text="${region}"></option>
+                                                th:value="${region}" th:text="${region.getHebrewName()}"></option>
                                     </select>
                                     <div class="text-danger server-error" th:if="${#fields.hasErrors('location')}"
                                          th:errors="*{location}"></div>

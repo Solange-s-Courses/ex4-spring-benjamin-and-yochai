@@ -1,4 +1,6 @@
 import {showToast} from "./toastUtils.js";
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 function toggleMeetingType() {
     const isVirtual = document.getElementById('meetingTypeSwitch').checked;
