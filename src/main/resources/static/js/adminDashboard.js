@@ -1,4 +1,4 @@
-import {showToast} from "./toastUtils";
+import {showToast} from "./toastUtils.js";
 
 const adminDashboard = ()=>{
     const POLLING = 5000;

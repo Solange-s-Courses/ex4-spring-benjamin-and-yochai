@@ -1,4 +1,4 @@
-import {showToast} from "./toastUtils";
+import {showToast} from "./toastUtils.js";
 
 const dashboardDom = function (){
     function formatDate(isoString) {

@@ -1,4 +1,4 @@
-import {showToast} from "./toastUtils";
+import {showToast} from "./toastUtils.js";
 
 const applicationDetailsDom = function() {
     

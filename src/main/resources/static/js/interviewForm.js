@@ -1,4 +1,4 @@
-import {showToast} from "./toastUtils";
+import {showToast} from "./toastUtils.js";
 
 function toggleMeetingType() {
     const isVirtual = document.getElementById('meetingTypeSwitch').checked;
@@ -59,6 +59,12 @@ document.addEventListener('DOMContentLoaded', function () {
     dateInputs.forEach(input => {
         input.min = nowString;
     });
+    
+    // הוספת event listener ל-meetingTypeSwitch
+    const meetingTypeSwitch = document.getElementById('meetingTypeSwitch');
+    if (meetingTypeSwitch) {
+        meetingTypeSwitch.addEventListener('change', toggleMeetingType);
+    }
     
     const scheduleForm = document.querySelector('form[action="/interviews/schedule"]');
     if (scheduleForm) {
@@ -157,28 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
             editInterview(id, date, location, notes, isVirtual);
         }
     });
-
-    const editMeetingTypeSwitch = document.getElementById('editMeetingTypeSwitch');
-    if (editMeetingTypeSwitch) {
-        editMeetingTypeSwitch.addEventListener('change', function() {
-            const isVirtual = this.checked;
-            const locationLabel = document.getElementById('editLocationLabel');
-            const locationInput = document.getElementById('editLocationInput');
-            
-            if (isVirtual) {
-                locationLabel.textContent = 'קישור לפגישה';
-                locationInput.placeholder = 'קישור לשיחת וידאו ייווצר אוטומטית';
-                locationInput.value = '';
-                locationInput.readOnly = true;
-                locationInput.classList.add('bg-light');
-            } else {
-                locationLabel.textContent = 'מיקום';
-                locationInput.placeholder = 'מיקום פיזי';
-                locationInput.readOnly = false;
-                locationInput.classList.remove('bg-light');
-            }
-        });
-    }
 
     // document.body.addEventListener('submit', function (e) {
     //     const form = e.target.closest('.cancel-interview-form');
