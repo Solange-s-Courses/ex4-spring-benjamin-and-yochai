@@ -1,4 +1,4 @@
-window.pendingToasts = [];
+/*window.pendingToasts = [];
 window.isPollingActive = false;
 
 function checkIfPollingActive() {
@@ -106,4 +106,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         toast.show();
     }
-});
+});*/
