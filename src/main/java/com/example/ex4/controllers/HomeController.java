@@ -6,6 +6,7 @@ import com.example.ex4.services.ApplicationService;
 import com.example.ex4.services.InterviewService;
 import com.example.ex4.services.PositionService;
 import com.example.ex4.repositories.PositionRepository;
+import com.example.ex4.dto.LoginForm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,29 @@ public class HomeController {
     public String about() {  return "about"; }
 
     @GetMapping("/login")
-    public String login() {  return "login"; }
+    public String login(Model model, HttpServletRequest request) {
+        LoginForm loginForm = new LoginForm();
+        
+        // Check if there's a username saved from previous failed login
+        // Get from session attributes
+        String savedUsername = (String) request.getSession().getAttribute("savedUsername");
+        if (savedUsername != null) {
+            loginForm.setUsername(savedUsername);
+            // Clear the session attribute after using it
+            request.getSession().removeAttribute("savedUsername");
+        }
+        
+        // Check if there's an error message from session
+        String loginError = (String) request.getSession().getAttribute("loginError");
+        if (loginError != null) {
+            model.addAttribute("loginError", loginError);
+            // Clear the session attribute after using it
+            request.getSession().removeAttribute("loginError");
+        }
+        
+        model.addAttribute("loginForm", loginForm);
+        return "login";
+    }
 
     @GetMapping("/dashboard")
     public String getDashboard(Model model, Principal principal) {

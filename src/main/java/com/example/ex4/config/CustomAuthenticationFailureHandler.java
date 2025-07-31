@@ -48,11 +48,9 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
             errorMessage = "תקלה בהתחברות, אנא נסו שנית במועד מאוחר יותר";
         }
 
-        FlashMap flashMap = new FlashMap();
-        flashMap.put("loginError", errorMessage);
-
-        SessionFlashMapManager flashMapManager = new SessionFlashMapManager();
-        flashMapManager.saveOutputFlashMap(flashMap, request, response);
+        // Also save to session for easier access
+        request.getSession().setAttribute("loginError", errorMessage);
+        request.getSession().setAttribute("savedUsername", request.getParameter("username"));
 
         getRedirectStrategy().sendRedirect(request, response, "/login?error");
     }
