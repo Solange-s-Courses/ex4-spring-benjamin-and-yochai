@@ -165,7 +165,7 @@ public class RestApiController {
 
     @PostMapping("/interviews/{id}/edit")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> editInterview(@PathVariable Long id, @RequestBody InterviewForm form) {
+    public ResponseEntity<Map<String, Object>> editInterview(@PathVariable Long id, @RequestBody InterviewForm form, Principal principal) {
         Map<String, Object> response = new HashMap<>();
         
         try {
@@ -173,6 +173,12 @@ public class RestApiController {
             if (originalInterview == null) {
                 response.put("success", false);
                 response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.ok(response);
+            }
+            
+            if (!originalInterview.getApplication().getPosition().getPublisher().getUsername().equals(principal.getName())) {
+                response.put("success", false);
+                response.put("message", "אין לך הרשאה לערוך ראיון זה");
                 return ResponseEntity.ok(response);
             }
             
@@ -198,38 +204,38 @@ public class RestApiController {
     }
 
     @PostMapping("/interviews/{id}/confirm")
-    public ResponseEntity<Map<String, Object>> confirmInterview(@PathVariable Long id) {
-        return interviewService.confirmInterviewApi(id);
+    public ResponseEntity<Map<String, Object>> confirmInterview(@PathVariable Long id, Principal principal) {
+        return interviewService.confirmInterviewApi(id, principal.getName());
     }
     
     @PostMapping("/interviews/{id}/reject")
-    public ResponseEntity<Map<String, Object>> rejectInterview(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return interviewService.rejectInterviewApi(id, body.get("reason"));
+    public ResponseEntity<Map<String, Object>> rejectInterview(@PathVariable Long id, @RequestBody Map<String, String> body, Principal principal) {
+        return interviewService.rejectInterviewApi(id, body.get("reason"), principal.getName());
     }
     
     @PostMapping("/interviews/{id}/complete")
-    public ResponseEntity<Map<String, Object>> completeInterview(@PathVariable Long id) {
-        return interviewService.completeInterviewApi(id);
+    public ResponseEntity<Map<String, Object>> completeInterview(@PathVariable Long id, Principal principal) {
+        return interviewService.completeInterviewApi(id, principal.getName());
     }
     
     @PostMapping("/interviews/{id}/summary")
-    public ResponseEntity<Map<String, Object>> updateInterviewSummary(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return interviewService.updateInterviewSummaryApi(id, body.get("summary"));
+    public ResponseEntity<Map<String, Object>> updateInterviewSummary(@PathVariable Long id, @RequestBody Map<String, String> body, Principal principal) {
+        return interviewService.updateInterviewSummaryApi(id, body.get("summary"), principal.getName());
     }
     
-    @PostMapping("/interviews/{id}/change-decision")
-    public ResponseEntity<Map<String, Object>> changeInterviewDecision(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return interviewService.changeInterviewDecisionApi(id, body.get("status"), body.get("reason"));
-    }
+//    @PostMapping("/interviews/{id}/change-decision")
+//    public ResponseEntity<Map<String, Object>> changeInterviewDecision(@PathVariable Long id, @RequestBody Map<String, String> body, Principal principal) {
+//        return interviewService.changeInterviewDecisionApi(id, body.get("status"), body.get("reason"), principal.getName());
+//    }
     
     @PostMapping("/applications/{id}/approve")
-    public ResponseEntity<Map<String, Object>> approveApplication(@PathVariable Long id) {
-        return applicationService.approveApplicationApi(id);
+    public ResponseEntity<Map<String, Object>> approveApplication(@PathVariable Long id, Principal principal) {
+        return applicationService.approveApplicationApi(id, principal.getName());
     }
     
     @PostMapping("/applications/{id}/reject")
-    public ResponseEntity<Map<String, Object>> rejectApplication(@PathVariable Long id) {
-        return applicationService.rejectApplicationApi(id);
+    public ResponseEntity<Map<String, Object>> rejectApplication(@PathVariable Long id, Principal principal) {
+        return applicationService.rejectApplicationApi(id, principal.getName());
     }
     
 }

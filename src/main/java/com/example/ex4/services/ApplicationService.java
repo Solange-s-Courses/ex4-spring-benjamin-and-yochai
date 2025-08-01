@@ -254,10 +254,22 @@ public class ApplicationService {
         return applicationRepository.findById(id).orElse(null);
     }
 
-    public ResponseEntity<Map<String, Object>> approveApplicationApi(Long applicationId) {
+    public ResponseEntity<Map<String, Object>> approveApplicationApi(Long applicationId, String username) {
         Map<String, Object> response = new HashMap<>();
         
         try {
+            Application application = getApplicationById(applicationId);
+            if (application == null) {
+                response.put("message", "המועמדות לא נמצאה");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            // בדיקת הרשאות - רק המו"ל של המשרה יכול לאשר/לדחות מועמדות
+            if (!application.getPosition().getPublisher().getUsername().equals(username)) {
+                response.put("message", "אין לך הרשאה לאשר מועמדות זו");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
             boolean success = updateApplicationStatus(applicationId, ApplicationStatus.APPROVED);
             if (success) {
                 response.put("message", "המועמדות אושרה בהצלחה!");
@@ -272,10 +284,22 @@ public class ApplicationService {
         }
     }
 
-    public ResponseEntity<Map<String, Object>> rejectApplicationApi(Long applicationId) {
+    public ResponseEntity<Map<String, Object>> rejectApplicationApi(Long applicationId, String username) {
         Map<String, Object> response = new HashMap<>();
         
         try {
+            Application application = getApplicationById(applicationId);
+            if (application == null) {
+                response.put("message", "המועמדות לא נמצאה");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            // בדיקת הרשאות - רק המו"ל של המשרה יכול לאשר/לדחות מועמדות
+            if (!application.getPosition().getPublisher().getUsername().equals(username)) {
+                response.put("message", "אין לך הרשאה לדחות מועמדות זו");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
             boolean success = updateApplicationStatus(applicationId, ApplicationStatus.REJECTED);
             if (success) {
                 response.put("message", "המועמדות נדחתה בהצלחה!");

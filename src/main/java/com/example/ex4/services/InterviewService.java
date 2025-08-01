@@ -235,10 +235,22 @@ public class InterviewService {
         return interviewRepository.findAll();
     }
 
-    public ResponseEntity<Map<String, Object>> confirmInterviewApi(Long interviewId) {
+    public ResponseEntity<Map<String, Object>> confirmInterviewApi(Long interviewId, String username) {
         Map<String, Object> response = new HashMap<>();
         
         try {
+            Interview interview = getInterviewById(interviewId);
+            if (interview == null) {
+                response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            if (!interview.getApplication().getPosition().getPublisher().getUsername().equals(username) &&
+                !interview.getApplication().getApplicant().getUsername().equals(username)) {
+                response.put("message", "אין לך הרשאה לאשר ראיון זה");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
             confirmInterview(interviewId);
             response.put("message", "הראיון אושר בהצלחה!");
             return ResponseEntity.ok(response);
@@ -251,10 +263,22 @@ public class InterviewService {
         }
     }
     
-    public ResponseEntity<Map<String, Object>> rejectInterviewApi(Long interviewId, String reason) {
+    public ResponseEntity<Map<String, Object>> rejectInterviewApi(Long interviewId, String reason, String username) {
         Map<String, Object> response = new HashMap<>();
         
         try {
+            Interview interview = getInterviewById(interviewId);
+            if (interview == null) {
+                response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            if (!interview.getApplication().getPosition().getPublisher().getUsername().equals(username) &&
+                !interview.getApplication().getApplicant().getUsername().equals(username)) {
+                response.put("message", "אין לך הרשאה לדחות ראיון זה");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
             rejectInterview(interviewId, reason);
             response.put("message", "הראיון נדחה בהצלחה!");
             return ResponseEntity.ok(response);
@@ -264,10 +288,21 @@ public class InterviewService {
         }
     }
     
-    public ResponseEntity<Map<String, Object>> completeInterviewApi(Long interviewId) {
+    public ResponseEntity<Map<String, Object>> completeInterviewApi(Long interviewId, String username) {
         Map<String, Object> response = new HashMap<>();
         
         try {
+            Interview interview = getInterviewById(interviewId);
+            if (interview == null) {
+                response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            if (!interview.getApplication().getPosition().getPublisher().getUsername().equals(username)) {
+                response.put("message", "אין לך הרשאה להשלים ראיון זה");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
             completeInterview(interviewId);
             response.put("message", "הראיון הושלם בהצלחה!");
             return ResponseEntity.ok(response);
@@ -277,7 +312,7 @@ public class InterviewService {
         }
     }
     
-    public ResponseEntity<Map<String, Object>> updateInterviewSummaryApi(Long interviewId, String summary) {
+    public ResponseEntity<Map<String, Object>> updateInterviewSummaryApi(Long interviewId, String summary, String username) {
         Map<String, Object> response = new HashMap<>();
         
         try {
@@ -285,6 +320,11 @@ public class InterviewService {
             if (interview == null) {
                 response.put("message", "הראיון לא נמצא");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            if (!interview.getApplication().getPosition().getPublisher().getUsername().equals(username)) {
+                response.put("message", "אין לך הרשאה לעדכן סיכום ראיון זה");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
             }
             
             interview.setInterviewSummary(summary);
@@ -298,39 +338,46 @@ public class InterviewService {
         }
     }
     
-    public ResponseEntity<Map<String, Object>> changeInterviewDecisionApi(Long interviewId, String newStatus, String reason) {
-        Map<String, Object> response = new HashMap<>();
-        
-        try {
-            Interview interview = getInterviewById(interviewId);
-            if (interview == null) {
-                response.put("message", "הראיון לא נמצא");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-            
-            switch (newStatus) {
-                case "CONFIRMED":
-                    confirmInterview(interviewId);
-                    break;
-                case "REJECTED":
-                    rejectInterview(interviewId, reason);
-                    break;
-                case "COMPLETED":
-                    completeInterview(interviewId);
-                    break;
-                default:
-                    response.put("message", "סטטוס לא תקין");
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-            
-            response.put("message", "סטטוס הראיון שונה בהצלחה!");
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        } catch (Exception e) {
-            response.put("message", "אירעה שגיאה בשינוי סטטוס הראיון.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
+//    public ResponseEntity<Map<String, Object>> changeInterviewDecisionApi(Long interviewId, String newStatus, String reason, String username) {
+//        Map<String, Object> response = new HashMap<>();
+//
+//        try {
+//            Interview interview = getInterviewById(interviewId);
+//            if (interview == null) {
+//                response.put("message", "הראיון לא נמצא");
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+//            }
+//
+//            // בדיקת הרשאות - רק המו"ל של המשרה או המועמד יכולים לשנות החלטה
+//            if (!interview.getApplication().getPosition().getPublisher().getUsername().equals(username) &&
+//                !interview.getApplication().getApplicant().getUsername().equals(username)) {
+//                response.put("message", "אין לך הרשאה לשנות החלטת ראיון זה");
+//                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+//            }
+//
+//            switch (newStatus) {
+//                case "CONFIRMED":
+//                    confirmInterview(interviewId);
+//                    break;
+//                case "REJECTED":
+//                    rejectInterview(interviewId, reason);
+//                    break;
+//                case "COMPLETED":
+//                    completeInterview(interviewId);
+//                    break;
+//                default:
+//                    response.put("message", "סטטוס לא תקין");
+//                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+//            }
+//
+//            response.put("message", "סטטוס הראיון שונה בהצלחה!");
+//            return ResponseEntity.ok(response);
+//        } catch (IllegalArgumentException e) {
+//            response.put("message", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+//        } catch (Exception e) {
+//            response.put("message", "אירעה שגיאה בשינוי סטטוס הראיון.");
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//        }
+//    }
 } 
