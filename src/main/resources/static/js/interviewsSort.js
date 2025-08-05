@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+    
     document.body.addEventListener('click', function (e) {
         if (e.target.closest('.sort-link')) {
             e.preventDefault();

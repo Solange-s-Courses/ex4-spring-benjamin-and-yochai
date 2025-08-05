@@ -106,9 +106,9 @@ public class HomeController {
         return "dashboard";
     }
 
-    @GetMapping("/logout")
-    public String logoutGet() {
-        return "error";
-    }
+    //@GetMapping("/logout")
+    //public String logoutGet() {
+      //  return "error";
+    //}
 
 }

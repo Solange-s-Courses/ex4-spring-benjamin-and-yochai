@@ -1,4 +1,4 @@
-<div th:fragment="toast" th:if="${successMessage or errorMessage}">
+<div th:fragment="toast" th:if="${successMessage != null or errorMessage != null}">
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="actionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"
          data-bs-autohide="true" data-bs-delay="4000">
@@ -7,14 +7,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
       <div class="toast-body">
-        <span th:if="${successMessage}" th:text="${successMessage}"></span>
-        <span th:if="${errorMessage}" th:text="${errorMessage}" class="text-danger"></span>
+        <span th:if="${successMessage != null}" th:text="${successMessage}"></span>
+        <span th:if="${errorMessage != null}" th:text="${errorMessage}" class="text-danger"></span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Keep old fragments for backward compatibility -->
+<!-- Keep old fragments for backward compatibility - ->
 <div th:fragment="successToast" th:if="${successMessage}">
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="actionToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"
@@ -39,4 +39,4 @@
       <div class="toast-body text-danger" th:text="${errorMessage}"></div>
     </div>
   </div>
-</div>
+</div-->

@@ -1,4 +1,11 @@
 // toastUtil.js
+document.addEventListener("DOMContentLoaded", ()=>{
+    const toastEl = document.getElementById('actionToast');
+    if (toastEl) {
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+});
 
 export function showToast(message, type = "success") {
     const toastContainerId = "globalToastContainer";

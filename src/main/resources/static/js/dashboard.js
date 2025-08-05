@@ -144,7 +144,7 @@ const dashboardDom = function (){
             cols[1].textContent = data.position.location;
             cols[2].textContent = data.position.assignmentType;
             cols[3].innerHTML = `<span class="badge ${getPositionStatusInfo(data.position.status).cssClass}">${getPositionStatusInfo(data.position.status).text}</span>`
-            cols[4].textContent = data.applicationCounter;
+            cols[4].textContent = data.activeApplications;
         }
 
         function addPositionRow(data, tbody){
@@ -162,8 +162,8 @@ const dashboardDom = function (){
                 <td>${data.position.location}</td>
                 <td>${data.position.assignmentType}</td>
                 <td>
-                    <span class="badge ${statusInfo.css}">
-                        ${statusInfo.label}
+                    <span class="badge ${statusInfo.cssClass}">
+                        ${statusInfo.text}
                     </span>
                 </td>
                 <td>${data.activeApplications}</td>
@@ -208,9 +208,8 @@ const dashboardDom = function (){
                 <td>${application.position.assignmentType}</td>
                 <td>${formatDate(application.applicationDate)}</td>
                 <td>
-                    <span class="badge"
-                          th:classappend="${application.status.name() == 'PENDING' ? 'bg-warning' : (application.status.name() == 'APPROVED' ? 'bg-success' : (application.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'))}"
-                          th:text="${application.status.name() == 'PENDING' ? 'ממתין' : (application.status.name() == 'APPROVED' ? 'התקבל' : (application.status.name() == 'REJECTED' ? 'נדחה' : 'בוטל'))}">
+                    <span class="badge ${statusInfo.cssClass}">
+                        ${statusInfo.text}
                     </span>
                 </td>
                 <td>
@@ -324,6 +323,7 @@ const dashboardDom = function (){
 
                 if (response.ok) {
                     showToast(data.message);
+                    await refreshData();
                     //setTimeout(() => window.location.reload(), 1500);
                 } else {
                     showToast(data.message, "danger");

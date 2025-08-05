@@ -247,13 +247,14 @@
     </section>
 </main>
 
-<div th:replace="~{fragments/toasts :: successToast}"></div>
-<div th:replace="~{fragments/toasts :: errorToast}"></div>
+<!--div th:replace="~{fragments/toasts :: successToast}"></div-->
+<div th:replace="~{fragments/toasts :: toast}"></div>
 
 <!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
-<script th:src="@{/js/toasts.js}"></script>
+<!--script th:src="@{/js/toasts.js}"></script-->
+
 <script th:src="@{/js/interviewsSort.js}"></script>
 <script type="module" th:src="@{/js/interviewForm.js}"></script>
 <script type="module" th:src="@{/js/dashboard.js}"></script>

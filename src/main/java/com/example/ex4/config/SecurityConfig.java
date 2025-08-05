@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.stereotype.Controller;
 
@@ -51,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**", "/restapi/admin/**").hasRole("ADMIN")
                         .requestMatchers("/positions/add**").hasAnyRole("ADMIN", "COMMANDER")
                         .requestMatchers("/positions/*/status").hasAnyRole("ADMIN", "COMMANDER")
-                        .requestMatchers("/dashboard", "/positions/**", "/interviews/**", "/restapi/**").authenticated()
+                        .requestMatchers("/dashboard", "/positions/**", "/interviews/**", "/restapi/**", "/logout").authenticated()
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
@@ -62,6 +63,7 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
