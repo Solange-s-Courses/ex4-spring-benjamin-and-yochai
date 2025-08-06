@@ -302,7 +302,15 @@ public class ApplicationService {
             
             boolean success = updateApplicationStatus(applicationId, ApplicationStatus.REJECTED);
             if (success) {
-                response.put("message", "המועמדות נדחתה בהצלחה!");
+                // ביטול כל הראיונות של המועמדות הזאת
+                List<Interview> interviews = interviewService.getInterviewsByApplication(application);
+                for (Interview interview : interviews) {
+                    if (interview.getStatus() != InterviewStatus.CANCELED) {
+                        interviewService.cancelInterview(interview);
+                    }
+                }
+                
+                response.put("message", "המועמדות נדחתה בהצלחה! כל הראיונות בוטלו גם כן.");
                 return ResponseEntity.ok(response);
             } else {
                 response.put("message", "שגיאה בדחיית המועמדות.");

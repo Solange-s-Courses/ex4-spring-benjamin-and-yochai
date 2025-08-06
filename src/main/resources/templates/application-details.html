@@ -41,11 +41,23 @@
           <div class="col-md-6"><strong>אימייל:</strong> <span th:text="${app.applicant.email}"></span></div>
           <div class="col-md-6"><strong>על המועמד:</strong> <span th:text="${app.applicant.about}"></span></div>
           <div class="col-md-6"><strong>תאריך הגשה:</strong> <span th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy HH:mm')}"></span></div>
+          <div class="col-md-6">
+            <strong>סטטוס מועמדות:</strong>
+            <span class="badge ms-2"
+                  th:classappend="${app.status.name() == 'PENDING' ? 'bg-warning' :
+                                 (app.status.name() == 'APPROVED' ? 'bg-success' :
+                                 (app.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'))}"
+                  th:text="${app.status.name() == 'PENDING' ? 'ממתין להחלטה' :
+                           (app.status.name() == 'APPROVED' ? 'התקבל' :
+                           (app.status.name() == 'REJECTED' ? 'נדחה' : 'בוטל'))}">
+            </span>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="card shadow-sm rounded-4 mb-4">
+    <div class="card shadow-sm rounded-4 mb-4"
+         th:classappend="${app.status.name() != 'PENDING' ? 'd-none' : ''}">
       <div class="card-header bg-white rounded-top-4 border-bottom-0">
         <h5 class="mb-0">פעולות על מועמדות</h5>
       </div>
@@ -174,7 +186,8 @@
                         th:data-date="${#temporals.format(interview.interviewDate, 'yyyy-MM-dd''T''HH:mm')}" 
                         th:data-location="${interview.location}" 
                         th:data-notes="${interview.notes != null ? interview.notes : ''}"
-                        th:data-virtual="${interview.isVirtual != null ? interview.isVirtual : false}">
+                        th:data-virtual="${interview.isVirtual != null ? interview.isVirtual : false}"
+                        th:classappend="${app.status.name() == 'REJECTED' or app.status.name() == 'CANCELED' ? 'd-none' : ''}">
                   <i class="bi bi-pencil"></i> ערוך
                 </button>
                 
@@ -250,7 +263,7 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/toasts :: toast}"></div>
-<script th:src="@{/js/toasts.js}"></script>
+<script type="module" th:src="@{/js/toastUtils.js}"></script>
 <script type="module" th:src="@{/js/interviewForm.js}"></script>
 <script th:src="@{/js/interviewsSort.js}"></script>
 <script type="module" th:src="@{/js/application-details.js}"></script>

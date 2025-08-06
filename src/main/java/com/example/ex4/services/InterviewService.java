@@ -138,7 +138,7 @@ public class InterviewService {
 
     public void cancelInterview(Interview interview) {
         interview.setStatus(InterviewStatus.CANCELED);
-        interview.setInterviewSummary("מועמדות בוטלה");
+        //interview.setInterviewSummary("מועמדות בוטלה");
         interviewRepository.save(interview);
     }
 

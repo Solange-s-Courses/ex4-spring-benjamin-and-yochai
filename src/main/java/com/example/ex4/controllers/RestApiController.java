@@ -168,13 +168,20 @@ public class RestApiController {
             if (originalInterview == null) {
                 response.put("success", false);
                 response.put("message", "הראיון לא נמצא");
-                return ResponseEntity.ok(response);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
             
             if (!originalInterview.getApplication().getPosition().getPublisher().getUsername().equals(principal.getName())) {
                 response.put("success", false);
                 response.put("message", "אין לך הרשאה לערוך ראיון זה");
-                return ResponseEntity.ok(response);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            Application application = originalInterview.getApplication();
+            if (application.getStatus() == ApplicationStatus.REJECTED || application.getStatus() == ApplicationStatus.CANCELED) {
+                response.put("success", false);
+                response.put("message", "לא ניתן לערוך ראיון כאשר המועמדות נדחתה או בוטלה");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
             
             LocalDateTime newDate = LocalDateTime.parse(form.getInterviewDate());
@@ -190,11 +197,11 @@ public class RestApiController {
         } catch (IllegalArgumentException e) {
             response.put("success", false);
             response.put("message", e.getMessage());
-            return ResponseEntity.ok(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "אירעה שגיאה בעדכון הראיון: " + e.getMessage());
-            return ResponseEntity.ok(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
