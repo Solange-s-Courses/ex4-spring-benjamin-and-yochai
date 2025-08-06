@@ -1,9 +1,8 @@
 import {showToast} from "./toastUtils.js";
 
-function toggleMeetingType() {
-    const isVirtual = document.getElementById('meetingTypeSwitch').checked;
-    const locationLabel = document.getElementById('locationLabel');
-    const locationInput = document.getElementById('locationInput');
+function toggleLocationField(isVirtual, locationLabelId, locationInputId) {
+    const locationLabel = document.getElementById(locationLabelId);
+    const locationInput = document.getElementById(locationInputId);
     
     if (isVirtual) {
         locationLabel.textContent = 'קישור לפגישה';
@@ -11,12 +10,24 @@ function toggleMeetingType() {
         locationInput.value = '';
         locationInput.readOnly = true;
         locationInput.classList.add('bg-light');
+        locationInput.removeAttribute('required');
     } else {
         locationLabel.textContent = 'מיקום';
         locationInput.placeholder = 'מיקום פיזי';
         locationInput.readOnly = false;
         locationInput.classList.remove('bg-light');
+        locationInput.setAttribute('required', 'required');
     }
+}
+
+function toggleMeetingType() {
+    const isVirtual = document.getElementById('meetingTypeSwitch').checked;
+    toggleLocationField(isVirtual, 'locationLabel', 'locationInput');
+}
+
+function toggleEditMeetingType() {
+    const isVirtual = document.getElementById('editMeetingTypeSwitch').checked;
+    toggleLocationField(isVirtual, 'editLocationLabel', 'editLocationInput');
 }
 
 window.toggleMeetingType = toggleMeetingType;
@@ -29,28 +40,75 @@ function editInterview(interviewId, date, location, notes, isVirtual) {
     const form = document.getElementById('editInterviewForm');
     form.setAttribute('data-interview-id', interviewId);
 
-    document.getElementById('editInterviewDate').value = date || '';
-    document.getElementById('editLocationInput').value = location || '';
-    document.getElementById('editInterviewNotes').value = notes || '';
+    document.getElementById('editInterviewDate').value = date;
+    document.getElementById('editLocationInput').value = location;
+    document.getElementById('editInterviewNotes').value = notes;
     document.getElementById('editMeetingTypeSwitch').checked = isVirtual === 'true';
     
-    const locationLabel = document.getElementById('editLocationLabel');
-    const locationInput = document.getElementById('editLocationInput');
-    
-    if (isVirtual === 'true') {
-        locationLabel.textContent = 'קישור לפגישה';
-        locationInput.placeholder = 'קישור לשיחת וידאו ייווצר אוטומטית';
-        locationInput.readOnly = true;
-        locationInput.classList.add('bg-light');
-    } else {
-        locationLabel.textContent = 'מיקום';
-        locationInput.placeholder = 'מיקום פיזי';
-        locationInput.readOnly = false;
-        locationInput.classList.remove('bg-light');
-    }
+    toggleLocationField(isVirtual === 'true', 'editLocationLabel', 'editLocationInput');
 
     const modal = new bootstrap.Modal(document.getElementById('editInterviewModal'));
     modal.show();
+}
+
+function showFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    const errorDiv = document.getElementById(`${fieldId}-error`);
+    
+    if (field && errorDiv) {
+        field.classList.add('is-invalid');
+        errorDiv.textContent = message;
+    }
+}
+
+function clearFieldError(fieldId) {
+    const field = document.getElementById(fieldId);
+    const errorDiv = document.getElementById(`${fieldId}-error`);
+    
+    if (field) {
+        field.classList.remove('is-invalid');
+    }
+    if (errorDiv) {
+        errorDiv.textContent = '';
+    }
+}
+
+function clearAllErrors(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    
+    const fields = form.querySelectorAll('.is-invalid');
+    fields.forEach(field => {
+        field.classList.remove('is-invalid');
+    });
+    
+    const errorDivs = form.querySelectorAll('.invalid-feedback');
+    errorDivs.forEach(div => {
+        div.textContent = '';
+    });
+}
+
+function validateInterviewForm(data, formId) {
+    let isValid = true;
+    
+    clearAllErrors(formId);
+    
+    const dateFieldId = formId === 'editInterviewForm' ? 'editInterviewDate' : 'interviewDate';
+    if (!data.interviewDate) {
+        showFieldError(dateFieldId, 'חובה לבחור תאריך ושעה לראיון');
+        isValid = false;
+    } else if (new Date(data.interviewDate) < new Date()) {
+        showFieldError(dateFieldId, 'לא ניתן לקבוע ראיון בזמן שחלף');
+        isValid = false;
+    }
+    
+    const locationFieldId = formId === 'editInterviewForm' ? 'editLocationInput' : 'locationInput';
+    if (!data.isVirtual && (!data.location || data.location.trim() === '')) {
+        showFieldError(locationFieldId, 'חובה להזין מיקום לפגישה פיזית או לבחור בפגישה וירטואלית');
+        isValid = false;
+    }
+    
+    return isValid;
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -62,10 +120,14 @@ document.addEventListener('DOMContentLoaded', function () {
         input.min = nowString;
     });
     
-    // הוספת event listener ל-meetingTypeSwitch
     const meetingTypeSwitch = document.getElementById('meetingTypeSwitch');
     if (meetingTypeSwitch) {
         meetingTypeSwitch.addEventListener('change', toggleMeetingType);
+    }
+    
+    const editMeetingTypeSwitch = document.getElementById('editMeetingTypeSwitch');
+    if (editMeetingTypeSwitch) {
+        editMeetingTypeSwitch.addEventListener('change', toggleEditMeetingType);
     }
     
     const scheduleForm = document.querySelector('form[action="/interviews/schedule"]');
@@ -82,8 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 isVirtual: formData.get('isVirtual') === 'on'
             };
             
-            if (data.interviewDate && new Date(data.interviewDate) < new Date()) {
-                showToast('לא ניתן לקבוע ראיון בזמן שחלף', "danger");
+            if (!validateInterviewForm(data, 'scheduleInterviewForm')) {
                 return;
             }
             
@@ -117,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
+
     const editForm = document.getElementById('editInterviewForm');
     if (editForm) {
         editForm.addEventListener('submit', function(e) {
@@ -131,8 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 isVirtual: formData.get('isVirtual') === 'on'
             };
             
-            if (data.interviewDate && new Date(data.interviewDate) < new Date()) {
-                showToast('לא ניתן לקבוע ראיון בזמן שחלף', "danger");
+            if (!validateInterviewForm(data, 'editInterviewForm')) {
                 return;
             }
             
