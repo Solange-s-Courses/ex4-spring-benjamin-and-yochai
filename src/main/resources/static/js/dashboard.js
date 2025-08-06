@@ -1,6 +1,6 @@
 import {showToast} from "./toastUtils.js";
 import {genericSortingFunc, sortRowsByDate, sortRowsByText} from "./sortingFuncs.js";
-import {formatDate, formatTime, getPositionStatusInfo, getInterviewStatusInfo, getApplicationStatusInfo} from "./textUtils.js"
+import {formatDate, formatTime, getPositionStatusInfo, getInterviewStatusInfo, getApplicationStatusInfo, locationEnumToHebrew} from "./textUtils.js"
 
 const dashboardDom = function (){
     document.addEventListener("DOMContentLoaded",()=>{
@@ -41,7 +41,7 @@ const dashboardDom = function (){
         function comparePositionRows(data, row){
             const cols = row.querySelectorAll('td');
             cols[0].querySelector("a").textContent = data.position.jobTitle;
-            cols[1].textContent = data.position.location; //refactor to hebrew
+            cols[1].textContent = locationEnumToHebrew(data.position.location); //refactor to hebrew
             cols[2].textContent = data.position.assignmentType;
             cols[3].innerHTML = `<span class="badge ${getPositionStatusInfo(data.position.status).cssClass}">${getPositionStatusInfo(data.position.status).text}</span>`
             cols[4].textContent = data.activeApplications;
@@ -59,7 +59,7 @@ const dashboardDom = function (){
                         ${data.position.jobTitle}
                     </a>
                 </td>
-                <td>${data.position.location}</td>
+                <td>${locationEnumToHebrew(data.position.location)}</td>
                 <td>${data.position.assignmentType}</td>
                 <td>
                     <span class="badge ${statusInfo.cssClass}">
@@ -85,7 +85,7 @@ const dashboardDom = function (){
         function compareApplicationRows(application, row){
             const cols = row.querySelectorAll('td');
             cols[0].querySelector("a").textContent = application.position.jobTitle;
-            cols[1].textContent = application.position.location;
+            cols[1].textContent = locationEnumToHebrew(application.position.location);
             cols[2].textContent = application.position.assignmentType;
             cols[3].textContent = formatDate(application.applicationDate);
             cols[4].innerHTML = `<span class="badge ${getApplicationStatusInfo(application.status).cssClass}">${getApplicationStatusInfo(application.status).text}</span>`
