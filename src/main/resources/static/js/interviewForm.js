@@ -10,13 +10,11 @@ function toggleLocationField(isVirtual, locationLabelId, locationInputId) {
         locationInput.value = '';
         locationInput.readOnly = true;
         locationInput.classList.add('bg-light');
-        locationInput.removeAttribute('required');
     } else {
         locationLabel.textContent = 'מיקום';
         locationInput.placeholder = 'מיקום פיזי';
         locationInput.readOnly = false;
         locationInput.classList.remove('bg-light');
-        locationInput.setAttribute('required', 'required');
     }
 }
 
