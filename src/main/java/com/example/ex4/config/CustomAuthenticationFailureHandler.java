@@ -21,7 +21,6 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
             throws IOException, ServletException {
         String errorMessage;
 
-        // בדיקה אם זה InternalAuthenticationServiceException עם cause
         if (exception instanceof InternalAuthenticationServiceException) {
             Throwable cause = exception.getCause();
             if (cause instanceof LockedException) {
@@ -32,23 +31,19 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
                 errorMessage = "תקלה בהתחברות, אנא נסו שנית במועד מאוחר יותר";
             }
         }
-        // בדיקה ישירה של Exception
         else if (exception instanceof LockedException) {
             errorMessage = "המשתמש חסום";
         }
         else if (exception instanceof DisabledException) {
             errorMessage = "יש להמתין לאישור המשתמש ע\"י מנהל המערכת";
         }
-        // שם משתמש או סיסמא שגויים
         else if (exception instanceof BadCredentialsException) {
             errorMessage = "שם משתמש או סיסמא שגויים";
         }
-        // כל שאר השגיאות - תקלה כללית
         else {
             errorMessage = "תקלה בהתחברות, אנא נסו שנית במועד מאוחר יותר";
         }
 
-        // Also save to session for easier access
         request.getSession().setAttribute("loginError", errorMessage);
         request.getSession().setAttribute("savedUsername", request.getParameter("username"));
 

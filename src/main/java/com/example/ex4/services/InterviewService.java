@@ -43,24 +43,6 @@ public class InterviewService {
         interviewRepository.save(interview);
     }
 
-    @Transactional
-    public void validateInterviewDateTimeForEdit(LocalDateTime interviewDate, Long applicationId, Long currentInterviewId) {
-        java.time.LocalDateTime now = java.time.LocalDateTime.now();
-        
-        if (interviewDate.isBefore(now)) {
-            throw new IllegalArgumentException("לא ניתן לקבוע ראיון בזמן שחלף");
-        }
-        
-        List<Interview> existingInterviews = interviewRepository.findByApplicationId(applicationId);
-        for (Interview existingInterview : existingInterviews) {
-            if (!existingInterview.getId().equals(currentInterviewId) &&
-                existingInterview.getStatus() != InterviewStatus.CANCELED && 
-                existingInterview.getStatus() != InterviewStatus.REJECTED &&
-                existingInterview.getInterviewDate().equals(interviewDate)) {
-                throw new IllegalArgumentException("כבר קיים ראיון באותו זמן");
-            }
-        }
-    }
 
     private String generateJitsiLink(Interview interview) {
         String roomId = "interview-" + interview.getApplication().getPosition().getId() + 
@@ -130,10 +112,10 @@ public class InterviewService {
     }
 
     @Transactional
-    public Interview completeInterview(Long id) {
+    public void completeInterview(Long id) {
         Interview interview = interviewRepository.findById(id).orElseThrow();
         interview.setStatus(InterviewStatus.COMPLETED);
-        return interviewRepository.save(interview);
+        interviewRepository.save(interview);
     }
 
 

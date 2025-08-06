@@ -29,7 +29,7 @@ public class RegistrationForm {
     private boolean commander;
 
     @NotNull(message = "חובה להעלות תעודת משרת מילואים!")
-    @FileSize(message = "גודל הקובץ חייב להיות עד 1MB") // לא צריך להגדיר max, יקח מ-application.properties
+    @FileSize(message = "גודל הקובץ חייב להיות עד 1MB")
     private MultipartFile militaryIdDoc;
 
     @NotBlank(message = "ספר על עצמך הוא שדה חובה")

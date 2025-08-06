@@ -5,18 +5,14 @@ import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.ApplicationService;
 import com.example.ex4.services.InterviewService;
 import com.example.ex4.services.PositionService;
-import com.example.ex4.repositories.PositionRepository;
 import com.example.ex4.dto.LoginForm;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -30,9 +26,6 @@ public class HomeController {
 
     @Autowired
     private PositionService positionService;
-
-    @Autowired
-    private PositionRepository positionRepository;
 
     @Autowired
     private InterviewService interviewService;
@@ -105,10 +98,6 @@ public class HomeController {
         model.addAttribute("myPositions", positionService.getPositionsWithActiveApplicationCounts(principal.getName()));
         return "dashboard";
     }
-
-    //@GetMapping("/logout")
-    //public String logoutGet() {
-      //  return "error";
-    //}
+    
 
 }

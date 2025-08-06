@@ -38,7 +38,7 @@ public class AppUser implements UserDetails {
     private String email;
 
     @Lob
-    @Column(/*name = "military_id_doc",*/ columnDefinition = "MEDIUMBLOB", nullable = false)
+    @Column(columnDefinition = "MEDIUMBLOB", nullable = false)
     private byte[] militaryIdDoc;
 
     @NotBlank
@@ -131,14 +131,6 @@ public class AppUser implements UserDetails {
     public void setMilitaryIdDoc(byte[] militaryIdDoc) {
         this.militaryIdDoc = militaryIdDoc;
     }
-
-    /*public Boolean getIsApproved() {
-        return isApproved;
-    }
-
-    public void setIsApproved(Boolean isApproved) {
-        this.isApproved = isApproved;
-    }*/
 
     public RegistrationStatus getRegistrationStatus() { return registrationStatus; }
 

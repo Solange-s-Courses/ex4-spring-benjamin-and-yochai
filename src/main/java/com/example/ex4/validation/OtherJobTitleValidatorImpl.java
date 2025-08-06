@@ -14,7 +14,7 @@ public class OtherJobTitleValidatorImpl implements ConstraintValidator<OtherJobT
     @Override
     public boolean isValid(PositionForm positionForm, ConstraintValidatorContext context) {
         if (positionForm == null) {
-            return true; // Let @NotNull handle null validation
+            return true;
         }
 
         String jobTitle = positionForm.getJobTitle();
@@ -41,6 +41,6 @@ public class OtherJobTitleValidatorImpl implements ConstraintValidator<OtherJobT
             }
         }
 
-        return true; // Valid if jobTitle is not "other" or otherJobTitle is valid
+        return true;
     }
 }

@@ -4,8 +4,6 @@ import com.example.ex4.dto.PositionForm;
 import com.example.ex4.models.*;
 import com.example.ex4.repositories.ApplicationRepository;
 import com.example.ex4.repositories.InterviewRepository;
-import com.example.ex4.models.*;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +13,13 @@ import com.example.ex4.repositories.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.net.URI;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
-//import com.example.ex4.dto.PositionDto;
 import jakarta.servlet.http.HttpSession;
-import com.example.ex4.repositories.ApplicationRepository;
 
 @Service
 public class PositionService {
@@ -105,7 +99,7 @@ public class PositionService {
         return "positions-page";
     }
 
-    public String getPositionPage(Long id, Model model, HttpServletRequest request) {
+    public String getPositionPage(Long id, Model model) {
         Position position = positionRepository.findById(id).orElseThrow(() -> new RuntimeException("Position not found"));
 
         model.addAttribute("position", position);
@@ -125,7 +119,7 @@ public class PositionService {
     }
 
     @Transactional
-    public String processAddPositionForm(PositionForm form, Model model,
+    public String processAddPositionForm(PositionForm form,
                                          BindingResult result, String username,
                                          RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
@@ -257,7 +251,7 @@ public class PositionService {
 
     @Transactional
     public String processEditPositionForm(Long id, @Valid PositionForm positionForm,
-                                          Model model, BindingResult result, String username,
+                                          BindingResult result, String username,
                                           RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "add-position";

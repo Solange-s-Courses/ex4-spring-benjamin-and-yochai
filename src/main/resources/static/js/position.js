@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let data;
 
             try {
-                data = await response.json(); // תנסה לקרוא את התגובה כ-JSON בכל מקרה
+                data = await response.json();
             } catch (jsonError) {
                 data = {};
             }

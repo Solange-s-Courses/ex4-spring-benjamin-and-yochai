@@ -1,6 +1,5 @@
 package com.example.ex4.services;
 
-//import com.example.ex4.dto.ApplicationDto;
 import com.example.ex4.models.Application;
 import com.example.ex4.models.ApplicationStatus;
 import com.example.ex4.models.AppUser;
@@ -16,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;

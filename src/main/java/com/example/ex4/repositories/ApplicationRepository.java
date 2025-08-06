@@ -19,7 +19,7 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     
     Optional<Application> findByApplicantAndPosition(AppUser applicant, Position position);
     
-    List<Application> findByStatus(com.example.ex4.models.ApplicationStatus status);
+    List<Application> findByStatus(ApplicationStatus status);
 
     Optional<Application> findByApplicantAndPositionAndStatus(AppUser user, Position position, ApplicationStatus applicationStatus);
 

@@ -15,7 +15,6 @@ public class PositionForm {
     @NotBlank(message = "חובה לבחור תפקיד")
     private String jobTitle;
 
-    //@Size(min = 2, message = "שם התפקיד חייב להכיל לפחות 2 תווים")
     private String otherJobTitle;
 
     @NotNull(message = "חובה לבחור מיקום")

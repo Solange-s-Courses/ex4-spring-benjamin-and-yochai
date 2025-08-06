@@ -1,4 +1,4 @@
-package com.example.ex4.validation;
+/*package com.example.ex4.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
@@ -50,4 +50,4 @@ public @interface ConditionalJobTitleValidator {
             }
         }
     }
-} 
+} */
