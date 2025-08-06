@@ -14,7 +14,7 @@ const dashboardDom = function (){
         const username = document.getElementById("username").value;
         const modal = document.getElementById('rejectionModal');
         const modalInstance = new bootstrap.Modal(modal);
-
+        const rejectionReasonTextArea = document.getElementById('rejectionReason');
 
 
         function reloadTable(data, tbody, compareRows, addRow){
@@ -263,7 +263,6 @@ const dashboardDom = function (){
 
                 if (response.ok) {
                     showToast(data.message);
-                    //setTimeout(() => window.location.reload(), 1500);
                 } else {
                     showToast(data.message, "danger");
                 }
@@ -285,7 +284,7 @@ const dashboardDom = function (){
         async function rejectInterview(interviewId) {
             try {
                 // ניקוי שדה הקלט
-                document.getElementById('rejectionReason').value = '';
+                rejectionReasonTextArea.value = '';
 
                 // טיפול בלחיצה על כפתור דחיה
                 const confirmBtn = document.getElementById('confirmRejectBtn');
@@ -297,37 +296,33 @@ const dashboardDom = function (){
                 newConfirmBtn.addEventListener('click', async () => {
                     const reason = document.getElementById('rejectionReason').value.trim();
 
-                    try{
-                    const response = await fetch(`/restapi/interviews/${interviewId}/reject`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''
-                        },
-                        body: JSON.stringify({ reason: reason || null })
-                    });
+                    try {
+                        const response = await fetch(`/restapi/interviews/${interviewId}/reject`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''
+                            },
+                            body: JSON.stringify({reason: reason || null})
+                        });
 
-                    const data = await response.json();
+                        const data = await response.json();
 
-                    if (response.ok) {
+                        if (!response.ok) throw Error(data.message);
+
                         showToast(data.message);
                         modalInstance.hide();
-                    //setTimeout(() => window.location.reload(), 1500);
-                    } else {
-                        showToast(data.message, "danger");
+                            //setTimeout(() => window.location.reload(), 1500);
+                    } catch (e) {
+                        showToast(e.message, "danger");
                     }
-                    }catch (e) {
-
-                    }finally {
+                    finally {
                         await refreshData();
                     }
-                    });
+                });
 
             } catch (error) {
-                showToast("אירעה שגיאה בדחיית הראיון", "danger");
-            }
-            finally {
-                await refreshData();
+                console.error(error);
             }
         }
 
