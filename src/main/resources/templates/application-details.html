@@ -109,9 +109,13 @@
           <thead class="table-light">
           <tr>
             <th>תאריך
-              <a href="#" class="sort-link ms-1" data-sort="date" data-table="interviews-table" data-col="0">
+              <button class="btn ms-1 p-0"
+                      data-sort="date"
+                      data-table="interviews-table"
+                      data-col="0"
+                      data-action="sort">
                 <i class="bi bi-arrow-down-up"></i>
-              </a>
+              </button>
             </th>
             <th>שעה</th>
             <th>מיקום/לינק</th>
@@ -163,7 +167,7 @@
               </form>
             </td>
             <td>
-              <div class="btn-group-vertical btn-group-sm" role="group">
+              <div class="d-flex flex-column ms-1 d-inline-flex">
                 <button type="button"
                         class="btn btn-outline-secondary btn-sm mb-1 edit-interview-btn"
                         th:data-id="${interview.id}" 
