@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+/*document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('loginForm');
     const username = document.getElementById('username');
     const password = document.getElementById('password');
@@ -46,4 +46,55 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordError.textContent = message;
         }
     }
-}); 
+});*/
+
+const loginForm = () => {
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('loginForm');
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        const usernameError = document.getElementById('usernameError');
+        const passwordError = document.getElementById('passwordError');
+
+        const clearErrors = () => {
+            username.classList.remove('is-invalid');
+            password.classList.remove('is-invalid');
+            usernameError.textContent = '';
+            passwordError.textContent = '';
+        };
+
+        const showError = (message, field) => {
+            if (field === 'username') {
+                username.classList.add('is-invalid');
+                usernameError.textContent = message;
+            } else if (field === 'password') {
+                password.classList.add('is-invalid');
+                passwordError.textContent = message;
+            }
+        };
+
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                let valid = true;
+
+                clearErrors();
+
+                if (username.value.trim() === '') {
+                    showError('יש להזין שם משתמש', 'username');
+                    valid = false;
+                }
+
+                if (password.value.trim() === '') {
+                    showError('יש להזין סיסמה', 'password');
+                    valid = false;
+                }
+
+                if (!valid) {
+                    e.preventDefault();
+                }
+            });
+        }
+    });
+};
+
+loginForm();
