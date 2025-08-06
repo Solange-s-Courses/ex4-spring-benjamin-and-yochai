@@ -401,7 +401,8 @@ public class InterviewService {
             }
             
             interview.setInterviewSummary(summary);
-            saveInterview(interview);
+            //saveInterview(interview);
+            interviewRepository.save(interview);
             
             response.put("message", "סיכום הראיון עודכן בהצלחה!");
             return ResponseEntity.ok(response);
