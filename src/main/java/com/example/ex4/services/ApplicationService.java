@@ -36,6 +36,13 @@ public class ApplicationService {
     @Autowired
     private InterviewService interviewService;
 
+    /**
+     * Submits an application for a position
+     * 
+     * @param positionId Position ID
+     * @param username Applicant username
+     * @return ResponseEntity containing submission result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> submitApplication(Long positionId, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -80,6 +87,12 @@ public class ApplicationService {
         }
     }
 
+    /**
+     * Gets all applications for a user
+     * 
+     * @param username Username to get applications for
+     * @return List of user's applications
+     */
     public List<Application> getUserApplications(String username) {
         try {
             AppUser user = appUserService.getUserByUsername(username);
@@ -90,7 +103,13 @@ public class ApplicationService {
         }
     }
 
-
+    /**
+     * Updates an application's status
+     * 
+     * @param applicationId Application ID
+     * @param status New status
+     * @return true if update successful, false otherwise
+     */
     @Transactional
     public boolean updateApplicationStatus(Long applicationId, ApplicationStatus status) {
         try {
@@ -107,7 +126,13 @@ public class ApplicationService {
         }
     }
 
-
+    /**
+     * Cancels an application for a position
+     * 
+     * @param positionId Position ID
+     * @param username Applicant username
+     * @return ResponseEntity containing cancellation result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> cancelApplication(Long positionId, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -149,7 +174,13 @@ public class ApplicationService {
         }
     }
 
-
+    /**
+     * Gets a user's application for a specific position
+     * 
+     * @param positionId Position ID
+     * @param username Username to get application for
+     * @return Application object or null if not found
+     */
     public Application getUserApplicationForPosition(Long positionId, String username) {
         try {
             AppUser user = appUserService.getUserByUsername(username);
@@ -165,6 +196,12 @@ public class ApplicationService {
         }
     }
 
+    /**
+     * Gets all applications for a position
+     * 
+     * @param positionId Position ID
+     * @return List of applications for the position
+     */
     public List<Application> getApplicationsByPositionId(Long positionId) {
         try {
             Position position = positionService.findById(positionId);
@@ -177,10 +214,23 @@ public class ApplicationService {
         }
     }
 
+    /**
+     * Gets an application by ID
+     * 
+     * @param id Application ID
+     * @return Application object or null if not found
+     */
     public Application getApplicationById(long id){
         return applicationRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Approves an application via API
+     * 
+     * @param applicationId Application ID
+     * @param username Username of the approver
+     * @return ResponseEntity containing approval result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> approveApplicationApi(Long applicationId, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -211,6 +261,13 @@ public class ApplicationService {
         }
     }
 
+    /**
+     * Rejects an application via API
+     * 
+     * @param applicationId Application ID
+     * @param username Username of the rejecter
+     * @return ResponseEntity containing rejection result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> rejectApplicationApi(Long applicationId, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -248,6 +305,13 @@ public class ApplicationService {
         }
     }
 
+    /**
+     * Polls for position applicants updates
+     * 
+     * @param positionId Position ID
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing applicants data
+     */
     public ResponseEntity<Map<String, Object>> pollPositionApplicants(Long positionId, Principal principal) {
         Map<String, Object> response = new HashMap<>();
         Position position = positionService.findById(positionId);
@@ -266,6 +330,13 @@ public class ApplicationService {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Polls for application commander updates
+     * 
+     * @param applicationId Application ID
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing application data
+     */
     public ResponseEntity<Map<String, Object>> pollApplicantsCommander(Long applicationId, Principal principal) {
         Map<String, Object> response = new HashMap<>();
 

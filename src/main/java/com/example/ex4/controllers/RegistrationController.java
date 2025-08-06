@@ -26,6 +26,12 @@ public class RegistrationController {
         this.appUserService = appUserService;
     }
 
+    /**
+     * Displays the registration form
+     * 
+     * @param model Spring MVC model
+     * @return The name of the registration template
+     */
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new RegistrationForm());
@@ -33,6 +39,14 @@ public class RegistrationController {
         return "register";
     }
 
+    /**
+     * Processes user registration
+     * 
+     * @param form Registration form data
+     * @param result Binding result for validation
+     * @param redirectAttributes Redirect attributes for flash messages
+     * @return Redirect URL or template name
+     */
     @PostMapping("/register")
     public String registerUser(@Valid @ModelAttribute("user") RegistrationForm form, BindingResult result,
                                RedirectAttributes redirectAttributes){

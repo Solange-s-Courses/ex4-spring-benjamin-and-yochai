@@ -30,14 +30,31 @@ public class HomeController {
     @Autowired
     private InterviewService interviewService;
 
+    /**
+     * Displays the home page
+     * 
+     * @return The name of the home page template
+     */
     @GetMapping("/")
     public String home() {
         return "index";
     }
 
+    /**
+     * Displays the about page
+     * 
+     * @return The name of the about page template
+     */
     @GetMapping("/about")
     public String about() {  return "about"; }
 
+    /**
+     * Displays the login page with error handling
+     * 
+     * @param model Spring MVC model
+     * @param request HTTP request object
+     * @return The name of the login page template
+     */
     @GetMapping("/login")
     public String login(Model model, HttpServletRequest request) {
         LoginForm loginForm = new LoginForm();
@@ -63,6 +80,13 @@ public class HomeController {
         return "login";
     }
 
+    /**
+     * Displays the user dashboard with applications and interviews
+     * 
+     * @param model Spring MVC model
+     * @param principal Current authenticated user
+     * @return The name of the dashboard template or redirect to login
+     */
     @GetMapping("/dashboard")
     public String getDashboard(Model model, Principal principal) {
         if (principal == null) {

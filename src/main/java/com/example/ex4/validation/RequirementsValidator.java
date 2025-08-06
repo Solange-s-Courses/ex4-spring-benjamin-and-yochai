@@ -19,6 +19,13 @@ public @interface RequirementsValidator {
     Class<? extends Payload>[] payload() default {};
 
     class RequirementsValidatorImpl implements ConstraintValidator<RequirementsValidator, List<String>> {
+        /**
+         * Validates requirements list
+         * 
+         * @param requirements List of requirements to validate
+         * @param context Validation context
+         * @return true if all requirements are valid, false otherwise
+         */
         @Override
         public boolean isValid(List<String> requirements, ConstraintValidatorContext context) {
             if (requirements == null || requirements.isEmpty()) {

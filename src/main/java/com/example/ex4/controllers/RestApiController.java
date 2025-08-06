@@ -35,6 +35,12 @@ public class RestApiController {
     @Autowired
     private InterviewService interviewService;
 
+    /**
+     * Retrieves a user's military ID document
+     * 
+     * @param id User ID
+     * @return ResponseEntity containing the document or 404 if not found
+     */
     @GetMapping("/admin/document/{id}")
     public ResponseEntity<byte[]> getDocument(@PathVariable Long id) {
         Optional<AppUser> userOpt = appUserService.getUserById(id);
@@ -50,11 +56,22 @@ public class RestApiController {
         }
     }
 
+    /**
+     * Retrieves all users
+     * 
+     * @return ResponseEntity containing list of all users
+     */
     @GetMapping("/admin/allUsers")
     public ResponseEntity<List<AppUser>> getAllUsers() {
         return ResponseEntity.ok(appUserService.getAllUsers());
     }
 
+    /**
+     * Changes a user's registration status
+     * 
+     * @param body Request body containing userId and status
+     * @return ResponseEntity containing the updated user
+     */
     @PostMapping("/admin/changeUserStatus")
     public ResponseEntity<AppUser> changeUserStatus(@RequestBody Map<String, String> body) {
         Long userId = Long.valueOf(body.get("userId"));
@@ -63,6 +80,12 @@ public class RestApiController {
         return appUserService.changeUserStatus(userId, RegistrationStatus.valueOf(newStatus));
     }
 
+    /**
+     * Changes a user's role
+     * 
+     * @param body Request body containing userId and role
+     * @return ResponseEntity containing the updated user
+     */
     @PostMapping("/admin/changeUserRole")
     public ResponseEntity<AppUser> changeUserRole(@RequestBody Map<String, String> body) {
         Long userId = Long.valueOf(body.get("userId"));
@@ -71,6 +94,13 @@ public class RestApiController {
         return appUserService.changeUserRole(userId, Role.valueOf(newRole));
     }
 
+    /**
+     * Reloads positions data with optional search term
+     * 
+     * @param searchTerm Optional search term
+     * @param session HTTP session
+     * @return ResponseEntity containing positions data
+     */
     @GetMapping("/positions/active")
     public ResponseEntity<Map<String, Object>> getPositionsData(
             @RequestParam(value = "search", required = false) String searchTerm,
@@ -78,18 +108,40 @@ public class RestApiController {
         return positionService.reloadPositions(searchTerm, session);
     }
 
+    /**
+     * Submits an application for a position
+     * 
+     * @param id Position ID
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing application result
+     */
     @GetMapping("/applications/{id}/apply")
     public ResponseEntity<Map<String, Object>> applyForPosition(@PathVariable Long id,
                                    Principal principal) {
         return applicationService.submitApplication(id, principal.getName());
     }
 
+    /**
+     * Cancels an application for a position
+     * 
+     * @param id Position ID
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing cancellation result
+     */
     @GetMapping("/applications/{id}/cancel")
     public ResponseEntity<Map<String, Object>> cancelApplication(@PathVariable Long id,
                                 Principal principal) {
         return applicationService.cancelApplication(id, principal.getName());
     }
 
+    /**
+     * Changes the status of a position
+     * 
+     * @param id Position ID
+     * @param body Request body containing status
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing status change result
+     */
     @PutMapping("/positions/{id}/status")
     public ResponseEntity<Map<String, Object>> changePositionStatus(@PathVariable Long id,
                                                                    @RequestBody Map<String, String> body,
@@ -98,49 +150,113 @@ public class RestApiController {
         return positionService.changePositionStatus(id, status, principal.getName());
     }
 
+    /**
+     * Schedules an interview
+     * 
+     * @param form Interview form data
+     * @return ResponseEntity containing scheduling result
+     */
     @PostMapping("/interviews/schedule")
     @ResponseBody
     public ResponseEntity<?> scheduleInterview(@RequestBody InterviewForm form) {
         return interviewService.scheduleInterviewApi(form);
     }
 
+    /**
+     * Edits an existing interview
+     * 
+     * @param id Interview ID
+     * @param form Interview form data
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing edit result
+     */
     @PostMapping("/interviews/{id}/edit")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> editInterview(@PathVariable Long id, @RequestBody InterviewForm form, Principal principal) {
         return interviewService.editInterviewApi(id, form, principal.getName());
     }
 
+    /**
+     * Confirms an interview
+     * 
+     * @param id Interview ID
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing confirmation result
+     */
     @PostMapping("/interviews/{id}/confirm")
     public ResponseEntity<Map<String, Object>> confirmInterview(@PathVariable Long id, Principal principal) {
         return interviewService.confirmInterviewApi(id, principal.getName());
     }
     
+    /**
+     * Rejects an interview
+     * 
+     * @param id Interview ID
+     * @param body Request body containing rejection reason
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing rejection result
+     */
     @PostMapping("/interviews/{id}/reject")
     public ResponseEntity<Map<String, Object>> rejectInterview(@PathVariable Long id, @RequestBody Map<String, String> body, Principal principal) {
         return interviewService.rejectInterviewApi(id, body.get("reason"), principal.getName());
     }
     
+    /**
+     * Completes an interview
+     * 
+     * @param id Interview ID
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing completion result
+     */
     @PostMapping("/interviews/{id}/complete")
     public ResponseEntity<Map<String, Object>> completeInterview(@PathVariable Long id, Principal principal) {
         return interviewService.completeInterviewApi(id, principal.getName());
     }
     
+    /**
+     * Updates interview summary
+     * 
+     * @param id Interview ID
+     * @param body Request body containing summary
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing update result
+     */
     @PostMapping("/interviews/{id}/summary")
     public ResponseEntity<Map<String, Object>> updateInterviewSummary(@PathVariable Long id, @RequestBody Map<String, String> body, Principal principal) {
         return interviewService.updateInterviewSummaryApi(id, body.get("summary"), principal.getName());
     }
 
     
+    /**
+     * Approves an application
+     * 
+     * @param id Application ID
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing approval result
+     */
     @PostMapping("/applications/{id}/approve")
     public ResponseEntity<Map<String, Object>> approveApplication(@PathVariable Long id, Principal principal) {
         return applicationService.approveApplicationApi(id, principal.getName());
     }
     
+    /**
+     * Rejects an application
+     * 
+     * @param id Application ID
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing rejection result
+     */
     @PostMapping("/applications/{id}/reject")
     public ResponseEntity<Map<String, Object>> rejectApplication(@PathVariable Long id, Principal principal) {
         return applicationService.rejectApplicationApi(id, principal.getName());
     }
 
+    /**
+     * Refreshes dashboard data
+     * 
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing dashboard data
+     */
     @GetMapping("/dashboard/poll")
     public ResponseEntity<Map<String, Object>> refreshDashboard(Principal principal) {
         AppUser user = appUserService.getUserByUsername(principal.getName());
@@ -181,11 +297,25 @@ public class RestApiController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Polls for position applicants updates
+     * 
+     * @param positionId Position ID
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing applicants data
+     */
     @GetMapping("/positions/{positionId}/poll")
     public ResponseEntity<Map<String, Object>> pollPositionApplicants(@PathVariable Long positionId, Principal principal) {
         return applicationService.pollPositionApplicants(positionId, principal);
     }
 
+    /**
+     * Polls for application commander updates
+     * 
+     * @param applicationId Application ID
+     * @param principal Current authenticated user
+     * @return ResponseEntity containing application data
+     */
     @GetMapping("/applications/{applicationId}/poll")
     public ResponseEntity<Map<String, Object>> pollApplicationCommander(@PathVariable Long applicationId, Principal principal) {
         return applicationService.pollApplicantsCommander(applicationId, principal);

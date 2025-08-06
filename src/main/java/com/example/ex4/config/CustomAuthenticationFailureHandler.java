@@ -15,6 +15,15 @@ import java.io.IOException;
 @Component
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
+    /**
+     * Handles authentication failures with custom error messages
+     * 
+     * @param request HTTP request
+     * @param response HTTP response
+     * @param exception Authentication exception
+     * @throws IOException if redirect fails
+     * @throws ServletException if servlet error occurs
+     */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception)

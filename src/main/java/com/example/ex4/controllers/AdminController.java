@@ -17,6 +17,12 @@ public class AdminController {
     @Autowired
     private AppUserService appUserService;
 
+    /**
+     * Displays the admin dashboard
+     * 
+     * @param model Spring MVC model
+     * @return The name of the admin dashboard template
+     */
     @GetMapping
     public String getAdminDashboard(Model model) {
         List<AppUser> pendingUsers = appUserService.getPendingUsers();
