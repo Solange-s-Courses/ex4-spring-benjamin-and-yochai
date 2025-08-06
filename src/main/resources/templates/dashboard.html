@@ -188,7 +188,7 @@
                     </thead>
                     <tbody id="futureInterviewsTbody">
                     <tr th:classappend="${#lists.isEmpty(relevantInterviews)?'':'d-none'}">
-                        <td colspan="7">אין ראיונות להצגה</td>
+                        <td th:colspan="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')') ? '8' : '7'}">אין ראיונות להצגה</td>
                     </tr>
                     <tr th:each="interview : ${relevantInterviews}" th:data-id="${interview.id}">
                         <td th:text="${interview.application.position.jobTitle}"></td>
@@ -263,7 +263,7 @@
 
 <!--script th:src="@{/js/toasts.js}"></script-->
 
-<script th:src="@{/js/interviewsSort.js}"></script>
+<script type="module" th:src="@{/js/interviewsSort.js}"></script>
 <script type="module" th:src="@{/js/interviewForm.js}"></script>
 <script type="module" th:src="@{/js/dashboard.js}"></script>
 </body>
