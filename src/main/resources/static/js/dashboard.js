@@ -239,16 +239,6 @@ const dashboardDom = function (){
             tbody.appendChild(row);
         }
 
-        // function addInterviewRow(data, tbody){
-        //
-        //     const newConfirmForms = newRow.querySelectorAll('.confirm-interview-form');
-        //     newConfirmForms.forEach(form => {
-        //         form.addEventListener('submit', async (event) => {
-        //             await setConfirmInterviewListener(form, event);
-        //         });
-        //     });
-        // }
-
         async function confirmInterview(interviewId) {
             try {
                 const response = await fetch(`/restapi/interviews/${interviewId}/confirm`, {
