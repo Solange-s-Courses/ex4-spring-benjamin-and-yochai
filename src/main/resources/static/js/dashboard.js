@@ -146,12 +146,14 @@ const dashboardDom = function (){
 
             if (username === interview.application.applicant.username && interview.status === "SCHEDULED") {
                 cols[4].innerHTML = `
-                    <form method="post" class="mb-0 confirm-interview-form d-inline" data-interview-id="${interview.id}">
-                        <!--input type="hidden" th:name="$ {_csrf.parameterName}" th:value="$ {_csrf.token}" /-->
-                        <button type="submit" class="btn btn-success btn-sm">אשר</button>
-                    </form>
+                    <div class="d-flex gap-2 justify-content-center align-items-center">  
+                        <form method="post" class="mb-0 confirm-interview-form d-inline" data-interview-id="${interview.id}">
+                            <!--input type="hidden" th:name="$ {_csrf.parameterName}" th:value="$ {_csrf.token}" /-->
+                            <button type="submit" class="btn btn-success btn-sm">אשר</button>
+                        </form>
 
-                    <button type="button" class="btn btn-danger btn-sm reject-interview-btn" data-interview-id="${interview.id}">דחה</button>
+                        <button type="button" class="btn btn-danger btn-sm reject-interview-btn" data-interview-id="${interview.id}">דחה</button>
+                    </div>
                 `;
 
                 const form = row.querySelector(".confirm-interview-form");
@@ -167,7 +169,13 @@ const dashboardDom = function (){
             }
             else{
                 const infoStatus = getInterviewStatusInfo(interview.status);
-                cols[4+commanderOffset].innerHTML = `<span class="badge ${infoStatus.cssClass}">${infoStatus.text}</span>`;
+                let reason = `<span class="badge ${infoStatus.cssClass}">${infoStatus.text}</span>`;
+
+                if (interview.status === 'REJECTED' && interview.rejectionReason &&
+                    interview.application.applicant.username !== username) {
+                    reason += `<div class="mt-1"><small class="text-muted"><strong>סיבה:</strong> ${interview.rejectionReason}</small></div>`;
+                }
+                cols[4+commanderOffset].innerHTML = reason;
             }
 
             cols[5+commanderOffset].textContent = interview.notes;
@@ -273,28 +281,75 @@ const dashboardDom = function (){
 
         async function rejectInterview(interviewId) {
             try {
-                const response = await fetch(`/restapi/interviews/${interviewId}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''
-                    },
-                    body: JSON.stringify({ reason: null })
+                const modalHtml = `
+                    <div class="modal fade" id="rejectionModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">דחיית ראיון</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="rejectionReason" class="form-label">סיבת דחיה (אופציונלי)</label>
+                                        <textarea class="form-control" id="rejectionReason" rows="3" placeholder="הזן סיבת דחיה..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                                    <button type="button" class="btn btn-danger" id="confirmRejectBtn">דחה ראיון</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                const modal = document.getElementById('rejectionModal');
+                const modalInstance = new bootstrap.Modal(modal);
+                
+                // ניקוי שדה הקלט
+                document.getElementById('rejectionReason').value = '';
+                
+                // טיפול בלחיצה על כפתור דחיה
+                const confirmBtn = document.getElementById('confirmRejectBtn');
+                
+                // הסרת event listeners קודמים
+                const newConfirmBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+                
+                newConfirmBtn.addEventListener('click', async () => {
+                    const reason = document.getElementById('rejectionReason').value.trim();
+                    
+                    const response = await fetch(`/restapi/interviews/${interviewId}/reject`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''
+                        },
+                        body: JSON.stringify({ reason: reason || null })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showToast(data.message);
+                        modalInstance.hide();
+                    } else {
+                        showToast(data.message, "danger");
+                    }
+                    
+                    await refreshData();
                 });
 
-                const data = await response.json();
+                modal.addEventListener('hidden.bs.modal', () => {
+                    modal.remove();
+                });
 
-                if (response.ok) {
-                    showToast(data.message);
-                    //setTimeout(() => window.location.reload(), 1500);
-                } else {
-                    showToast(data.message, "danger");
-                }
+                modalInstance.show();
+
             } catch (error) {
                 showToast("אירעה שגיאה בדחיית הראיון", "danger");
-            }
-            finally {
-                await refreshData();
             }
         }
 

@@ -164,6 +164,13 @@
                              (interview.status.name() == 'REJECTED' ? 'נדחה' :
                              (interview.status.name() == 'COMPLETED' ? 'הושלם' : 'מבוטל')))}">
               </span>
+              <div th:if="${interview.status.name() == 'REJECTED' && interview.rejectionReason != null && !#strings.isEmpty(interview.rejectionReason)}"
+                   class="mt-1">
+                <small class="text-muted">
+                  <strong>סיבה:</strong> <span th:text="${interview.rejectionReason}"></span>
+                </small>
+              </div>
+
             </td>
             <td th:text="${interview.notes}"></td>
             <td>
