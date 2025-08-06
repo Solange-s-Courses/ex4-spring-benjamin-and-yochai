@@ -211,7 +211,7 @@
                             <span th:if="${interview.application.applicant.username == #authentication.name}">
                                 <div th:if="${interview.status.name() == 'SCHEDULED'}" class="d-flex gap-2 justify-content-center align-items-center">
                                     <form method="post" class="mb-0 confirm-interview-form d-inline" th:attr="data-interview-id=${interview.id}">
-                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                        <!--input type="hidden" th:name="$ {_csrf.parameterName}" th:value="$ {_csrf.token}" /-->
                                         <button type="submit" class="btn btn-success btn-sm">אשר</button>
                                     </form>
 

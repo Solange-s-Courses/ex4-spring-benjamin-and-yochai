@@ -153,6 +153,17 @@ const dashboardDom = function (){
 
                     <button type="button" class="btn btn-danger btn-sm reject-interview-btn" data-interview-id="${interview.id}">דחה</button>
                 `;
+
+                const form = row.querySelector(".confirm-interview-form");
+                form.addEventListener("submit", async (event) => {
+                    await setConfirmInterviewListener(form, event);
+                });
+
+                row.querySelector(".reject-interview-btn").addEventListener("click", async (event) => {
+                    event.preventDefault();
+                    await rejectInterview(interview.id);
+                });
+
             }
             else{
                 const infoStatus = getInterviewStatusInfo(interview.status);
