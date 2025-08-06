@@ -324,6 +324,9 @@ const dashboardDom = function (){
             } catch (error) {
                 console.error(error);
             }
+            finally {
+                modalInstance.show();
+            }
         }
 
         const confirmForms = document.querySelectorAll('.confirm-interview-form');
