@@ -18,6 +18,9 @@ public class DefaultAdminInitializer {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Creates a default admin user on application startup
+     */
     @PostConstruct
     public void createDefaultAdmin() {
         String username = "admin";

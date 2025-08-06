@@ -23,6 +23,15 @@ public class InterviewService {
     @Autowired
     private ApplicationRepository applicationRepository;
 
+    /**
+     * Schedules an interview
+     * 
+     * @param application Application for the interview
+     * @param interviewDate Interview date and time
+     * @param location Interview location
+     * @param notes Interview notes
+     * @param isVirtual Whether the interview is virtual
+     */
     @Transactional
     public void scheduleInterview(Application application, LocalDateTime interviewDate, String location, String notes, Boolean isVirtual) {
         validateInterviewDateTimeForCommander(interviewDate, application.getPosition().getPublisher().getId(), null);
@@ -43,7 +52,12 @@ public class InterviewService {
         interviewRepository.save(interview);
     }
 
-
+    /**
+     * Generates a Jitsi link for virtual interviews
+     * 
+     * @param interview Interview object
+     * @return Jitsi meeting link
+     */
     private String generateJitsiLink(Interview interview) {
         String roomId = "interview-" + interview.getApplication().getPosition().getId() + 
                        "-" + interview.getApplication().getApplicant().getUsername() +
@@ -54,6 +68,13 @@ public class InterviewService {
         return "https://meet.jit.si/" + roomId;
     }
 
+    /**
+     * Validates applicant interview time conflicts
+     * 
+     * @param interviewDate Proposed interview date
+     * @param applicantId Applicant ID
+     * @param excludeInterviewId Interview ID to exclude from validation
+     */
     private void validateApplicantInterviewTime(LocalDateTime interviewDate, Long applicantId, Long excludeInterviewId) {
         List<Interview> allInterviews = interviewRepository.findAll();
         for (Interview existingInterview : allInterviews) {
@@ -69,6 +90,11 @@ public class InterviewService {
         }
     }
 
+    /**
+     * Confirms an interview
+     * 
+     * @param interviewId Interview ID
+     */
     @Transactional
     public void confirmInterview(Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId).orElseThrow();
@@ -79,6 +105,12 @@ public class InterviewService {
         interviewRepository.save(interview);
     }
 
+    /**
+     * Rejects an interview
+     * 
+     * @param interviewId Interview ID
+     * @param reason Rejection reason
+     */
     @Transactional
     public void rejectInterview(Long interviewId, String reason) {
         Interview interview = interviewRepository.findById(interviewId).orElseThrow();
@@ -87,10 +119,22 @@ public class InterviewService {
         interviewRepository.save(interview);
     }
 
+    /**
+     * Gets interviews for an application
+     * 
+     * @param application Application to get interviews for
+     * @return List of interviews for the application
+     */
     public List<Interview> getInterviewsByApplication(Application application) {
         return interviewRepository.findByApplication(application);
     }
 
+    /**
+     * Gets interviews for a user
+     * 
+     * @param user User to get interviews for
+     * @return List of interviews for the user
+     */
     public List<Interview> getInterviewsByUser(AppUser user) {
         List<Application> applications = applicationRepository.findByApplicant(user);
         List<Interview> interviews = new java.util.ArrayList<>();
@@ -100,10 +144,21 @@ public class InterviewService {
         return interviews;
     }
 
+    /**
+     * Gets an interview by ID
+     * 
+     * @param id Interview ID
+     * @return Interview object or null if not found
+     */
     public Interview getInterviewById(Long id) {
         return interviewRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Cancels an interview
+     * 
+     * @param interview Interview to cancel
+     */
     @Transactional
     public void cancelInterview(Interview interview) {
         interview.setStatus(InterviewStatus.CANCELED);
@@ -111,6 +166,11 @@ public class InterviewService {
         interviewRepository.save(interview);
     }
 
+    /**
+     * Completes an interview
+     * 
+     * @param id Interview ID
+     */
     @Transactional
     public void completeInterview(Long id) {
         Interview interview = interviewRepository.findById(id).orElseThrow();
@@ -118,7 +178,13 @@ public class InterviewService {
         interviewRepository.save(interview);
     }
 
-
+    /**
+     * Validates interview date/time for commander
+     * 
+     * @param interviewDate Proposed interview date
+     * @param commanderId Commander ID
+     * @param excludeInterviewId Interview ID to exclude from validation
+     */
     private void validateInterviewDateTimeForCommander(LocalDateTime interviewDate, Long commanderId, Long excludeInterviewId) {
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
         
@@ -141,6 +207,15 @@ public class InterviewService {
         }
     }
 
+    /**
+     * Updates an interview
+     * 
+     * @param interviewId Interview ID
+     * @param newDate New interview date
+     * @param location New location
+     * @param notes New notes
+     * @param isVirtual Whether the interview is virtual
+     */
     @Transactional
     public void updateInterview(Long interviewId, LocalDateTime newDate, String location, String notes, Boolean isVirtual) {
         Interview interview = getInterviewById(interviewId);
@@ -166,17 +241,35 @@ public class InterviewService {
         interviewRepository.save(interview);
     }
 
-    public String getUpdateMessage(Interview originalInterview, java.time.LocalDateTime newDate) {
+    /**
+     * Gets update message for interview changes
+     * 
+     * @param originalInterview Original interview object
+     * @param newDate New interview date
+     * @return Update message
+     */
+    public String getUpdateMessage(Interview originalInterview, LocalDateTime newDate) {
         boolean dateChanged = !originalInterview.getInterviewDate().equals(newDate);
         return dateChanged ? 
             "הראיון עודכן בהצלחה. הסטטוס שונה ל'ממתין לאישור' עקב שינוי בתאריך/שעה." :
             "הראיון עודכן בהצלחה.";
     }
 
+    /**
+     * Gets all interviews
+     * 
+     * @return List of all interviews
+     */
     public java.util.List<Interview> getAllInterviews() {
         return interviewRepository.findAll();
     }
 
+    /**
+     * Schedules an interview via API
+     * 
+     * @param form Interview form data
+     * @return ResponseEntity containing scheduling result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> scheduleInterviewApi(InterviewForm form) {
         Map<String, Object> response = new HashMap<>();
@@ -204,6 +297,14 @@ public class InterviewService {
         }
     }
 
+    /**
+     * Edits an interview via API
+     * 
+     * @param id Interview ID
+     * @param form Interview form data
+     * @param username Username of the editor
+     * @return ResponseEntity containing edit result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> editInterviewApi(Long id, InterviewForm form, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -250,6 +351,13 @@ public class InterviewService {
         }
     }
 
+    /**
+     * Confirms an interview via API
+     * 
+     * @param interviewId Interview ID
+     * @param username Username of the confirmer
+     * @return ResponseEntity containing confirmation result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> confirmInterviewApi(Long interviewId, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -279,6 +387,14 @@ public class InterviewService {
         }
     }
 
+    /**
+     * Rejects an interview via API
+     * 
+     * @param interviewId Interview ID
+     * @param reason Rejection reason
+     * @param username Username of the rejecter
+     * @return ResponseEntity containing rejection result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> rejectInterviewApi(Long interviewId, String reason, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -305,6 +421,13 @@ public class InterviewService {
         }
     }
 
+    /**
+     * Completes an interview via API
+     * 
+     * @param interviewId Interview ID
+     * @param username Username of the completer
+     * @return ResponseEntity containing completion result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> completeInterviewApi(Long interviewId, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -330,6 +453,14 @@ public class InterviewService {
         }
     }
 
+    /**
+     * Updates interview summary via API
+     * 
+     * @param interviewId Interview ID
+     * @param summary Interview summary
+     * @param username Username of the updater
+     * @return ResponseEntity containing update result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> updateInterviewSummaryApi(Long interviewId, String summary, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -357,7 +488,12 @@ public class InterviewService {
         }
     }
 
-
+    /**
+     * Finds interviews by application
+     * 
+     * @param application Application to find interviews for
+     * @return List of interviews for the application
+     */
     public List<Interview> findByApplication(Application application) {
         return interviewRepository.findByApplication(application);
     }

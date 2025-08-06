@@ -6,11 +6,23 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class OtherJobTitleValidatorImpl implements ConstraintValidator<OtherJobTitleValidator, PositionForm> {
 
+    /**
+     * Initializes the validator
+     * 
+     * @param constraintAnnotation OtherJobTitleValidator annotation
+     */
     @Override
     public void initialize(OtherJobTitleValidator constraintAnnotation) {
         // No initialization needed
     }
 
+    /**
+     * Validates other job title when "other" is selected
+     * 
+     * @param positionForm Position form to validate
+     * @param context Validation context
+     * @return true if validation passes, false otherwise
+     */
     @Override
     public boolean isValid(PositionForm positionForm, ConstraintValidatorContext context) {
         if (positionForm == null) {

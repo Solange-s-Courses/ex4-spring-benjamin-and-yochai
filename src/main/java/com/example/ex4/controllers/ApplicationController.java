@@ -21,7 +21,15 @@ public class ApplicationController {
     private ApplicationService applicationService;
     @Autowired
     private InterviewService interviewService;
-
+    
+    /**
+     * Displays application details page
+     * 
+     * @param id Application ID
+     * @param model Spring MVC model
+     * @param principal Current authenticated user
+     * @return The name of the application details template or redirect to error
+     */
     @GetMapping("/{id}")
     public String application(@PathVariable Integer id, Model model, Principal principal) {
         Application app = applicationService.getApplicationById(id);

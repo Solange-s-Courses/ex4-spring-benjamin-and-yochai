@@ -34,11 +34,25 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
+    /**
+     * Creates and configures the authentication manager
+     * 
+     * @param config Authentication configuration
+     * @return AuthenticationManager bean
+     * @throws Exception if configuration fails
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * Configures the security filter chain
+     * 
+     * @param http HttpSecurity object
+     * @return SecurityFilterChain bean
+     * @throws Exception if configuration fails
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         RequestMatcher logoutMatcher = request ->

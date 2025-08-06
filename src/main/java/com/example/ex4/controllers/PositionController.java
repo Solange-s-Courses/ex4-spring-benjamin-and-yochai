@@ -28,11 +28,27 @@ public class PositionController {
     @Autowired
     private ApplicationService applicationService;
 
+    /**
+     * Displays the positions page
+     * 
+     * @param model Spring MVC model
+     * @param session HTTP session
+     * @return The name of the positions page template
+     */
     @GetMapping("")
     public String positionsPage(Model model, HttpSession session) {
         return positionService.getPositionsPage(model, session);
     }
 
+    /**
+     * Displays a specific position page
+     * 
+     * @param id Position ID
+     * @param model Spring MVC model
+     * @param principal Current authenticated user
+     * @param request HTTP request object
+     * @return The name of the position page template
+     */
     @GetMapping("/{id}")
     public String getPosition(@PathVariable Long id, Model model, Principal principal, HttpServletRequest request) {
         String result = positionService.getPositionPage(id, model);
@@ -49,11 +65,29 @@ public class PositionController {
         return result;
     }
 
+    /**
+     * Displays the edit position form
+     * 
+     * @param id Position ID
+     * @param model Spring MVC model
+     * @param principal Current authenticated user
+     * @return The name of the edit position template
+     */
     @GetMapping("/edit/{id}")
     public String editPositionPage(@PathVariable Long id, Model model, Principal principal) {
         return positionService.getEditPosition(id, model, principal);
     }
 
+    /**
+     * Processes the edit position form submission
+     * 
+     * @param id Position ID
+     * @param positionForm Form data
+     * @param result Binding result for validation
+     * @param redirectAttributes Redirect attributes for flash messages
+     * @param principal Current authenticated user
+     * @return Redirect URL or template name
+     */
     @PutMapping("/{id}")
     public String editPosition(@PathVariable Long id, @Valid @ModelAttribute("positionForm") PositionForm positionForm,
                                BindingResult result,
@@ -61,11 +95,27 @@ public class PositionController {
         return positionService.processEditPositionForm(id ,positionForm, result, principal.getName(), redirectAttributes);
     }
 
+    /**
+     * Displays the add position form
+     * 
+     * @param model Spring MVC model
+     * @return The name of the add position template
+     */
     @GetMapping("/add")
     public String showAddPositionForm(Model model) {
         return positionService.getAddPositionForm(model);
     }
 
+    /**
+     * Processes the add position form submission
+     * 
+     * @param positionForm Form data
+     * @param result Binding result for validation
+     * @param model Spring MVC model
+     * @param redirectAttributes Redirect attributes for flash messages
+     * @param principal Current authenticated user
+     * @return Redirect URL or template name
+     */
     @PostMapping("/add")
     public String addPosition(@Valid @ModelAttribute("positionForm") PositionForm positionForm,
                               BindingResult result, Model model,

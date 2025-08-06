@@ -41,50 +41,110 @@ public class PositionForm {
         this.requirements = List.of(position.getRequirements().split(", "));
     }
 
+    /**
+     * Gets the job title
+     *
+     * @return Job title
+     */
     public String getJobTitle() {
         return jobTitle;
     }
 
+    /**
+     * Sets the job title
+     *
+     * @param jobTitle Job title to set
+     */
     public void setJobTitle(String jobTitle) {
         this.jobTitle = jobTitle;
     }
 
+    /**
+     * Gets the other job title
+     *
+     * @return Other job title
+     */
     public String getOtherJobTitle() {
         return otherJobTitle;
     }
 
+    /**
+     * Sets the other job title
+     *
+     * @param otherJobTitle Other job title to set
+     */
     public void setOtherJobTitle(String otherJobTitle) {
         this.otherJobTitle = otherJobTitle;
     }
 
+    /**
+     * Gets the location
+     *
+     * @return Location
+     */
     public LocationRegion getLocation() {
         return location;
     }
 
+    /**
+     * Sets the location
+     *
+     * @param location Location to set
+     */
     public void setLocation(LocationRegion location) {
         this.location = location;
     }
 
+    /**
+     * Gets the assignment type
+     *
+     * @return Assignment type
+     */
     public String getAssignmentType() {
         return assignmentType;
     }
 
+    /**
+     * Sets the assignment type
+     *
+     * @param assignmentType Assignment type to set
+     */
     public void setAssignmentType(String assignmentType) {
         this.assignmentType = assignmentType;
     }
 
+    /**
+     * Gets the description
+     *
+     * @return Description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Sets the description
+     *
+     * @param description Description to set
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Gets the requirements
+     *
+     * @return Requirements array
+     */
     public List<String> getRequirements() {
         return requirements;
     }
 
+    /**
+     * Sets the requirements
+     *
+     * @param requirements Requirements array to set
+     */
     public void setRequirements(List<String> requirements) {
         this.requirements = requirements;
     }

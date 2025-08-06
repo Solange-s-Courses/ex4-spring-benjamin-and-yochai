@@ -36,7 +36,15 @@ public class AppUserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Spring Security UserDetailsService implementation
+    /**
+     * Loads user details for Spring Security authentication
+     * 
+     * @param username Username to load
+     * @return UserDetails object
+     * @throws UsernameNotFoundException if user not found
+     * @throws LockedException if account is blocked
+     * @throws DisabledException if account is pending approval
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser user = appUserRepository.findByUsername(username)
@@ -53,30 +61,71 @@ public class AppUserService implements UserDetailsService {
         return user;
     }
 
+    /**
+     * Retrieves all users
+     * 
+     * @return List of all users
+     */
     public List<AppUser> getAllUsers() {
         return appUserRepository.findAll();
     }
 
+    /**
+     * Retrieves users with pending registration status
+     * 
+     * @return List of pending users
+     */
     public List<AppUser> getPendingUsers() {
         return appUserRepository.findByRegistrationStatus(RegistrationStatus.PENDING);
     }
 
+    /**
+     * Retrieves a user by ID
+     * 
+     * @param id User ID
+     * @return Optional containing the user if found
+     */
     public Optional<AppUser> getUserById(Long id) {
         return appUserRepository.findById(id);
     }
 
+    /**
+     * Retrieves a user by username
+     * 
+     * @param username Username to search for
+     * @return AppUser object
+     * @throws UsernameNotFoundException if user not found
+     */
     public AppUser getUserByUsername(String username) {
         return appUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
+    /**
+     * Checks if a username exists
+     * 
+     * @param username Username to check
+     * @return true if username exists, false otherwise
+     */
     public boolean existsByUsername(String username) {
         return appUserRepository.existsByUsername(username);
     }
 
+    /**
+     * Checks if an email exists
+     * 
+     * @param email Email to check
+     * @return true if email exists, false otherwise
+     */
     public boolean existsByEmail(String email) {
         return appUserRepository.existsByEmail(email);
     }
 
+    /**
+     * Saves a new user from registration form
+     * 
+     * @param form Registration form data
+     * @throws IOException if file processing fails
+     */
     @Transactional
     public void saveUser(RegistrationForm form) throws IOException {
         form.setPassword(passwordEncoder.encode(form.getPassword()));
@@ -85,6 +134,13 @@ public class AppUserService implements UserDetailsService {
         appUserRepository.save(appUser);
     }
 
+    /**
+     * Changes a user's registration status
+     * 
+     * @param id User ID
+     * @param status New registration status
+     * @return ResponseEntity containing the updated user
+     */
     @Transactional
     public ResponseEntity<AppUser> changeUserStatus(Long id, RegistrationStatus status) {
         Optional<AppUser> userOpt = getUserById(id);
@@ -99,6 +155,13 @@ public class AppUserService implements UserDetailsService {
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * Changes a user's role
+     * 
+     * @param id User ID
+     * @param role New role
+     * @return ResponseEntity containing the updated user
+     */
     @Transactional
     public ResponseEntity<AppUser> changeUserRole(Long id, Role role) {
         Optional<AppUser> userOpt = appUserRepository.findById(id);

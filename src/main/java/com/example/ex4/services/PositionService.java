@@ -32,21 +32,42 @@ public class PositionService {
     @Autowired
     private InterviewRepository interviewRepository;
 
-
+    /**
+     * Finds a position by ID
+     * 
+     * @param id Position ID
+     * @return Position object or null if not found
+     */
     public Position findById(Long id) {
         return positionRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Saves a position
+     * 
+     * @param position Position to save
+     */
     @Transactional
     public void save(Position position) {
         positionRepository.save(position);
     }
 
+    /**
+     * Retrieves all distinct job titles
+     * 
+     * @return List of distinct job titles
+     */
     public List<String> getAllDistinctJobTitles() {
         return positionRepository.findDistinctJobTitles();
     }
 
-
+    /**
+     * Searches positions by status with optional search term
+     * 
+     * @param searchTerm Optional search term
+     * @param status Position status to filter by
+     * @return List of positions matching criteria
+     */
     private List<Position> searchPositionsByStatus(String searchTerm, PositionStatus status) {
         List<Position> jobs;
         if (searchTerm == null || searchTerm.isBlank()){
@@ -57,6 +78,12 @@ public class PositionService {
         return jobs;
     }
 
+    /**
+     * Gets active positions with string filters
+     * 
+     * @param searchTerm Optional search term
+     * @return Map containing jobs, locations, and service types
+     */
     private Map<String, Object> getActivePositionsWithStringFilters(String searchTerm) {
         List<Position> jobs = searchPositionsByStatus(searchTerm, PositionStatus.ACTIVE);
 
@@ -88,6 +115,13 @@ public class PositionService {
         return result;
     }
 
+    /**
+     * Gets the positions page data
+     * 
+     * @param model Spring MVC model
+     * @param session HTTP session
+     * @return Template name for positions page
+     */
     public String getPositionsPage(Model model, HttpSession session) {
         Map<String, Object> result = getActivePositionsWithStringFilters("");
 
@@ -99,6 +133,13 @@ public class PositionService {
         return "positions-page";
     }
 
+    /**
+     * Gets a specific position page
+     * 
+     * @param id Position ID
+     * @param model Spring MVC model
+     * @return Template name for position page
+     */
     public String getPositionPage(Long id, Model model) {
         Position position = positionRepository.findById(id).orElseThrow(() -> new RuntimeException("Position not found"));
 
@@ -106,6 +147,12 @@ public class PositionService {
         return "position";
     }
 
+    /**
+     * Gets the add position form
+     * 
+     * @param model Spring MVC model
+     * @return Template name for add position form
+     */
     public String getAddPositionForm(Model model) {
         PositionForm form = new PositionForm();
         form.setRequirements(Arrays.asList(""));
@@ -118,6 +165,15 @@ public class PositionService {
         return "add-position";
     }
 
+    /**
+     * Processes the add position form
+     * 
+     * @param form Position form data
+     * @param result Binding result for validation
+     * @param username Publisher username
+     * @param redirectAttributes Redirect attributes for flash messages
+     * @return Redirect URL or template name
+     */
     @Transactional
     public String processAddPositionForm(PositionForm form,
                                          BindingResult result, String username,
@@ -139,6 +195,13 @@ public class PositionService {
         }
     }
 
+    /**
+     * Reloads positions data
+     * 
+     * @param searchTerm Optional search term
+     * @param session HTTP session
+     * @return ResponseEntity containing positions data
+     */
     public ResponseEntity<Map<String, Object>> reloadPositions(String searchTerm, HttpSession session) {
          try {
             Map<String, Object> response = getActivePositionsWithStringFilters(searchTerm);
@@ -151,7 +214,12 @@ public class PositionService {
         }
     }
 
-
+    /**
+     * Gets positions with active application counts for a user
+     * 
+     * @param username Username to get positions for
+     * @return List of maps containing position data and application counts
+     */
     public List<Map<String, Object>> getPositionsWithActiveApplicationCounts(String username) {
         AppUser user = appUserService.getUserByUsername(username);
         List<Position> positions = positionRepository.findByPublisher(user);
@@ -169,6 +237,13 @@ public class PositionService {
         }).collect(Collectors.toList());
     }
 
+    /**
+     * Handles recent searches in session
+     * 
+     * @param searchTerm Search term to add
+     * @param session HTTP session
+     * @return List of recent searches
+     */
     private List<String> handleRecentSearches(String searchTerm, HttpSession session) {
         List<String> recentSearches = (List<String>) session.getAttribute("recent_searches");
         if (recentSearches == null) {
@@ -186,6 +261,14 @@ public class PositionService {
         return recentSearches;
     }
 
+    /**
+     * Changes the status of a position
+     * 
+     * @param id Position ID
+     * @param status New status
+     * @param username Username of the position publisher
+     * @return ResponseEntity containing status change result
+     */
     @Transactional
     public ResponseEntity<Map<String, Object>> changePositionStatus(Long id, String status, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -230,7 +313,14 @@ public class PositionService {
         }
     }
 
-
+    /**
+     * Gets the edit position form
+     * 
+     * @param id Position ID
+     * @param model Spring MVC model
+     * @param principal Current authenticated user
+     * @return Template name for edit position form
+     */
     public String getEditPosition(Long id, Model model, Principal principal) {
         Position position = findById(id);
         if (position == null || !position.getPublisher().getUsername().equals(principal.getName())) {
@@ -249,6 +339,16 @@ public class PositionService {
         return "add-position";
     }
 
+    /**
+     * Processes the edit position form
+     * 
+     * @param id Position ID
+     * @param positionForm Position form data
+     * @param result Binding result for validation
+     * @param username Publisher username
+     * @param redirectAttributes Redirect attributes for flash messages
+     * @return Redirect URL or template name
+     */
     @Transactional
     public String processEditPositionForm(Long id, @Valid PositionForm positionForm,
                                           BindingResult result, String username,
