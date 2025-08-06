@@ -1,4 +1,5 @@
 import {showToast} from "./toastUtils.js";
+import {genericSortingFunc, sortRowsByDate, sortRowsByText} from "./sortingFuncs.js";
 
 const dashboardDom = function (){
     function formatDate(isoString) {
@@ -110,6 +111,7 @@ const dashboardDom = function (){
         const upcomingInterviewCount = document.getElementById("upcomingInterviewCount");
         const myPositionsTbody = document.getElementById("myPositionsTbody");
         const myApplicationsTbody = document.getElementById("myApplicationsTbody");
+        const interviewsTable = document.getElementById("interviews-table");
         const futureInterviewsTbody = document.getElementById("futureInterviewsTbody");
         const username = document.getElementById("username").value;
 
@@ -141,7 +143,7 @@ const dashboardDom = function (){
         function comparePositionRows(data, row){
             const cols = row.querySelectorAll('td');
             cols[0].querySelector("a").textContent = data.position.jobTitle;
-            cols[1].textContent = data.position.location;
+            cols[1].textContent = data.position.location; //refactor to hebrew
             cols[2].textContent = data.position.assignmentType;
             cols[3].innerHTML = `<span class="badge ${getPositionStatusInfo(data.position.status).cssClass}">${getPositionStatusInfo(data.position.status).text}</span>`
             cols[4].textContent = data.activeApplications;
@@ -227,25 +229,40 @@ const dashboardDom = function (){
         }
 
         function compareInterviewRows(interview, row){
-            /*const cols = row.querySelectorAll('td');
+            const cols = row.querySelectorAll('td');
+
+            const commanderOffset = (cols.length === 8)? 1: 0;
+
             cols[0].textContent = interview.application.position.jobTitle;
 
-            const date = new Date(interview.interviewDate);
-            cols[2].textContent = date.toLocaleDateString('en-GB');
-            cols[3].textContent = interview.interviewDate;
-            if(!interview.isVirtual){
-                cols[4].textContent = interview.location;
-            }
-            if(username == interview.application.applicant.username){
-                cols[5].textContent = 'line 147 dashboard.js';
-            }
-            else{
-                cols[5].innerHTML = `<span class="badge ${getInterviewStatusInfo(interview.status).cssClass}">${getInterviewStatusInfo(interview.status).text}</span>`;
+            cols[1+commanderOffset].textContent = formatDate(interview.interviewDate)
+            cols[2+commanderOffset].textContent = formatTime(interview.interviewDate);
+            if(interview.isVirtual) {
+                cols[3 + commanderOffset].innerHTML =
+                    `<a href="${interview.jitsiLink}" target="_blank" class="btn btn-sm btn-primary">
+                        <i class="bi bi-camera-video"></i> הצטרף לפגישה
+                    </a>`;
+            } else {
+                cols[3 + commanderOffset].innerHTML = interview.location;
             }
 
-            cols[6]
-            cols[7]
-            cols[8]*/
+            if (username === interview.application.applicant.username && interview.status === "SCHEDULED") {
+                cols[4].innerHTML = `
+                    <form method="post" class="mb-0 confirm-interview-form d-inline" data-interview-id="${interview.id}">
+                        <!--input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /-->
+                        <button type="submit" class="btn btn-success btn-sm">אשר</button>
+                    </form>
+
+                    <button type="button" class="btn btn-danger btn-sm reject-interview-btn" data-interview-id="${interview.id}">דחה</button>
+                `;
+            }
+            else{
+                const infoStatus = getInterviewStatusInfo(interview.status);
+                cols[4+commanderOffset].innerHTML = `<span class="badge ${infoStatus.cssClass}">${infoStatus.text}</span>`;
+            }
+
+            cols[5+commanderOffset].textContent = interview.notes;
+
         }
 
         function addInterviewRow(interview, tbody){
@@ -255,6 +272,14 @@ const dashboardDom = function (){
             const formattedDate = formatDate(interview.interviewDate)
             const formattedTime = formatTime(interview.interviewDate)
             const statusInfo = getInterviewStatusInfo(interview.status);
+
+            let commanderHtml;
+            if(interview.application.position.publisher.username === username){
+                commanderHtml = `<td>${interview.application.applicant.firstName} ${interview.application.applicant.lastName}</td>`;
+            }
+            else{
+                commanderHtml = ``;
+            }
 
             let locationHtml = '';
             if (interview.isVirtual) {
@@ -275,18 +300,13 @@ const dashboardDom = function (){
 
             row.innerHTML = `
                 <td>${interview.application.position.jobTitle}</td>
-                <td>${interview.application.applicant.firstName} ${interview.application.applicant.lastName}</td>
+                ${commanderHtml}
                 <td>${formattedDate}</td>
                 <td>${formattedTime}</td>
                 <td>${locationHtml}</td>
                 <td>
                     <span class="badge ${statusInfo.cssClass}">${statusInfo.text}</span>
                     ${rejectionHtml}
-                </td>
-                <td>
-                <span class="badge ${statusInfo.cssClass}">
-                    ${statusInfo.text}
-                </span>
                 </td>
                 <td>${interview.notes || ''}</td>
                 <td>
@@ -323,13 +343,16 @@ const dashboardDom = function (){
 
                 if (response.ok) {
                     showToast(data.message);
-                    await refreshData();
                     //setTimeout(() => window.location.reload(), 1500);
                 } else {
                     showToast(data.message, "danger");
                 }
-            } catch (error) {
+            }
+            catch (error) {
                 showToast("אירעה שגיאה באישור הראיון", "danger");
+            }
+            finally {
+                await refreshData();
             }
         }
 
@@ -361,6 +384,9 @@ const dashboardDom = function (){
             } catch (error) {
                 showToast("אירעה שגיאה בדחיית הראיון", "danger");
             }
+            finally {
+                await refreshData();
+            }
         }
 
         const confirmForms = document.querySelectorAll('.confirm-interview-form');
@@ -387,6 +413,7 @@ const dashboardDom = function (){
                     method: "GET"
                 })
                 if (!response.ok) throw Error();
+
                 const data = await response.json();
 
                 if(data.stats){
@@ -402,6 +429,19 @@ const dashboardDom = function (){
                 }
                 if(data.interviews){
                     reloadTable(data.interviews, futureInterviewsTbody, compareInterviewRows, addInterviewRow);
+
+                    const sortType = interviewsTable.dataset.sortType;
+                    if (sortType){
+                        const button = interviewsTable.querySelector(`[data-sort="${sortType}"]`);
+                        const colIndex = parseInt(button.dataset.col);
+
+                        if (sortType === 'date') {
+                            genericSortingFunc(interviewsTable, colIndex, sortRowsByDate, false);
+                        } else if (sortType === 'role') {
+                            genericSortingFunc(interviewsTable, colIndex, sortRowsByText, false);
+                        }
+                    }
+
                 }
             }catch (e){
                 console.error("error polling: " + e);
