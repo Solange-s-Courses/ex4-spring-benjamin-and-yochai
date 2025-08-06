@@ -37,7 +37,8 @@ public class ApplicationService {
 
     @Autowired
     private InterviewService interviewService;
-    
+
+    @Transactional
     public ResponseEntity<Map<String, Object>> submitApplication(Long positionId, String username) {
         Map<String, Object> response = new HashMap<>();
         try {
@@ -58,7 +59,6 @@ public class ApplicationService {
             
             if (existingApplication.isPresent()) {
                 Application existing = existingApplication.get();
-                // אם המועמדות מבוטלת, אפשר להגיש מחדש
                 if (existing.getStatus() == ApplicationStatus.CANCELED) {
                     existing.setStatus(ApplicationStatus.PENDING);
                     existing.setApplicationDate(LocalDateTime.now());
@@ -77,54 +77,23 @@ public class ApplicationService {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            response.put("message", "המועמדות הוגשה בהצלחה");
+            response.put("message", "אירעה שגיאה בהגשת המועמדות.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
-//    public boolean isResubmission(Long positionId, String username) {
-//        try {
-//            AppUser applicant = appUserService.getUserByUsername(username);
-//            Position position = positionService.findById(positionId);
-//
-//            if (applicant == null || position == null) {
-//                return false;
-//            }
-//
-//            Optional<Application> existingApplication =
-//                applicationRepository.findByApplicantAndPosition(applicant, position);
-//
-//            return existingApplication.isPresent() &&
-//                   existingApplication.get().getStatus() == ApplicationStatus.CANCELED;
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
 
     public List<Application> getUserApplications(String username) {
         try {
             AppUser user = appUserService.getUserByUsername(username);
             List<Application> applications = applicationRepository.findByApplicant(user);
-            return applications;//applications.stream()
-                    //.map(this::convertToDto)
-                    //.collect(Collectors.toList());
+            return applications;
         } catch (Exception e) {
             return new ArrayList<>();
         }
     }
 
-    /*public List<ApplicationDto> getPositionApplications(Long positionId) {
-        Position position = positionService.findById(positionId);
-        if (position == null) {
-            return new ArrayList<>();
-        }
-        
-        List<Application> applications = applicationRepository.findByPosition(position);
-        return applications.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }*/
 
+    @Transactional
     public boolean updateApplicationStatus(Long applicationId, ApplicationStatus status) {
         try {
             Optional<Application> applicationOpt = applicationRepository.findById(applicationId);
@@ -135,23 +104,6 @@ public class ApplicationService {
                 return true;
             }
             return false;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public boolean hasUserApplied(Long positionId, String username) {
-        try {
-            AppUser user = appUserService.getUserByUsername(username);
-            Position position = positionService.findById(positionId);
-            
-            if (user == null || position == null) {
-                return false;
-            }
-            
-            Optional<Application> application = applicationRepository.findByApplicantAndPosition(user, position);
-            
-            return application.isPresent() && application.get().getStatus() != ApplicationStatus.CANCELED;
         } catch (Exception e) {
             return false;
         }
@@ -175,13 +127,11 @@ public class ApplicationService {
             
             if (application.isPresent()) {
                 Application app = application.get();
-                // רק מועמדויות במצב PENDING יכולות להיות מבוטלות
+
                 if (app.getStatus() == ApplicationStatus.PENDING) {
-                    // ביטול המועמדות
                     app.setStatus(ApplicationStatus.CANCELED);
                     applicationRepository.save(app);
                     
-                    // ביטול כל הראיונות של המועמדות הזאת
                     List<Interview> interviews = interviewService.getInterviewsByApplication(app);
                     for (Interview interview : interviews) {
                         if (interview.getStatus() != InterviewStatus.CANCELED) {
@@ -229,32 +179,11 @@ public class ApplicationService {
         }
     }
 
-    /*private ApplicationDto convertToDto(Application application) {
-        String location = "-";
-        if (application.getPosition().getLocation() != null) {
-            location = application.getPosition().getLocation().name();
-        }
-        
-        String applicantName = application.getApplicant().getFirstName();
-        applicantName = applicantName + " " + application.getApplicant().getLastName();
-        
-        return new ApplicationDto(
-            application.getId(),
-            application.getApplicant().getId(),
-            applicantName,
-            application.getPosition().getId(),
-            application.getPosition().getJobTitle(),
-            location,
-            application.getPosition().getAssignmentType(),
-            application.getApplicationDate(),
-            application.getStatus()
-        );
-    }*/
-
     public Application getApplicationById(long id){
         return applicationRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public ResponseEntity<Map<String, Object>> approveApplicationApi(Long applicationId, String username) {
         Map<String, Object> response = new HashMap<>();
         
@@ -265,7 +194,6 @@ public class ApplicationService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
             
-            // בדיקת הרשאות - רק המו"ל של המשרה יכול לאשר/לדחות מועמדות
             if (!application.getPosition().getPublisher().getUsername().equals(username)) {
                 response.put("message", "אין לך הרשאה לאשר מועמדות זו");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
@@ -285,6 +213,7 @@ public class ApplicationService {
         }
     }
 
+    @Transactional
     public ResponseEntity<Map<String, Object>> rejectApplicationApi(Long applicationId, String username) {
         Map<String, Object> response = new HashMap<>();
         
@@ -295,7 +224,6 @@ public class ApplicationService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
             
-            // בדיקת הרשאות - רק המו"ל של המשרה יכול לאשר/לדחות מועמדות
             if (!application.getPosition().getPublisher().getUsername().equals(username)) {
                 response.put("message", "אין לך הרשאה לדחות מועמדות זו");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
@@ -303,7 +231,6 @@ public class ApplicationService {
             
             boolean success = updateApplicationStatus(applicationId, ApplicationStatus.REJECTED);
             if (success) {
-                // ביטול כל הראיונות של המועמדות הזאת
                 List<Interview> interviews = interviewService.getInterviewsByApplication(application);
                 for (Interview interview : interviews) {
                     if (interview.getStatus() != InterviewStatus.CANCELED) {

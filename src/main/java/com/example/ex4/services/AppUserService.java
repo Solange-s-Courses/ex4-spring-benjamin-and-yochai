@@ -69,10 +69,6 @@ public class AppUserService implements UserDetailsService {
         return appUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
-    public Optional<AppUser> getUserByEmail(String email) {
-        return appUserRepository.findByEmail(email);
-    }
-
     public boolean existsByUsername(String username) {
         return appUserRepository.existsByUsername(username);
     }
@@ -87,11 +83,6 @@ public class AppUserService implements UserDetailsService {
         AppUser appUser = new AppUser(form);
 
         appUserRepository.save(appUser);
-    }
-
-    @Transactional
-    public void updateUser(AppUser user) {
-        appUserRepository.save(user);
     }
 
     @Transactional
