@@ -41,11 +41,23 @@
           <div class="col-md-6"><strong>אימייל:</strong> <span th:text="${app.applicant.email}"></span></div>
           <div class="col-md-6"><strong>על המועמד:</strong> <span th:text="${app.applicant.about}"></span></div>
           <div class="col-md-6"><strong>תאריך הגשה:</strong> <span th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy HH:mm')}"></span></div>
+          <div class="col-md-6">
+            <strong>סטטוס מועמדות:</strong>
+            <span class="badge ms-2"
+                  th:classappend="${app.status.name() == 'PENDING' ? 'bg-warning' :
+                                 (app.status.name() == 'APPROVED' ? 'bg-success' :
+                                 (app.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-secondary'))}"
+                  th:text="${app.status.name() == 'PENDING' ? 'ממתין להחלטה' :
+                           (app.status.name() == 'APPROVED' ? 'התקבל' :
+                           (app.status.name() == 'REJECTED' ? 'נדחה' : 'בוטל'))}">
+            </span>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="card shadow-sm rounded-4 mb-4">
+    <div class="card shadow-sm rounded-4 mb-4"
+         th:classappend="${app.status.name() != 'PENDING' ? 'd-none' : ''}">
       <div class="card-header bg-white rounded-top-4 border-bottom-0">
         <h5 class="mb-0">פעולות על מועמדות</h5>
       </div>
@@ -62,7 +74,7 @@
             <button type="submit" class="btn btn-outline-danger w-100">דחה מועמדות</button>
           </form>
 
-          <form th:action="@{/interviews/schedule}" method="post" class="col-12 row g-3 align-items-center">
+          <form th:action="@{/interviews/schedule}" method="post" class="col-12 row g-3 align-items-center" id="scheduleInterviewForm">
             <input type="hidden" name="applicationId" th:value="${app.id}" />
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
@@ -78,12 +90,14 @@
 
             <div class="col-md-6">
               <label class="form-label">תאריך ושעה</label>
-              <input type="datetime-local" name="interviewDate" class="form-control" required min="" />
+              <input type="datetime-local" name="interviewDate" id="interviewDate" class="form-control" min="" />
+              <div class="invalid-feedback" id="interviewDate-error"></div>
             </div>
 
             <div class="col-md-6">
               <label class="form-label" id="locationLabel">מיקום</label>
-              <input type="text" name="location" id="locationInput" class="form-control" placeholder="מיקום פיזי" required />
+              <input type="text" name="location" id="locationInput" class="form-control" placeholder="מיקום פיזי" />
+              <div class="invalid-feedback" id="locationInput-error"></div>
             </div>
 
             <div class="col-md-6">
@@ -174,7 +188,8 @@
                         th:data-date="${#temporals.format(interview.interviewDate, 'yyyy-MM-dd''T''HH:mm')}" 
                         th:data-location="${interview.location}" 
                         th:data-notes="${interview.notes != null ? interview.notes : ''}"
-                        th:data-virtual="${interview.isVirtual != null ? interview.isVirtual : false}">
+                        th:data-virtual="${interview.isVirtual != null ? interview.isVirtual : false}"
+                        th:classappend="${app.status.name() == 'REJECTED' or app.status.name() == 'CANCELED' ? 'd-none' : ''}">
                   <i class="bi bi-pencil"></i> ערוך
                 </button>
                 
@@ -223,12 +238,14 @@
               
               <div class="mb-3">
                 <label class="form-label">תאריך ושעה</label>
-                <input type="datetime-local" name="interviewDate" id="editInterviewDate" class="form-control" required min="" />
+                <input type="datetime-local" name="interviewDate" id="editInterviewDate" class="form-control" min="" />
+                <div class="invalid-feedback" id="editInterviewDate-error"></div>
               </div>
               
               <div class="mb-3">
                 <label class="form-label" id="editLocationLabel">מיקום</label>
-                <input type="text" name="location" id="editLocationInput" class="form-control" placeholder="מיקום פיזי" required />
+                <input type="text" name="location" id="editLocationInput" class="form-control" placeholder="מיקום פיזי" />
+                <div class="invalid-feedback" id="editLocationInput-error"></div>
               </div>
               
               <div class="mb-3">
@@ -250,7 +267,7 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/toasts :: toast}"></div>
-<script th:src="@{/js/toasts.js}"></script>
+<script type="module" th:src="@{/js/toastUtils.js}"></script>
 <script type="module" th:src="@{/js/interviewForm.js}"></script>
 <script type="module" th:src="@{/js/interviewsSort.js}"></script>
 <script type="module" th:src="@{/js/application-details.js}"></script>

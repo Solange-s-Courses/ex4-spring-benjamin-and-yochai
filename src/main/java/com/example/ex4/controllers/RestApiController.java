@@ -141,61 +141,13 @@ public class RestApiController {
     @PostMapping("/interviews/schedule")
     @ResponseBody
     public ResponseEntity<?> scheduleInterview(@RequestBody InterviewForm form) {
-        try {
-            Application application = applicationRepository.findById(form.getApplicationId()).orElseThrow();
-            interviewService.scheduleInterview(
-                application,
-                LocalDateTime.parse(form.getInterviewDate()),
-                form.getLocation(),
-                form.getNotes(),
-                form.getIsVirtual()
-            );
-            return ResponseEntity.ok().body(Map.of("success", true, "message", "הראיון נקבע בהצלחה!"));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("success", false, "message", "אירעה שגיאה בקביעת הראיון. ודא שכל השדות תקינים ונסה שוב."));
-        }
+        return interviewService.scheduleInterviewApi(form);
     }
 
     @PostMapping("/interviews/{id}/edit")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> editInterview(@PathVariable Long id, @RequestBody InterviewForm form, Principal principal) {
-        Map<String, Object> response = new HashMap<>();
-        
-        try {
-            Interview originalInterview = interviewService.getInterviewById(id);
-            if (originalInterview == null) {
-                response.put("success", false);
-                response.put("message", "הראיון לא נמצא");
-                return ResponseEntity.ok(response);
-            }
-            
-            if (!originalInterview.getApplication().getPosition().getPublisher().getUsername().equals(principal.getName())) {
-                response.put("success", false);
-                response.put("message", "אין לך הרשאה לערוך ראיון זה");
-                return ResponseEntity.ok(response);
-            }
-            
-            LocalDateTime newDate = LocalDateTime.parse(form.getInterviewDate());
-            
-            Interview updatedInterview = interviewService.updateInterview(id, newDate, form.getLocation(), form.getNotes(), form.getIsVirtual());
-            
-            String message = interviewService.getUpdateMessage(originalInterview, newDate);
-            
-            response.put("success", true);
-            response.put("message", message);
-            return ResponseEntity.ok(response);
-            
-        } catch (IllegalArgumentException e) {
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "אירעה שגיאה בעדכון הראיון: " + e.getMessage());
-            return ResponseEntity.ok(response);
-        }
+        return interviewService.editInterviewApi(id, form, principal.getName());
     }
 
     @PostMapping("/interviews/{id}/confirm")

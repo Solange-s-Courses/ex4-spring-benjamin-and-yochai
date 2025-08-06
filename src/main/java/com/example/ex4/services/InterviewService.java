@@ -1,6 +1,7 @@
 package com.example.ex4.services;
 
 import com.example.ex4.models.*;
+import com.example.ex4.dto.InterviewForm;
 import com.example.ex4.repositories.ApplicationRepository;
 import com.example.ex4.repositories.InterviewRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -138,7 +140,7 @@ public class InterviewService {
 
     public void cancelInterview(Interview interview) {
         interview.setStatus(InterviewStatus.CANCELED);
-        interview.setInterviewSummary("מועמדות בוטלה");
+        //interview.setInterviewSummary("מועמדות בוטלה");
         interviewRepository.save(interview);
     }
 
@@ -199,7 +201,7 @@ public class InterviewService {
         }
     }
 
-    public Interview updateInterview(Long interviewId, java.time.LocalDateTime newDate, String location, String notes, Boolean isVirtual) {
+    public void updateInterview(Long interviewId, LocalDateTime newDate, String location, String notes, Boolean isVirtual) {
         Interview interview = getInterviewById(interviewId);
         if (interview == null) {
             throw new IllegalArgumentException("הראיון לא נמצא");
@@ -221,7 +223,7 @@ public class InterviewService {
             interview.setStatus(InterviewStatus.SCHEDULED);
         }
         
-        return interviewRepository.save(interview);
+        interviewRepository.save(interview);
     }
 
     public String getUpdateMessage(Interview originalInterview, java.time.LocalDateTime newDate) {
@@ -233,6 +235,77 @@ public class InterviewService {
 
     public java.util.List<Interview> getAllInterviews() {
         return interviewRepository.findAll();
+    }
+
+    public ResponseEntity<Map<String, Object>> scheduleInterviewApi(InterviewForm form) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Application application = applicationRepository.findById(form.getApplicationId()).orElseThrow();
+            scheduleInterview(
+                application,
+                LocalDateTime.parse(form.getInterviewDate()),
+                form.getLocation(),
+                form.getNotes(),
+                form.getIsVirtual()
+            );
+            response.put("success", true);
+            response.put("message", "הראיון נקבע בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "אירעה שגיאה בקביעת הראיון. ודא שכל השדות תקינים ונסה שוב.");
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    public ResponseEntity<Map<String, Object>> editInterviewApi(Long id, InterviewForm form, String username) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Interview originalInterview = getInterviewById(id);
+            if (originalInterview == null) {
+                response.put("success", false);
+                response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            if (!originalInterview.getApplication().getPosition().getPublisher().getUsername().equals(username)) {
+                response.put("success", false);
+                response.put("message", "אין לך הרשאה לערוך ראיון זה");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            Application application = originalInterview.getApplication();
+            if (application.getStatus() == ApplicationStatus.REJECTED || application.getStatus() == ApplicationStatus.CANCELED) {
+                response.put("success", false);
+                response.put("message", "לא ניתן לערוך ראיון כאשר המועמדות נדחתה או בוטלה");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            
+            LocalDateTime newDate = LocalDateTime.parse(form.getInterviewDate());
+            
+            updateInterview(id, newDate, form.getLocation(), form.getNotes(), form.getIsVirtual());
+            
+            String message = getUpdateMessage(originalInterview, newDate);
+            
+            response.put("success", true);
+            response.put("message", message);
+            return ResponseEntity.ok(response);
+            
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "אירעה שגיאה בעדכון הראיון: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     public ResponseEntity<Map<String, Object>> confirmInterviewApi(Long interviewId, String username) {
