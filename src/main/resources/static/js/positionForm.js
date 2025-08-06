@@ -97,8 +97,7 @@ function positionDom(){
             const requirementInputs = requirementsContainer.querySelectorAll('input');
 
             let isValid = true;
-            let hasValidRequirements = false;
-            
+
             requirementInputs.forEach((input) => {
                 const value = input.value;
                 
@@ -108,12 +107,10 @@ function positionDom(){
                 } else if (value.trim().length < 3) {
                     showError('דרישה חייבת להכיל לפחות 3 תווים', 'requirements');
                     isValid = false;
-                } else {
-                    //hasValidRequirements = true;
                 }
             });
             
-            if (/*hasValidRequirements && */ isValid) {  // לא מצליח להבין מה קורה פה-------------------------------------------------
+            if (isValid) {
                 showError('', 'requirements');
             }
             
@@ -130,7 +127,7 @@ function positionDom(){
             const isRequirementsValid = validateRequirements();
 
             return isJobTitleValid && isLocationValid && isAssignmentTypeValid &&
-                   isDescriptionValid && isRequirementsValid;//-----------------------------------------------------------------------------------
+                   isDescriptionValid && isRequirementsValid;
         }
 
         jobTitleSelect.addEventListener('change', function() {
@@ -147,12 +144,6 @@ function positionDom(){
         
         descriptionTextArea.addEventListener('input', validateDescription);
 
-        // what???????????????????????------------------------------------------------------------------------------------------
-        document.getElementById('requirementsContainer').addEventListener('input', function(e) {
-            if (e.target.name === 'requirements') {
-                validateRequirements();
-            }
-        });
 
         form.addEventListener('submit',  function(e) {
             if (!validateForm()) {
@@ -194,27 +185,6 @@ function positionDom(){
                 }
             });
         }
-/*
-        function updateRemoveButtons() {
-            const rows = document.querySelectorAll('#requirementsContainer .input-group');
-            rows.forEach((row, index) => {
-                const btn = row.querySelector('.remove-requirement');
-                const input = row.querySelector('input[name="requirements"]');
-
-                //עלול להיות מסוכן
-                if (!input.id) {
-                    input.id = `requirement-${index}`;
-                }
-                
-                if (rows.length > 1) {
-                    btn.classList.remove('d-none');
-                } else {
-                    btn.classList.add('d-none');
-                }
-            });
-        }
-
- */
 
         document.getElementById('addRequirementBtn').addEventListener('click', function () {
             const index = requirementsContainer.querySelectorAll('input').length;
@@ -231,31 +201,6 @@ function positionDom(){
             showError('', 'requirements');
             div.querySelector("input").addEventListener("input", validateRequirements)
         });
-        /*
-        document.getElementById('addRequirementBtn').onclick = function() {
-            const container = document.getElementById('requirementsContainer');
-            const row = document.createElement('div');
-            const index = container.children.length;
-            
-            row.className = 'input-group mb-2';
-            row.innerHTML = `
-                <input type="text" name="requirements" id="requirement-${index}" placeholder="הכנס דרישה נוספת לתפקיד" class="form-control rounded-3">
-                <button type="button" class="btn btn-outline-danger remove-requirement d-none">
-                    <i class="bi bi-trash"></i>
-                </button>
-            `;
-            container.appendChild(row);
-            //updateRemoveButtons();
-            updateRequirementsInputNames();
-            
-            const newInput = row.querySelector('input[name="requirements"]');
-            newInput.addEventListener('input', validateRequirements);
-            
-            // נקה שגיאות כשמוסיפים דרישה חדשה
-            showError('', 'requirements');
-        };
-
-         */
 
 
         requirementsContainer.addEventListener('click', function (e) {
@@ -266,30 +211,6 @@ function positionDom(){
                 showError('', 'requirements');
             }
         });
-        /*
-        document.getElementById('requirementsContainer').addEventListener('click', function(e) {
-            if (e.target.closest('.remove-requirement')) {
-                const rows = document.querySelectorAll('#requirementsContainer .input-group');
-                if (rows.length > 1) {
-                    e.target.closest('.input-group').remove();
-                    //updateRemoveButtons();
-                    updateRequirementsInputNames();
-                    
-                    // תמיד נקה שגיאות אחרי מחיקה
-                    showError('', 'requirements');
-                    
-                    // אם נשארו דרישות, בדוק אותן מחדש
-                    const remainingInputs = document.querySelectorAll('#requirementsContainer input[name="requirements"]');
-                    if (remainingInputs.length > 0) {
-                        validateRequirements();
-                    }
-                }
-            }
-        });
-
-         */
-
-        //updateRemoveButtons();
         updateRequirementsInputNames();
     });
 }
