@@ -249,7 +249,7 @@ const dashboardDom = function (){
             if (username === interview.application.applicant.username && interview.status === "SCHEDULED") {
                 cols[4].innerHTML = `
                     <form method="post" class="mb-0 confirm-interview-form d-inline" data-interview-id="${interview.id}">
-                        <!--input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /-->
+                        <!--input type="hidden" th:name="$ {_csrf.parameterName}" th:value="$ {_csrf.token}" /-->
                         <button type="submit" class="btn btn-success btn-sm">אשר</button>
                     </form>
 
