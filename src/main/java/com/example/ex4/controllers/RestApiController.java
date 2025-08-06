@@ -104,7 +104,7 @@ public class RestApiController {
         return positionService.reloadPositions(searchTerm, session);
     }
 
-    @GetMapping("/application/{id}/apply")
+    @GetMapping("/applications/{id}/apply")
     public ResponseEntity<Map<String, Object>> applyForPosition(@PathVariable Long id,
                                    Principal principal) {
         return applicationService.submitApplication(id, principal.getName());
@@ -120,7 +120,7 @@ public class RestApiController {
 //        }
     }
 
-    @GetMapping("/application/{id}/cancel")
+    @GetMapping("/applications/{id}/cancel")
     public ResponseEntity<Map<String, Object>> cancelApplication(@PathVariable Long id,
                                 Principal principal) {
         return applicationService.cancelApplication(id, principal.getName());
@@ -224,6 +224,11 @@ public class RestApiController {
     @GetMapping("/positions/{positionId}/poll")
     public ResponseEntity<Map<String, Object>> pollPositionApplicants(@PathVariable Long positionId, Principal principal) {
         return applicationService.pollPositionApplicants(positionId, principal);
+    }
+
+    @GetMapping("/applications/{applicationId}/poll")
+    public ResponseEntity<Map<String, Object>> pollApplicationCommander(@PathVariable Long applicationId, Principal principal) {
+        return applicationService.pollApplicantsCommander(applicationId, principal);
     }
 }
 

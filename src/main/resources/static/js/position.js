@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const sendReq = async(btn, divToHide, divToShow)=>{
         try{
             btn.disabled = true;
-            const response = await fetch(`/restapi/application/${btn.dataset.positionId}/${btn.dataset.action}`,
+            const response = await fetch(`/restapi/applications/${btn.dataset.positionId}/${btn.dataset.action}`,
                 {
                     method: "GET"
                 });
@@ -109,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         async function reload(){
             try{
-
                 const response = await fetch(`/restapi/positions/${positionId}/poll`, {
                     method: "GET"
                 })

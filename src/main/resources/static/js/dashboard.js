@@ -133,8 +133,9 @@ const dashboardDom = function (){
 
             cols[0].textContent = interview.application.position.jobTitle;
 
-            cols[1+commanderOffset].textContent = formatDate(interview.interviewDate)
+            cols[1+commanderOffset].textContent = formatDate(interview.interviewDate);
             cols[2+commanderOffset].textContent = formatTime(interview.interviewDate);
+
             if(interview.isVirtual) {
                 cols[3 + commanderOffset].innerHTML =
                     `<a href="${interview.jitsiLink}" target="_blank" class="btn btn-sm btn-primary">
@@ -147,7 +148,7 @@ const dashboardDom = function (){
             if (username === interview.application.applicant.username && interview.status === "SCHEDULED") {
                 cols[4].innerHTML = `
                     <form method="post" class="mb-0 confirm-interview-form d-inline" data-interview-id="${interview.id}">
-                        <!--input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /-->
+                        <!--input type="hidden" th:name="$ {_csrf.parameterName}" th:value="$ {_csrf.token}" /-->
                         <button type="submit" class="btn btn-success btn-sm">אשר</button>
                     </form>
 

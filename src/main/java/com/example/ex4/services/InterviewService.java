@@ -410,7 +410,11 @@ public class InterviewService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    
+
+    public List<Interview> findByApplication(Application application) {
+        return interviewRepository.findByApplication(application);
+    }
+
 //    public ResponseEntity<Map<String, Object>> changeInterviewDecisionApi(Long interviewId, String newStatus, String reason, String username) {
 //        Map<String, Object> response = new HashMap<>();
 //
