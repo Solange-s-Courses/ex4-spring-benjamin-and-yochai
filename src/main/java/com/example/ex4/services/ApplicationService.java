@@ -11,6 +11,7 @@ import com.example.ex4.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -321,4 +322,22 @@ public class ApplicationService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-} 
+
+    public ResponseEntity<Map<String, Object>> pollPositionApplicants(Long positionId, Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+        Position position = positionService.findById(positionId);
+
+        if (position == null) {
+            response.put("message", "המועמדות לא נמצאה");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        if (!position.getPublisher().getUsername().equals(principal.getName())) {
+            response.put("message", "אין הרשאה");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        List<Application>applications = applicationRepository.findByPosition(position);
+        response.put("applications", applications);
+        return ResponseEntity.ok(response);
+    }
+}

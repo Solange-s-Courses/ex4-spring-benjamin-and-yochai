@@ -1,4 +1,5 @@
 import {showToast} from "./toastUtils.js";
+import {getApplicationStatusInfo, formatDateTime} from "./textUtils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     //users
@@ -8,7 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelApplicationBtn = document.getElementById("cancel-application-btn");
     const applyPositionBtn = document.getElementById("apply-position-btn");
     //commander
-    const changeStatusForm = document.getElementById("changeStatusForm")
+    const changeStatusForm = document.getElementById("changeStatusForm");
+    const applicantTable = document.getElementById("applicantTable");
+    let pollingInterval = null;
 
     const sendReq = async(btn, divToHide, divToShow)=>{
         try{
@@ -73,12 +76,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (changeStatusForm){
         const selector = changeStatusForm.querySelector("select");
+        const positionId = selector.dataset.positionId;
 
         changeStatusForm.addEventListener("submit", async (e)=>{
             e.preventDefault();
             const originalStatus = selector.dataset.status;
             const choosenStatus = selector.value;
-            const positionId = selector.dataset.positionId;
+
 
             if (originalStatus === choosenStatus) return;
 
@@ -98,7 +102,69 @@ document.addEventListener("DOMContentLoaded", () => {
                 selector.dataset.status = choosenStatus;
             }catch(e){
                 showToast(e.message || "שגיאה בעדכון סטטוס המשרה", "danger")
+            }finally {
+                await reload();
             }
+        })
+
+        async function reload(){
+            try{
+
+                const response = await fetch(`/restapi/positions/${positionId}/poll`, {
+                    method: "GET"
+                })
+                if (!response.ok) throw Error("Failed to poll");
+
+                const data = (await response.json()).applications;
+                const tbody = applicantTable.querySelector("tbody");
+
+                const emptyRow = tbody.querySelector("tr td[colspan='4']");
+                if (emptyRow && data.length > 0) {
+                    emptyRow.parentElement.remove();
+                }
+
+                for (const app of data) {
+                    const existingRow = tbody.querySelector(`tr[application-id="${app.id}"]`);
+                    const statusInfo = getApplicationStatusInfo(app.status);
+
+                    if (existingRow) {
+                        const cols = existingRow.querySelectorAll('td');
+                        cols[3].innerHTML = `
+                            <span class="badge ${statusInfo.cssClass}"> ${statusInfo.text}</span>
+                        `;
+                    }
+                    else {
+                        const tr = document.createElement("tr");
+                        tr.setAttribute("application-id", app.id);
+
+                        tr.innerHTML = `
+                            <td>
+                                <a href="${'/application/' + app.id}">
+                                    ${app.applicant.firstName + ' ' + app.applicant.lastName}
+                                </a>
+                            </td>
+                            <td>${app.applicant.email}</td>
+                            <td>${formatDateTime(app.applicationDate)}</td>
+                            <td>
+                                <span class="badge ${statusInfo.cssClass}"> ${statusInfo.text} </span>
+                            </td>
+                        `
+
+                        tbody.appendChild(tr);
+                    }
+                }
+            }
+            catch (e){
+                console.error("error polling: " + e);
+            }
+        }
+
+        pollingInterval = setInterval(reload, 5000);
+    }
+
+    if (pollingInterval){
+        window.addEventListener("beforeunload", ()=>{
+            clearInterval(pollingInterval);
         })
     }
 
