@@ -1,6 +1,6 @@
 import {showToast} from "./toastUtils.js";
 import {genericSortingFunc, sortRowsByDate, sortRowsByText} from "./sortingFuncs.js";
-import {formatDate, formatTime, getPositionStatusInfo, getInterviewStatusInfo, getApplicationStatusInfo} from "./textUtils.js"
+import {formatDate, formatTime, getPositionStatusInfo, getInterviewStatusInfo, getApplicationStatusInfo, locationEnumToHebrew} from "./textUtils.js"
 
 const dashboardDom = function (){
     document.addEventListener("DOMContentLoaded",()=>{
@@ -12,6 +12,9 @@ const dashboardDom = function (){
         const interviewsTable = document.getElementById("interviews-table");
         const futureInterviewsTbody = document.getElementById("futureInterviewsTbody");
         const username = document.getElementById("username").value;
+        const modal = document.getElementById('rejectionModal');
+        const modalInstance = new bootstrap.Modal(modal);
+
 
 
         function reloadTable(data, tbody, compareRows, addRow){
@@ -41,7 +44,7 @@ const dashboardDom = function (){
         function comparePositionRows(data, row){
             const cols = row.querySelectorAll('td');
             cols[0].querySelector("a").textContent = data.position.jobTitle;
-            cols[1].textContent = data.position.location; //refactor to hebrew
+            cols[1].textContent = locationEnumToHebrew(data.position.location); //refactor to hebrew
             cols[2].textContent = data.position.assignmentType;
             cols[3].innerHTML = `<span class="badge ${getPositionStatusInfo(data.position.status).cssClass}">${getPositionStatusInfo(data.position.status).text}</span>`
             cols[4].textContent = data.activeApplications;
@@ -59,7 +62,7 @@ const dashboardDom = function (){
                         ${data.position.jobTitle}
                     </a>
                 </td>
-                <td>${data.position.location}</td>
+                <td>${locationEnumToHebrew(data.position.location)}</td>
                 <td>${data.position.assignmentType}</td>
                 <td>
                     <span class="badge ${statusInfo.cssClass}">
@@ -85,7 +88,7 @@ const dashboardDom = function (){
         function compareApplicationRows(application, row){
             const cols = row.querySelectorAll('td');
             cols[0].querySelector("a").textContent = application.position.jobTitle;
-            cols[1].textContent = application.position.location;
+            cols[1].textContent = locationEnumToHebrew(application.position.location);
             cols[2].textContent = application.position.assignmentType;
             cols[3].textContent = formatDate(application.applicationDate);
             cols[4].innerHTML = `<span class="badge ${getApplicationStatusInfo(application.status).cssClass}">${getApplicationStatusInfo(application.status).text}</span>`
@@ -152,12 +155,30 @@ const dashboardDom = function (){
                         <button type="submit" class="btn btn-success btn-sm">אשר</button>
                     </form>
 
-                    <button type="button" class="btn btn-danger btn-sm reject-interview-btn" data-interview-id="${interview.id}">דחה</button>
+                        <button type="button" class="btn btn-danger btn-sm reject-interview-btn" data-interview-id="${interview.id}">דחה</button>
+                    </div>
                 `;
+
+                const form = row.querySelector(".confirm-interview-form");
+                form.addEventListener("submit", async (event) => {
+                    await setConfirmInterviewListener(form, event);
+                });
+
+                row.querySelector(".reject-interview-btn").addEventListener("click", async (event) => {
+                    event.preventDefault();
+                    await rejectInterview(interview.id);
+                });
+
             }
             else{
                 const infoStatus = getInterviewStatusInfo(interview.status);
-                cols[4+commanderOffset].innerHTML = `<span class="badge ${infoStatus.cssClass}">${infoStatus.text}</span>`;
+                let reason = `<span class="badge ${infoStatus.cssClass}">${infoStatus.text}</span>`;
+
+                if (interview.status === 'REJECTED' && interview.rejectionReason &&
+                    interview.application.applicant.username !== username) {
+                    reason += `<div class="mt-1"><small class="text-muted"><strong>סיבה:</strong> ${interview.rejectionReason}</small></div>`;
+                }
+                cols[4+commanderOffset].innerHTML = reason;
             }
 
             cols[5+commanderOffset].textContent = interview.notes;
@@ -263,23 +284,45 @@ const dashboardDom = function (){
 
         async function rejectInterview(interviewId) {
             try {
-                const response = await fetch(`/restapi/interviews/${interviewId}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''
-                    },
-                    body: JSON.stringify({ reason: null })
-                });
+                // ניקוי שדה הקלט
+                document.getElementById('rejectionReason').value = '';
 
-                const data = await response.json();
+                // טיפול בלחיצה על כפתור דחיה
+                const confirmBtn = document.getElementById('confirmRejectBtn');
 
-                if (response.ok) {
-                    showToast(data.message);
+                // הסרת event listeners קודמים
+                const newConfirmBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+                newConfirmBtn.addEventListener('click', async () => {
+                    const reason = document.getElementById('rejectionReason').value.trim();
+
+                    try{
+                    const response = await fetch(`/restapi/interviews/${interviewId}/reject`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || ''
+                        },
+                        body: JSON.stringify({ reason: reason || null })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showToast(data.message);
+                        modalInstance.hide();
                     //setTimeout(() => window.location.reload(), 1500);
-                } else {
-                    showToast(data.message, "danger");
-                }
+                    } else {
+                        showToast(data.message, "danger");
+                    }
+                    }catch (e) {
+
+                    }finally {
+                        await refreshData();
+                    }
+                    });
+
             } catch (error) {
                 showToast("אירעה שגיאה בדחיית הראיון", "danger");
             }

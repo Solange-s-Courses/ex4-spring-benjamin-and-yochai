@@ -12,7 +12,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleAnyException(Exception exc) {
         System.out.println("InvalidDataAccessApiUsageException at " + exc.getMessage() + ": " + exc);
-        //exc.printStackTrace();
         return "error";
     }
 }

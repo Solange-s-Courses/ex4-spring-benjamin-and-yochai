@@ -105,3 +105,17 @@ export function getInterviewStatusInfo(status) {
         text: statusName
     };
 }
+
+export function locationEnumToHebrew (location){
+    const locationRegionMap = {
+        'NORTH': 'צפון',
+        'VALLEY': 'בקעה',
+        'CENTER': 'מרכז',
+        'JERUSALEM_AND_SURROUNDINGS': 'ירושלים והסביבה',
+        'JUDEA_AND_SAMARIA': 'יהודה ושומרון',
+        'GAZA': 'עזה',
+        'SOUTH': 'דרום'
+    };
+
+    return locationRegionMap[location] || location;
+}

@@ -165,6 +165,13 @@
                              (interview.status.name() == 'REJECTED' ? 'נדחה' :
                              (interview.status.name() == 'COMPLETED' ? 'הושלם' : 'מבוטל')))}">
               </span>
+              <div th:if="${interview.status.name() == 'REJECTED' && interview.rejectionReason != null && !#strings.isEmpty(interview.rejectionReason)}"
+                   class="mt-1">
+                <small class="text-muted">
+                  <strong>סיבה:</strong> <span th:text="${interview.rejectionReason}"></span>
+                </small>
+              </div>
+
             </td>
             <td th:text="${interview.notes}"></td>
             <td>
@@ -193,7 +200,7 @@
                 
                 <form th:action="@{'/interviews/' + ${interview.id} + '/cancel'}"
                       method="post"
-                      th:classappend="${interview.status.name() != 'CANCELED' && interview.status.name() != 'COMPLETED'}? '':'d-none'"
+                      th:classappend="${interview.status.name() != 'CANCELED' && interview.status.name() != 'COMPLETED' && interview.status.name() != 'REJECTED'}? '':'d-none'"
                       class="d-inline cancel-interview-form">
                   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                   <button type="submit" class="btn btn-outline-danger btn-sm mb-1 w-100">

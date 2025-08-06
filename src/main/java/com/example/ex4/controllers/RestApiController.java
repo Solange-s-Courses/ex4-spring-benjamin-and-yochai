@@ -4,7 +4,6 @@ import com.example.ex4.models.*;
 import com.example.ex4.services.AppUserService;
 import com.example.ex4.services.ApplicationService;
 import com.example.ex4.services.PositionService;
-//import com.example.ex4.dto.PositionDto;
 import com.example.ex4.dto.InterviewForm;
 import com.example.ex4.services.InterviewService;
 import com.example.ex4.repositories.ApplicationRepository;
@@ -35,8 +34,6 @@ public class RestApiController {
     private ApplicationService applicationService;
     @Autowired
     private InterviewService interviewService;
-    @Autowired
-    private ApplicationRepository applicationRepository;
 
     @GetMapping("/admin/document/{id}")
     public ResponseEntity<byte[]> getDocument(@PathVariable Long id) {
@@ -46,7 +43,7 @@ public class RestApiController {
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"military_id.pdf\"")
-                    .contentType(MediaType.APPLICATION_PDF) // קובץ PDF בלבד
+                    .contentType(MediaType.APPLICATION_PDF)
                     .body(data);
         } else {
             return ResponseEntity.notFound().build();
@@ -74,29 +71,6 @@ public class RestApiController {
         return appUserService.changeUserRole(userId, Role.valueOf(newRole));
     }
 
-//    @GetMapping("/positions")
-//    @ResponseBody
-//    public ResponseEntity<List<PositionDto>> searchPositions(
-//            @RequestParam(value = "search", required = false) String search,
-//            @RequestParam(value = "location", required = false) String location,
-//            @RequestParam(value = "serviceType", required = false) String assignmentType,
-//            HttpSession session) {
-//
-//        List<PositionDto> positions = positionService.searchPositions(
-//            search != null ? search : "",
-//            location,
-//            assignmentType,
-//            session
-//        );
-//        return ResponseEntity.ok(positions);
-//    }
-//
-//    @GetMapping("/positions/recent-searches")
-//    @ResponseBody
-//    public List<String> getRecentSearches(HttpSession session) {
-//        return positionService.getRecentSearches(session);
-//    }
-
     @GetMapping("/positions/active")
     public ResponseEntity<Map<String, Object>> getPositionsData(
             @RequestParam(value = "search", required = false) String searchTerm,
@@ -108,16 +82,6 @@ public class RestApiController {
     public ResponseEntity<Map<String, Object>> applyForPosition(@PathVariable Long id,
                                    Principal principal) {
         return applicationService.submitApplication(id, principal.getName());
-//        Map<String, Object> response = new HashMap<>();
-//
-//        try {
-//            applicationService.submitApplication(id, principal.getName());
-//            response.put("message", "המועמדות הוגשה בהצלחה!");
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            response.put("message", "אירעה שגיאה בהגשת המועמדות.");
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
     }
 
     @GetMapping("/applications/{id}/cancel")
@@ -165,11 +129,7 @@ public class RestApiController {
     public ResponseEntity<Map<String, Object>> updateInterviewSummary(@PathVariable Long id, @RequestBody Map<String, String> body, Principal principal) {
         return interviewService.updateInterviewSummaryApi(id, body.get("summary"), principal.getName());
     }
-    
-//    @PostMapping("/interviews/{id}/change-decision")
-//    public ResponseEntity<Map<String, Object>> changeInterviewDecision(@PathVariable Long id, @RequestBody Map<String, String> body, Principal principal) {
-//        return interviewService.changeInterviewDecisionApi(id, body.get("status"), body.get("reason"), principal.getName());
-//    }
+
     
     @PostMapping("/applications/{id}/approve")
     public ResponseEntity<Map<String, Object>> approveApplication(@PathVariable Long id, Principal principal) {

@@ -211,7 +211,7 @@
                             <span th:if="${interview.application.applicant.username == #authentication.name}">
                                 <div th:if="${interview.status.name() == 'SCHEDULED'}" class="d-flex gap-2 justify-content-center align-items-center">
                                     <form method="post" class="mb-0 confirm-interview-form d-inline" th:attr="data-interview-id=${interview.id}">
-                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                        <!--input type="hidden" th:name="$ {_csrf.parameterName}" th:value="$ {_csrf.token}" /-->
                                         <button type="submit" class="btn btn-success btn-sm">אשר</button>
                                     </form>
 
@@ -242,7 +242,7 @@
                         </td>
                         <td th:text="${interview.notes}"></td>
                         <td>
-                                <span th:if="${interview.application.applicant.username == #authentication.name}"
+                            <span th:if="${interview.application.applicant.username == #authentication.name}"
                                       class="badge bg-primary">מרואיין</span>
                             <span th:if="${interview.application.applicant.username != #authentication.name}"
                                   class="badge bg-success">מראיין</span>
@@ -250,6 +250,28 @@
                     </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+        
+        <!-- Rejection Modal -->
+        <div class="modal fade" id="rejectionModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">דחיית ראיון</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="rejectionReason" class="form-label">סיבת דחיה (אופציונלי)</label>
+                            <textarea class="form-control" id="rejectionReason" rows="3" placeholder="הזן סיבת דחיה..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                        <button type="button" class="btn btn-danger" id="confirmRejectBtn">דחה ראיון</button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
