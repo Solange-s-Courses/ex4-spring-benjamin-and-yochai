@@ -152,9 +152,7 @@ This is a Spring Boot web application that serves as a job recruitment platform 
 
 ## Known Bugs
 
-1. **Session Timeout**: Session timeout configuration is currently commented out in application.properties
-2. **File Upload Size**: Limited to 1MB for military ID documents
-3. **Admin Credentials**: Default admin credentials should be changed in production
+1. **Admin Credentials**: Default admin credentials should be changed in production
 
 ## SQL Import File
 
