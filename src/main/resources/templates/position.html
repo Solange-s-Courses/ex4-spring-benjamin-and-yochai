@@ -101,10 +101,7 @@
                     </div>
                 </div>
 
-                <!------------------------------------------------------------------------------------------------------------>
                 <div th:if="${position.publisher.username != #authentication.name}" class="text-center">
-
-                    <!-- ✅ Case 1: Application APPROVED / REJECTED -->
                     <div id="applicationFinalStatus"
                          class="alert rounded-3"
                          th:classappend="${userApplication == null or (userApplication.status.name() != 'APPROVED' and userApplication.status.name() != 'REJECTED') ? 'd-none' :
@@ -118,7 +115,6 @@
                         </div>
                     </div>
 
-                    <!-- ✅ Case 2: Application PENDING -->
                     <div id="applicationPendingStatus"
                          class="alert alert-info rounded-3"
                          th:classappend="${userApplication == null or userApplication.status.name() != 'PENDING' ? 'd-none' : ''}">
@@ -138,7 +134,6 @@
                         </button>
                     </div>
 
-                    <!-- ✅ Case 3: No Application -->
                     <div id="noApplicationStatus"
                          th:classappend="${userApplication != null ? 'd-none' : ''}">
                         <button th:data-position-id="${position.id}" th:data-action="apply"
@@ -150,38 +145,6 @@
                     </div>
 
                 </div>
-
-
-                <!------------------------------------------------------------------------------------------------------------ >
-                <! -- Apply/Cancel Button -- >
-                <div th:unless="${position.publisher.username == #authentication.name }" class="text-center">
-
-
-                    <div id="hasAppliedDiv" th:class="alert alert-info rounded-3 ${hasApplied? '': 'd-none'}">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <i class="bi bi-info-circle me-2"></i>
-                                כבר הגשת מועמדות למשרה זו
-                                <div class="small text-muted mt-1" th:if="${userApplication != null}">
-                                    תאריך הגשה: <span class="date" th:text="${#temporals.format(userApplication.applicationDate, 'dd/MM/yyyy HH:mm')}"></span>
-                                </div>
-                            </div>
-                            <button th:data-position-id="${position.id}"
-                                    class="btn btn-outline-danger btn-sm rounded-3 cancel-application-btn">
-                                <i class="bi bi-x-circle me-1"></i>
-                                בטל מועמדות
-                            </button>
-                        </div>
-                    </div>
-
-                    <!- - NEW BUTTON WITH EVENT LISTENER - ->
-                    <button th:data-position-id="${position.id}"
-                            th:class="btn btn-success btn-lg px-5 rounded-3 apply-position-btn ${hasApplied? 'd-none': ''}"">
-                        <i class="bi bi-send-fill me-2"></i>
-                        הגש מועמדות
-                    </button>
-                </div>
-                <------------------------------------------------------------------------------------------------------------>
             </div>
         </div>
 
@@ -193,22 +156,6 @@
                     <i class="bi bi-pencil me-1"></i>
                     עריכת משרה
                 </a>
-
-                <!-- OLD FORM - COMMENTED OUT -->
-                <!-- <form th:action="@{/positions/{id}/status(id=${position.id})}" method="post" class="d-flex align-items-center gap-2 mb-0">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <select name="status" class="form-select form-select-sm" style="width:auto;">
-                        <option th:selected="${position.status.name() == 'ACTIVE'}" value="ACTIVE">פעילה</option>
-                        <option th:selected="${position.status.name() == 'CANCELED'}" value="CANCELED">מבוטלת</option>
-                        <option th:selected="${position.status.name() == 'FULFILLED'}" value="FULFILLED">אוישה</option>
-                        <option th:selected="${position.status.name() == 'FROZEN'}" value="FROZEN">מוקפאת</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary btn-sm" title="עדכן סטטוס">
-                        עדכן סטטוס
-                    </button>
-                </form> -->
-                
-                <!-- NEW STATUS UPDATE WITH EVENT LISTENER -->
                 <form class="d-flex align-items-center gap-2 mb-0" id="changeStatusForm">
                     <select th:data-position-id="${position.id}" th:data-status="${position.status.name()}"
                             class="form-select form-select-sm status-select" style="width:auto;">
@@ -249,7 +196,6 @@
                                         </td>
                                     </tr>
                                     <tr th:each="app : ${applications}" th:attr="application-id=${app.id}">
-                                        <!--                                <td th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}"></td>-->
                                         <td>
                                             <a th:href="@{'/application/' + ${app.id}}"
                                                th:text="${app.applicant.firstName + ' ' + app.applicant.lastName}">
@@ -302,10 +248,6 @@
                         <button class="btn btn-outline-primary btn-sm rounded-3" th:id="shareBtn">
                             שתף משרה
                         </button>
-                        <div class="d-none" id="copy-message"
-                             style="position:fixed; bottom:20px; right:20px; background:#28a745; color:white; padding:10px 15px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.3); z-index:9999;">
-                            הקישור הועתק בהצלחה!
-                        </div>
                     </div>
                 </div>
             </div>
@@ -314,8 +256,6 @@
 </main>
 
 <div th:replace="~{fragments/toasts :: toast}"></div>
-
-<!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 <script type="module" th:src="@{/js/position.js}"></script>

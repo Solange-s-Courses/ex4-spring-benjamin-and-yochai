@@ -38,11 +38,7 @@ function positionDom(){
                 if (otherValue.length < 2) {
                     showError('תפקיד חייב להכיל לפחות 2 תווים', 'jobTitle');
                     return false;
-                } else {
-                    //showError('', 'otherJobTitleInput');
                 }
-            } else {
-                //showError('', 'otherJobTitleInput');
             }
             
             return true;
@@ -95,7 +91,6 @@ function positionDom(){
 
         function validateRequirements() {
             const requirementInputs = requirementsContainer.querySelectorAll('input');
-
             let isValid = true;
 
             requirementInputs.forEach((input) => {
@@ -159,7 +154,6 @@ function positionDom(){
         function toggleOtherInput() {
             if (jobTitleSelect.value === "אחר") {
                 otherJobTitleInput.classList.remove("d-none");
-                //otherJobTitleInput.value = "";
             } else {
                 otherJobTitleInput.value = "";
                 otherJobTitleInput.classList.add("d-none");
@@ -201,7 +195,6 @@ function positionDom(){
             showError('', 'requirements');
             div.querySelector("input").addEventListener("input", validateRequirements)
         });
-
 
         requirementsContainer.addEventListener('click', function (e) {
             if (e.target.closest('.remove-requirement')) {

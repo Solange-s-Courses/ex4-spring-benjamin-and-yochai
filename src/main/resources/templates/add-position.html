@@ -120,31 +120,7 @@
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
-                                        <!--
-                                        <div class="input-group mb-2">
-                                            <input type="text" name="requirements"
-                                                   placeholder="הכנס דרישת מינימום לתפקיד (לדוגמא - רובאי 03)"
-                                                   class="form-control rounded-3">
-                                            <button type="button"
-                                                    class="btn btn-outline-danger remove-requirement d-none">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                        -->
                                     </div>
-
-                                    <!--<div id="requirementsContainer">
-                                        <div th:each="requirement, iterStat : ${requirements}" class="input-group mb-2">
-                                            <input type="text"
-                                                   class="form-control rounded-3"
-                                                   th:name="'requirements[' + ${iterStat.index} + ']'"
-                                                   th:value="${requirement}"
-                                                   placeholder="הכנס דרישת מינימום לתפקיד (לדוג' - רובאי 03)">
-                                            <button type="button" class="btn btn-outline-danger remove-requirement">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>-->
 
                                     <div class="text-danger server-error mb-2" th:if="${#fields.hasErrors('requirements')}"
                                          th:errors="*{requirements}"></div>

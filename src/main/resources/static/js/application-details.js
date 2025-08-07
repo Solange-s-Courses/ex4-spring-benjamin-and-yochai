@@ -1,9 +1,10 @@
 import {showToast} from "./toastUtils.js";
-import {formatDate, formatDateTime, formatTime, getApplicationStatusInfo, getInterviewStatusInfo} from "./textUtils.js";
+import {formatDate, formatTime, getApplicationStatusInfo, getInterviewStatusInfo} from "./textUtils.js";
 import {genericSortingFunc, sortRowsByDate} from "./sortingFuncs.js";
 
 const applicationDetailsDom = function() {
-    
+    const POLLING = 5000;
+
     document.addEventListener('DOMContentLoaded', function () {
         const applicationStatusBadge = document.getElementById("applicationStatusBadge");
         const actionsCard = document.getElementById("actionsCard");
@@ -84,7 +85,6 @@ const applicationDetailsDom = function() {
             await updateInterviewSummary(interviewId, summary);
         }
 
-        // הוספת event listeners לפורמים
         const completeForms = document.querySelectorAll('.complete-interview-form');
         completeForms.forEach(form => {
             form.addEventListener('submit', async (event) => {
@@ -207,8 +207,6 @@ const applicationDetailsDom = function() {
 
                         tbody.appendChild(existingRow);
 
-                        //add event listener
-
                         const summaryForm = existingRow.querySelector(".update-summary-form");
                         summaryForm.addEventListener("submit", async (e)=>{
                             await setUpdateSummaryListener(summaryForm, e);
@@ -251,14 +249,12 @@ const applicationDetailsDom = function() {
                             cancelForm.classList.remove("d-none");
                             completeForm.classList.remove("d-none");
                             break;
-
                         default:
                             editButton.classList.add("d-none");
                             cancelForm.classList.add("d-none");
                             completeForm.classList.add("d-none");
                             break;
                     }
-
                 }
             }
             catch (e){
@@ -266,7 +262,7 @@ const applicationDetailsDom = function() {
             }
         }
 
-        const pollingInterval = setInterval(reload, 5000);
+        const pollingInterval = setInterval(reload, POLLING);
 
         window.addEventListener("beforeunload", ()=>{
             clearInterval(pollingInterval);
@@ -294,7 +290,6 @@ const applicationDetailsDom = function() {
             const isVirtual = document.getElementById('meetingTypeSwitch').checked;
             toggleLocationField(isVirtual, 'locationLabel', 'locationInput');
             clearFieldError('locationInput');
-
         };
 
         const toggleEditMeetingType = () => {
@@ -302,7 +297,6 @@ const applicationDetailsDom = function() {
             toggleLocationField(isVirtual, 'editLocationLabel', 'editLocationInput');
             clearFieldError('editLocationInput');
         };
-
 
         const editInterview = (interviewId, date, location, notes, isVirtual) => {
             const form = document.getElementById('editInterviewForm');
@@ -361,7 +355,6 @@ const applicationDetailsDom = function() {
 
             clearAllErrors(form);
 
-            //const dateFieldId = formId === 'editInterviewForm' ? 'editInterviewDate' : 'interviewDate';
             if (!data.get("interviewDate")) {
                 showFieldError(form, "interviewDate", 'חובה לבחור תאריך ושעה לראיון');
                 isValid = false;
@@ -370,7 +363,6 @@ const applicationDetailsDom = function() {
                 isValid = false;
             }
 
-            //const locationFieldId = formId === 'editInterviewForm' ? 'editLocationInput' : 'locationInput';
             if (data.get("isVirtual") !== "on"  && (!data.get("location") || data.get("location").trim() === '')) {
                 showFieldError(form, "location", 'חובה להזין מיקום לפגישה פיזית או לבחור בפגישה וירטואלית');
                 isValid = false;
@@ -424,7 +416,6 @@ const applicationDetailsDom = function() {
                             'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
                         },
                         body: JSON.stringify(data)
-                        //body: formData
                     });
 
                     const result = await response.json();
@@ -446,37 +437,6 @@ const applicationDetailsDom = function() {
                 } finally {
                     await reload();
                 }
-                //
-                // fetch('/restapi/interviews/schedule', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //         'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
-                //     },
-                //     body: JSON.stringify(data)
-                // })
-                //     .then(response => {
-                //         if (!response.ok) {
-                //             return response.json().then(errorData => {
-                //                 throw new Error(errorData.message || 'אירעה שגיאה בקביעת הראיון');
-                //             });
-                //         }
-                //         return response.json();
-                //     })
-                //     .then(result => {
-                //         if (result.success) {
-                //             showToast(result.message);
-                //             //setTimeout(() => window.location.reload(), 1500);
-                //         } else {
-                //             showToast(result.message, "danger");
-                //         }
-                //     })
-                //     .catch(error => {
-                //         showToast(error.message || 'אירעה שגיאה בקביעת הראיון', "danger");
-                //     })
-                //     .finally(){
-                //     refreshData();
-                // };
             });
         }
 
@@ -507,7 +467,6 @@ const applicationDetailsDom = function() {
                             'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
                         },
                         body: JSON.stringify(data)
-                        //body: formData
                     });
 
                     const result = await response.json();
@@ -548,18 +507,6 @@ const applicationDetailsDom = function() {
             })
         })
 
-        // document.body.addEventListener('click', function (e) {
-        //     const btn = e.target.closest('.edit-interview-btn');
-        //     if (btn) {
-        //         const id = btn.getAttribute('data-id');
-        //         const date = btn.getAttribute('data-date');
-        //         const location = btn.getAttribute('data-location');
-        //         const notes = btn.getAttribute('data-notes');
-        //         const isVirtual = btn.getAttribute('data-virtual');
-        //         editInterview(id, date, location, notes, isVirtual);
-        //     }
-        // });
-
         async function applicationDecision(applicationId, action){
             try {
                 const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
@@ -593,31 +540,6 @@ const applicationDetailsDom = function() {
                 e.preventDefault();
                 const applicationId = approveForm.dataset.applicationId;
                 await applicationDecision(applicationId, "approve");
-
-                // try {
-                //     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-                //     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-                //
-                //     const response = await fetch(`/restapi/applications/${applicationId}/approve`, {
-                //         method: 'POST',
-                //         headers: {
-                //             'Content-Type': 'application/json',
-                //             [csrfHeader]: csrfToken
-                //         }
-                //     });
-                //
-                //     const data = await response.json();
-                //
-                //     if (response.ok) {
-                //         showToast(data.message);
-                //     } else {
-                //         showToast(data.message, "danger");
-                //     }
-                // } catch (error) {
-                //     showToast(error.message || "אירעה שגיאה באישור המועמדות", "danger");
-                // }finally {
-                //     await reload();
-                // }
             });
         }
 
@@ -628,30 +550,6 @@ const applicationDetailsDom = function() {
                 const applicationId = rejectForm.dataset.applicationId;
 
                 await applicationDecision(applicationId, "reject");
-                // try {
-                //     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-                //     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-                //
-                //     const response = await fetch(`/restapi/applications/${applicationId}/reject`, {
-                //         method: 'POST',
-                //         headers: {
-                //             'Content-Type': 'application/json',
-                //             [csrfHeader]: csrfToken
-                //         }
-                //     });
-                //
-                //     const data = await response.json();
-                //
-                //     if (response.ok) {
-                //         showToast(data.message);
-                //     } else {
-                //         showToast(data.message, "danger");
-                //     }
-                // } catch (error) {
-                //     showToast("אירעה שגיאה בדחיית המועמדות", "danger");
-                // }finally {
-                //     await reload();
-                // }
             });
         }
 

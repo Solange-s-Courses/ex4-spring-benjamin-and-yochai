@@ -3,6 +3,8 @@ import {genericSortingFunc, sortRowsByDate, sortRowsByText} from "./sortingFuncs
 import {formatDate, formatTime, getPositionStatusInfo, getInterviewStatusInfo, getApplicationStatusInfo, locationEnumToHebrew} from "./textUtils.js"
 
 const dashboardDom = function (){
+    const POLLING = 5000;
+
     document.addEventListener("DOMContentLoaded",()=>{
         const totalApplicationsCount = document.getElementById("totalApplicationsCount");
         const pendingApplicationsCount = document.getElementById("pendingApplicationsCount");
@@ -275,13 +277,9 @@ const dashboardDom = function (){
 
         async function rejectInterview(interviewId) {
             try {
-                // ניקוי שדה הקלט
                 rejectionReasonTextArea.value = '';
 
-                // טיפול בלחיצה על כפתור דחיה
                 const confirmBtn = document.getElementById('confirmRejectBtn');
-
-                // הסרת event listeners קודמים
                 const newConfirmBtn = confirmBtn.cloneNode(true);
                 confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
@@ -304,7 +302,6 @@ const dashboardDom = function (){
 
                         showToast(data.message);
                         modalInstance.hide();
-                            //setTimeout(() => window.location.reload(), 1500);
                     } catch (e) {
                         showToast(e.message, "danger");
                     }
@@ -336,8 +333,6 @@ const dashboardDom = function (){
                 await rejectInterview(interviewId);
             });
         });
-
-
 
         async function refreshData(){
             try{
@@ -380,7 +375,7 @@ const dashboardDom = function (){
             }
         }
 
-        const pollingInterval = setInterval(refreshData, 5000);
+        const pollingInterval = setInterval(refreshData, POLLING);
 
         window.addEventListener('beforeunload', function() {
             clearInterval(pollingInterval);

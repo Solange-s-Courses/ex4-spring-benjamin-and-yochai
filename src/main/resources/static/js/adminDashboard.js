@@ -56,19 +56,12 @@ const adminDashboard = ()=>{
         }
     }
 
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
-
     document.addEventListener("DOMContentLoaded", function () {
         const showPdfButtons = document.querySelectorAll(".view-pdf-btn");
         const spinner = document.getElementById("pdf-spinner");
         const modalOpenNewPageBtn = document.getElementById("modalOpenBtn");
         const nameDisplay = document.getElementById("modal-fullName");
         const pdfContainer = document.getElementById("pdf-container");
-        const pdfModal = document.getElementById('pdfModal');
         const newAccountsTable = document.getElementById("newAccountsTbody");
         const newAccountsSearch = document.getElementById("newAccSearch");
         const permissionTable = document.getElementById("accountsPermissionTbody");
@@ -129,9 +122,6 @@ const adminDashboard = ()=>{
             const updatedUser = await changeUserStatus(userId, newStatus);
             if (updatedUser){
                 await refreshData();
-                //form.closest("tr").remove();
-                //updatePermissionTable(updatedUser);
-                //filterTable(newAccountsTable, newAccountsSearch.value);
             }
             pollingInterval = setInterval(refreshData, POLLING);
         }
@@ -312,7 +302,6 @@ const adminDashboard = ()=>{
 
         async function fetchAllUsers(){
             try {
-                // You may need to adjust this endpoint based on your backend API
                 const response = await fetch('/restapi/admin/allUsers', {
                     method: 'GET',
                     headers: {
@@ -386,10 +375,6 @@ const adminDashboard = ()=>{
 
         async function refreshData() {
             try {
-                if (window.startPolling) {
-                    window.startPolling();
-                }
-                
                 const data = await fetchAllUsers();
 
                 if (data) {
@@ -400,19 +385,13 @@ const adminDashboard = ()=>{
                     filterTable(newAccountsTable, newAccountsSearch.value);
                     filterTable(permissionTable, permissionSearch.value);
                 }
-                
-                if (window.onPollingComplete) {
-                    window.onPollingComplete();
-                }
+
             } catch (error) {
-                if (window.onPollingComplete) {
-                    window.onPollingComplete();
-                }
                 console.error('Error refreshing data:', error);
             }
         }
 
-        pollingInterval = setInterval(refreshData, 5000);
+        pollingInterval = setInterval(refreshData, POLLING);
 
         window.addEventListener('beforeunload', function() {
             clearInterval(pollingInterval);

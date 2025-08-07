@@ -37,13 +37,6 @@
                                     <div class="invalid-feedback" id="passwordError"></div>
                                 </div>
 
-                                <!-- Error / Logout messages -->
-                                <!--
-                                <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    שם משתמש או סיסמה שגויים
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                                -->
                                 <div th:if="${loginError}" class="alert alert-danger" th:text="${loginError}"></div>
 
                                 <div th:if="${param.logout}" class="alert alert-success alert-dismissible fade show"
@@ -67,10 +60,9 @@
     </section>
 </main>
 
-<!-- Footer + Optional Toast -->
+
 <div th:replace="~{fragments/toasts :: toast}"></div>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
-
 <script th:src="@{/js/loginForm.js}"></script>
 </body>
 </html>

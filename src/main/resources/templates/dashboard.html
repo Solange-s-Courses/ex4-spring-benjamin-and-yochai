@@ -155,12 +155,6 @@
                     <tr>
                         <th>שם משרה</th>
                         <th th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')')}">מועמד</th>
-                        <!--th th:unless="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')')}"> </th-->
-                        <!--                        <th>תאריך-->
-                        <!--                            <a href="#" class="sort-link ms-1" data-sort="date" data-table="interviews-table" data-col="2">-->
-                        <!--                                <i class="bi bi-arrow-down-up"></i>-->
-                        <!--                            </a>-->
-                        <!--                        </th>-->
                         <th>תאריך
                             <button class="btn ms-1 p-0"
                                     data-sort="date"
@@ -194,7 +188,6 @@
                         <td th:text="${interview.application.position.jobTitle}"></td>
                         <td th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')')}"
                             th:text="${interview.application.applicant.firstName + ' ' + interview.application.applicant.lastName}"></td>
-                        <!--td th:unless="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''COMMANDER'')')}"> </td-->
                         <td th:text="${#temporals.format(interview.interviewDate, 'dd/MM/yyyy')}"></td>
                         <td th:text="${#temporals.format(interview.interviewDate, 'HH:mm')}"></td>
                         <td>
@@ -232,7 +225,6 @@
                                           th:classappend="${interview.status.name() == 'SCHEDULED' ? 'bg-warning' : (interview.status.name() == 'CONFIRMED' ? 'bg-success' : (interview.status.name() == 'REJECTED' ? 'bg-danger' : (interview.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary')))}"
                                           th:text="${interview.status.name() == 'SCHEDULED' ? 'ממתין לאישור' : (interview.status.name() == 'CONFIRMED' ? 'מאושר' : (interview.status.name() == 'REJECTED' ? 'נדחה' : (interview.status.name() == 'COMPLETED' ? 'הושלם' : 'מבוטל')))}">
                                     </span>
-                                    <!-- הצגת סיבת הדחייה אם קיימת -->
                                     <div th:if="${interview.status.name() == 'REJECTED' && interview.rejectionReason != null && !#strings.isEmpty(interview.rejectionReason)}"
                                          class="mt-1">
                                         <small class="text-muted">
@@ -279,16 +271,9 @@
     </section>
 </main>
 
-<!--div th:replace="~{fragments/toasts :: successToast}"></div-->
 <div th:replace="~{fragments/toasts :: toast}"></div>
-
-<!-- Footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
-
-<!--script th:src="@{/js/toasts.js}"></script-->
-
 <script type="module" th:src="@{/js/interviewsSort.js}"></script>
-<!--script type="module" th:src="@{/js/interviewForm.js}"></script-->
 <script type="module" th:src="@{/js/dashboard.js}"></script>
 </body>
 </html>
