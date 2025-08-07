@@ -220,8 +220,9 @@ const applicationDetailsDom = function() {
                         });
 
                         const cancelForm = existingRow.querySelector(".cancel-interview-form");
-                        cancelForm.addEventListener("submit", async ()=>{
-                            await
+                        cancelForm.addEventListener("submit", async (e)=>{
+                            e.preventDefault();
+                            await cancelInterview(interview.id);
                         });
 
                         const completeForm = existingRow.querySelector(".complete-interview-form");
@@ -229,8 +230,6 @@ const applicationDetailsDom = function() {
                             await setCompleteInterviewListener(completeForm, e)
                         });
 
-
-                        //sorting
                         const sortType = interviewsTable.dataset.sortType;
                         if (sortType){
                             genericSortingFunc(interviewsTable, 0, sortRowsByDate, false);
@@ -656,33 +655,36 @@ const applicationDetailsDom = function() {
             });
         }
 
+        async function cancelInterview(id){
+            try {
+                const response = await fetch(`/restapi/interviews/${id}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'אירעה שגיאה בביטול הראיון');
+                }
+
+                showToast(result.message);
+                await reload();
+
+            } catch (error) {
+                showToast(error.message || 'אירעה שגיאה בביטול הראיון', "danger");
+            }
+        }
+
         const cancelForms = document.querySelectorAll('.cancel-interview-form');
         cancelForms.forEach(form => {
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
                 const interviewId = this.getAttribute('data-interview-id');
-                
-                try {
-                    const response = await fetch(`/restapi/interviews/${interviewId}/cancel`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
-                        }
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (!response.ok) {
-                        throw new Error(result.message || 'אירעה שגיאה בביטול הראיון');
-                    }
-                    
-                    showToast(result.message);
-                    await reload();
-                    
-                } catch (error) {
-                    showToast(error.message || 'אירעה שגיאה בביטול הראיון', "danger");
-                }
+
+                await cancelInterview(interviewId);
             });
         });
 
