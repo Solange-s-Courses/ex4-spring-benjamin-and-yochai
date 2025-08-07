@@ -1,5 +1,6 @@
 import {showToast} from "./toastUtils.js";
 import {formatDate, formatDateTime, formatTime, getApplicationStatusInfo, getInterviewStatusInfo} from "./textUtils.js";
+import {genericSortingFunc, sortRowsByDate} from "./sortingFuncs.js";
 
 const applicationDetailsDom = function() {
     
@@ -205,6 +206,34 @@ const applicationDetailsDom = function() {
 
                         tbody.appendChild(existingRow);
 
+                        //add event listener
+
+                        const summaryForm = existingRow.querySelector(".update-summary-form");
+                        summaryForm.addEventListener("submit", async (e)=>{
+                            await setUpdateSummaryListener(summaryForm, e);
+                        })
+
+                        const btn = existingRow.querySelector(".edit-interview-btn");
+                        btn.addEventListener("click",()=>{
+                            openEditModal(btn);
+                        });
+
+                        const cancelForm = existingRow.querySelector(".cancel-interview-form");
+                        cancelForm.addEventListener("submit", async ()=>{
+                            await
+                        });
+
+                        const completeForm = existingRow.querySelector(".complete-interview-form");
+                        completeForm.addEventListener("submit",async (e)=>{
+                            await setCompleteInterviewListener(completeForm, e)
+                        });
+
+
+                        //sorting
+                        const sortType = interviewsTable.dataset.sortType;
+                        if (sortType){
+                            genericSortingFunc(interviewsTable, 0, sortRowsByDate, false);
+                        }
                     }
 
                     const editButton = existingRow.querySelector(".edit-interview-btn");
@@ -290,9 +319,9 @@ const applicationDetailsDom = function() {
             modal.show();
         };
 
-        const showFieldError = (fieldId, message) => {
-            const field = document.getElementById(fieldId);
-            const errorDiv = document.getElementById(`${fieldId}-error`);
+        const showFieldError = (form, fieldName, message) => {
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            const errorDiv = form.querySelector(`#${field.id}-error`);
 
             if (field && errorDiv) {
                 field.classList.add('is-invalid');
@@ -312,8 +341,7 @@ const applicationDetailsDom = function() {
             }
         };
 
-        const clearAllErrors = (formId) => {
-            const form = document.getElementById(formId);
+        const clearAllErrors = (form) => {
             if (!form) return;
 
             const fields = form.querySelectorAll('.is-invalid');
@@ -329,21 +357,22 @@ const applicationDetailsDom = function() {
 
         const validateInterviewForm = (data, formId) => {
             let isValid = true;
+            const form = document.getElementById(formId);
 
-            clearAllErrors(formId);
+            clearAllErrors(form);
 
-            const dateFieldId = formId === 'editInterviewForm' ? 'editInterviewDate' : 'interviewDate';
-            if (!data.interviewDate) {
-                showFieldError(dateFieldId, 'חובה לבחור תאריך ושעה לראיון');
+            //const dateFieldId = formId === 'editInterviewForm' ? 'editInterviewDate' : 'interviewDate';
+            if (!data.get("interviewDate")) {
+                showFieldError(form, "interviewDate", 'חובה לבחור תאריך ושעה לראיון');
                 isValid = false;
-            } else if (new Date(data.interviewDate) < new Date()) {
-                showFieldError(dateFieldId, 'לא ניתן לקבוע ראיון בזמן שחלף');
+            } else if (new Date(data.get("interviewDate")) < new Date()) {
+                showFieldError(form, "interviewDate", 'לא ניתן לקבוע ראיון בזמן שחלף');
                 isValid = false;
             }
 
-            const locationFieldId = formId === 'editInterviewForm' ? 'editLocationInput' : 'locationInput';
-            if (!data.isVirtual && (!data.location || data.location.trim() === '')) {
-                showFieldError(locationFieldId, 'חובה להזין מיקום לפגישה פיזית או לבחור בפגישה וירטואלית');
+            //const locationFieldId = formId === 'editInterviewForm' ? 'editLocationInput' : 'locationInput';
+            if (data.get("isVirtual") !== "on"  && (!data.get("location") || data.get("location").trim() === '')) {
+                showFieldError(form, "location", 'חובה להזין מיקום לפגישה פיזית או לבחור בפגישה וירטואלית');
                 isValid = false;
             }
 
@@ -374,6 +403,7 @@ const applicationDetailsDom = function() {
                 e.preventDefault();
 
                 const formData = new FormData(this);
+
                 const data = {
                     applicationId: formData.get('applicationId'),
                     interviewDate: formData.get('interviewDate'),
@@ -382,7 +412,7 @@ const applicationDetailsDom = function() {
                     isVirtual: formData.get('isVirtual') === 'on'
                 };
 
-                if (!validateInterviewForm(data, 'scheduleInterviewForm')) {
+                if (!validateInterviewForm(formData, 'scheduleInterviewForm')) {
                     return;
                 }
 
@@ -394,6 +424,7 @@ const applicationDetailsDom = function() {
                             'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
                         },
                         body: JSON.stringify(data)
+                        //body: formData
                     });
 
                     const result = await response.json();
@@ -404,6 +435,7 @@ const applicationDetailsDom = function() {
 
                     if (result.success) {
                         showToast(result.message);
+                        this.reset();
                     } else {
                         showToast(result.message, "danger");
                     }
@@ -455,6 +487,7 @@ const applicationDetailsDom = function() {
 
                 const formData = new FormData(this);
                 const interviewId = this.getAttribute('data-interview-id');
+
                 const data = {
                     interviewDate: formData.get('interviewDate'),
                     location: formData.get('location'),
@@ -462,7 +495,7 @@ const applicationDetailsDom = function() {
                     isVirtual: formData.get('isVirtual') === 'on'
                 };
 
-                if (!validateInterviewForm(data, 'editInterviewForm')) {
+                if (!validateInterviewForm(formData, 'editInterviewForm')) {
                     return;
                 }
 
@@ -474,6 +507,7 @@ const applicationDetailsDom = function() {
                             'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
                         },
                         body: JSON.stringify(data)
+                        //body: formData
                     });
 
                     const result = await response.json();
@@ -495,48 +529,22 @@ const applicationDetailsDom = function() {
                 }finally {
                     await reload();
                 }
-                //
-                // fetch(`/restapi/interviews/${interviewId}/edit`, {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //         'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
-                //     },
-                //     body: JSON.stringify(data)
-                // })
-                //     .then(response => {
-                //         if (!response.ok) {
-                //             return response.json().then(errorData => {
-                //                 throw new Error(errorData.message || 'אירעה שגיאה בעדכון הראיון');
-                //             });
-                //         }
-                //         return response.json();
-                //     })
-                //     .then(result => {
-                //         if (result.success) {
-                //             showToast(result.message);
-                //             const modal = bootstrap.Modal.getInstance(document.getElementById('editInterviewModal'));
-                //             modal.hide();
-                //             //setTimeout(() => window.location.reload(), 1500);
-                //         } else {
-                //             showToast(result.message, "danger");
-                //         }
-                //     })
-                //     .catch(error => {
-                //         showToast(error.message || 'אירעה שגיאה בעדכון הראיון', "danger");
-                //     });
             });
+        }
+
+        function openEditModal(btn){
+            const id = btn.getAttribute('data-id');
+            const date = btn.getAttribute('data-date');
+            const location = btn.getAttribute('data-location');
+            const notes = btn.getAttribute('data-notes');
+            const isVirtual = btn.getAttribute('data-virtual');
+            editInterview(id, date, location, notes, isVirtual);
         }
 
         const editInterviewBtns = document.querySelectorAll(".edit-interview-btn");
         editInterviewBtns.forEach(btn =>{
             btn.addEventListener("click", ()=>{
-                const id = btn.getAttribute('data-id');
-                const date = btn.getAttribute('data-date');
-                const location = btn.getAttribute('data-location');
-                const notes = btn.getAttribute('data-notes');
-                const isVirtual = btn.getAttribute('data-virtual');
-                editInterview(id, date, location, notes, isVirtual);
+                openEditModal(btn);
             })
         })
 
@@ -552,36 +560,64 @@ const applicationDetailsDom = function() {
         //     }
         // });
 
+        async function applicationDecision(applicationId, action){
+            try {
+                const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+                const response = await fetch(`/restapi/applications/${applicationId}/${action}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast(data.message);
+                } else {
+                    showToast(data.message, "danger");
+                }
+            } catch (error) {
+                showToast(error.message || "אירעה שגיאה בשמירה", "danger");
+            }finally {
+                await reload();
+            }
+        }
+
         const approveForm = document.querySelector('.approve-application-form');
         if (approveForm) {
             approveForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const applicationId = approveForm.dataset.applicationId;
+                await applicationDecision(applicationId, "approve");
 
-                try {
-                    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-                    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-                    const response = await fetch(`/restapi/applications/${applicationId}/approve`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            [csrfHeader]: csrfToken
-                        }
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        showToast(data.message);
-                    } else {
-                        showToast(data.message, "danger");
-                    }
-                } catch (error) {
-                    showToast(error.message || "אירעה שגיאה באישור המועמדות", "danger");
-                }finally {
-                    await reload();
-                }
+                // try {
+                //     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                //     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                //
+                //     const response = await fetch(`/restapi/applications/${applicationId}/approve`, {
+                //         method: 'POST',
+                //         headers: {
+                //             'Content-Type': 'application/json',
+                //             [csrfHeader]: csrfToken
+                //         }
+                //     });
+                //
+                //     const data = await response.json();
+                //
+                //     if (response.ok) {
+                //         showToast(data.message);
+                //     } else {
+                //         showToast(data.message, "danger");
+                //     }
+                // } catch (error) {
+                //     showToast(error.message || "אירעה שגיאה באישור המועמדות", "danger");
+                // }finally {
+                //     await reload();
+                // }
             });
         }
 
@@ -591,30 +627,31 @@ const applicationDetailsDom = function() {
                 e.preventDefault();
                 const applicationId = rejectForm.dataset.applicationId;
 
-                try {
-                    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-                    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-                    const response = await fetch(`/restapi/applications/${applicationId}/reject`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            [csrfHeader]: csrfToken
-                        }
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        showToast(data.message);
-                    } else {
-                        showToast(data.message, "danger");
-                    }
-                } catch (error) {
-                    showToast("אירעה שגיאה בדחיית המועמדות", "danger");
-                }finally {
-                    await reload();
-                }
+                await applicationDecision(applicationId, "reject");
+                // try {
+                //     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                //     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                //
+                //     const response = await fetch(`/restapi/applications/${applicationId}/reject`, {
+                //         method: 'POST',
+                //         headers: {
+                //             'Content-Type': 'application/json',
+                //             [csrfHeader]: csrfToken
+                //         }
+                //     });
+                //
+                //     const data = await response.json();
+                //
+                //     if (response.ok) {
+                //         showToast(data.message);
+                //     } else {
+                //         showToast(data.message, "danger");
+                //     }
+                // } catch (error) {
+                //     showToast("אירעה שגיאה בדחיית המועמדות", "danger");
+                // }finally {
+                //     await reload();
+                // }
             });
         }
 
