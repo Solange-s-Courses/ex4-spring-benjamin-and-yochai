@@ -4,7 +4,16 @@ import com.example.ex4.dto.RegistrationForm;
 import com.example.ex4.models.AppUser;
 import com.example.ex4.models.RegistrationStatus;
 import com.example.ex4.models.Role;
+import com.example.ex4.models.Position;
+import com.example.ex4.models.PositionStatus;
+import com.example.ex4.models.Application;
+import com.example.ex4.models.ApplicationStatus;
+import com.example.ex4.models.Interview;
+import com.example.ex4.models.InterviewStatus;
 import com.example.ex4.repositories.AppUserRepository;
+import com.example.ex4.repositories.PositionRepository;
+import com.example.ex4.repositories.ApplicationRepository;
+import com.example.ex4.repositories.InterviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +37,21 @@ import java.util.Optional;
 public class AppUserService implements UserDetailsService {
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final PositionRepository positionRepository;
+    private final PositionService positionService;
+    private final ApplicationRepository applicationRepository;
+    private final InterviewRepository interviewRepository;
 
     @Autowired
-    public AppUserService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder) {
+    public AppUserService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder, 
+                         PositionRepository positionRepository, PositionService positionService,
+                         ApplicationRepository applicationRepository, InterviewRepository interviewRepository) {
         this.appUserRepository = appUserRepository;
         this.passwordEncoder = passwordEncoder;
+        this.positionRepository = positionRepository;
+        this.positionService = positionService;
+        this.applicationRepository = applicationRepository;
+        this.interviewRepository = interviewRepository;
     }
 
     /**
@@ -152,7 +170,52 @@ public class AppUserService implements UserDetailsService {
         user.setRegistrationStatus(status);
         appUserRepository.save(user);
 
+        if (status != RegistrationStatus.APPROVED) {
+            freezeUserPositions(user);
+            cancelUserApplications(user);
+        }
+
         return ResponseEntity.ok(user);
+    }
+
+    /**
+     * Freezes all active positions of a user
+     * 
+     * @param user The user whose positions should be frozen
+     */
+    private void freezeUserPositions(AppUser user) {
+        List<Position> userPositions = positionRepository.findByPublisher(user);
+        for (Position position : userPositions) {
+            if (position.getStatus() == PositionStatus.ACTIVE) {
+                positionService.changePositionStatus(position.getId(), PositionStatus.FROZEN.name(), user.getUsername());
+            }
+        }
+    }
+
+    /**
+     * Cancels all pending applications of a user
+     * 
+     * @param user The user whose applications should be canceled
+     */
+    private void cancelUserApplications(AppUser user) {
+        List<Application> userApplications = applicationRepository.findByApplicant(user);
+        for (Application application : userApplications) {
+            if (application.getStatus() == ApplicationStatus.PENDING) {
+
+                application.setStatus(ApplicationStatus.CANCELED);
+                applicationRepository.save(application);
+                
+                List<Interview> interviews = interviewRepository.findByApplication(application);
+                for (Interview interview : interviews) {
+                    if (interview.getStatus() == InterviewStatus.SCHEDULED ||
+                        interview.getStatus() == InterviewStatus.CONFIRMED) {
+                        interview.setStatus(InterviewStatus.CANCELED);
+                        interview.setRejectionReason("המשתמש נחסם");
+                    }
+                }
+                interviewRepository.saveAll(interviews);
+            }
+        }
     }
 
     /**

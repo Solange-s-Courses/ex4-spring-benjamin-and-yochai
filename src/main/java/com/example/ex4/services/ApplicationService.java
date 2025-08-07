@@ -127,6 +127,13 @@ public class ApplicationService {
     }
 
     /**
+     * Cancels an application and its related interviews without validation
+     * This method is used internally when a user is blocked
+     * 
+     * @param application The application to cancel
+     */
+
+    /**
      * Cancels an application for a position
      * 
      * @param positionId Position ID
