@@ -162,7 +162,7 @@ public class ApplicationService {
                         }
                     }
                     
-                    response.put("message", "המועמדות בוטלה בהצלחה! כל הראיונות בוטלו גם כן.");
+                    response.put("message", "המועמדות בוטלה בהצלחה! כל הראיונות (במידה והיו) בוטלו גם כן.");
                     return ResponseEntity.ok(response);
                 }
             }

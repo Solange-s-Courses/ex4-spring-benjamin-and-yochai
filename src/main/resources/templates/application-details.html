@@ -194,7 +194,8 @@
                         th:data-location="${interview.location}" 
                         th:data-notes="${interview.notes != null ? interview.notes : ''}"
                         th:data-virtual="${interview.isVirtual != null ? interview.isVirtual : false}"
-                        th:classappend="${app.status.name() == 'REJECTED' or app.status.name() == 'CANCELED' ? 'd-none' : ''}">
+                        th:classappend="${app.status.name() != 'PENDING' or
+                        interview.status.name() == 'COMPLETED' or interview.status.name() == 'CANCELED' or interview.status.name() == 'REJECTED' ? 'd-none' : ''}">
                   <i class="bi bi-pencil"></i> ערוך
                 </button>
                 
