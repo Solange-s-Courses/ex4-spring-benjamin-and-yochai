@@ -1,3 +1,13 @@
+/**
+ * Text formatting and utility functions module
+ * @module textUtils
+ */
+
+/**
+ * Formats an ISO date string to DD/MM/YYYY format
+ * @param {string} isoString - ISO date string to format
+ * @returns {string} Formatted date string in DD/MM/YYYY format
+ */
 export function formatDate(isoString) {
     const date = new Date(isoString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -6,6 +16,11 @@ export function formatDate(isoString) {
     return `${day}/${month}/${year}`;
 }
 
+/**
+ * Formats an ISO date string to HH:MM time format
+ * @param {string} isoString - ISO date string to format
+ * @returns {string} Formatted time string in HH:MM format
+ */
 export function formatTime(isoString){
     const date = new Date(isoString);
     const hours = date.getHours().toString().padStart(2, '0');
@@ -14,10 +29,20 @@ export function formatTime(isoString){
     return `${hours}:${minutes}`;
 }
 
+/**
+ * Formats an ISO date string to DD/MM/YYYY HH:MM format
+ * @param {string} isoString - ISO date string to format
+ * @returns {string} Formatted date and time string
+ */
 export function formatDateTime(isoString){
     return formatDate(isoString) + ' ' + formatTime(isoString);
 }
 
+/**
+ * Gets CSS class and Hebrew text for position status
+ * @param {string|Object} status - Position status (enum or string)
+ * @returns {Object} Object containing cssClass and text properties
+ */
 export function getPositionStatusInfo(status) {
     const statusName = status?.name?.() || status; // Handle both enum and string
 
@@ -46,6 +71,11 @@ export function getPositionStatusInfo(status) {
     };
 }
 
+/**
+ * Gets CSS class and Hebrew text for application status
+ * @param {string|Object} status - Application status (enum or string)
+ * @returns {Object} Object containing cssClass and text properties
+ */
 export function getApplicationStatusInfo(status) {
     const statusName = status?.name?.() || status; // Handle both enum and string
 
@@ -74,6 +104,11 @@ export function getApplicationStatusInfo(status) {
     };
 }
 
+/**
+ * Gets CSS class and Hebrew text for interview status
+ * @param {string|Object} status - Interview status (enum or string)
+ * @returns {Object} Object containing cssClass and text properties
+ */
 export function getInterviewStatusInfo(status) {
     const statusName = status?.name?.() || status; // Handle both enum and string
 
@@ -106,6 +141,11 @@ export function getInterviewStatusInfo(status) {
     };
 }
 
+/**
+ * Converts location enum values to Hebrew text
+ * @param {string} location - Location enum value
+ * @returns {string} Hebrew text for the location
+ */
 export function locationEnumToHebrew (location){
     const locationRegionMap = {
         'NORTH': 'צפון',

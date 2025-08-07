@@ -1,3 +1,12 @@
+/**
+ * Login form validation and handling module
+ * @module loginForm
+ */
+
+/**
+ * Initializes login form validation and event handling
+ * Sets up form submission validation for username and password fields
+ */
 const loginForm = () => {
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('loginForm');
@@ -6,6 +15,9 @@ const loginForm = () => {
         const usernameError = document.getElementById('usernameError');
         const passwordError = document.getElementById('passwordError');
 
+        /**
+         * Clears all validation errors from the form
+         */
         const clearErrors = () => {
             username.classList.remove('is-invalid');
             password.classList.remove('is-invalid');
@@ -13,6 +25,11 @@ const loginForm = () => {
             passwordError.textContent = '';
         };
 
+        /**
+         * Shows validation error for a specific field
+         * @param {string} message - Error message to display
+         * @param {string} field - Field name ('username' or 'password')
+         */
         const showError = (message, field) => {
             if (field === 'username') {
                 username.classList.add('is-invalid');

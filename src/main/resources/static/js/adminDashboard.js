@@ -1,7 +1,21 @@
+/**
+ * Admin dashboard functionality module
+ * @module adminDashboard
+ */
+
 import {showToast} from "./toastUtils.js";
 
+/**
+ * Initializes admin dashboard functionality including user management and PDF viewing
+ */
 const adminDashboard = ()=>{
     const POLLING = 5000;
+    
+    /**
+     * Renders PDF document using PDF.js library
+     * @param {string} url - URL of the PDF document
+     * @param {HTMLElement} container - Container element to render PDF into
+     */
     const renderPdfWithPdfJs = async (url, container) => {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         const loadingTask = pdfjsLib.getDocument(url);
@@ -33,6 +47,11 @@ const adminDashboard = ()=>{
         }
     };
 
+    /**
+     * Filters table rows based on search value
+     * @param {HTMLTableElement} table - Table element to filter
+     * @param {string} searchValue - Search term to filter by
+     */
     const filterTable = (table, searchValue)=>{
         const rows = table.querySelectorAll("tr[data-username]");
         const noUsersMsg = table.querySelector("tr[data-error='no-users']");
@@ -71,18 +90,24 @@ const adminDashboard = ()=>{
         const changeRoleForms = permissionTable.querySelectorAll(".change-role-form");
         let pollingInterval = null;
 
+        // Search functionality
         permissionSearch.addEventListener("input", ()=>{filterTable(permissionTable, permissionSearch.value)});
         newAccountsSearch.addEventListener("input", ()=>{filterTable(newAccountsTable, newAccountsSearch.value)});
 
         filterTable(permissionTable, permissionSearch.value);
         filterTable(newAccountsTable, newAccountsSearch.value);
 
+        // PDF viewing functionality
         showPdfButtons.forEach(button => {
             button.addEventListener("click", async function () {
                 await showPdfListener(button);
             });
         })
 
+        /**
+         * Handles PDF viewing button click
+         * @param {HTMLButtonElement} button - Button that was clicked
+         */
         async function showPdfListener (button){
             const userId = button.dataset.userId;
             const fullName = button.dataset.userFullName;
@@ -105,13 +130,18 @@ const adminDashboard = ()=>{
             }
         }
 
-        //first table
+        // Status change functionality for new accounts
         setStatusButtons.forEach(form => {
             form.addEventListener("submit", async (event) => {
                 await setStatusListener(form, event);
             });
         });
 
+        /**
+         * Handles status change for new accounts
+         * @param {HTMLFormElement} form - Form element
+         * @param {Event} event - Form submit event
+         */
         async function setStatusListener(form, event){
             clearInterval(pollingInterval);
             event.preventDefault();
@@ -126,11 +156,16 @@ const adminDashboard = ()=>{
             pollingInterval = setInterval(refreshData, POLLING);
         }
 
-        //second table
+        // Status change functionality for existing accounts
         changeStatusForms.forEach(form => {
             form.addEventListener("submit", async(event)=>{await changeStatusListener(form, event)});
         });
 
+        /**
+         * Handles status change for existing accounts
+         * @param {HTMLFormElement} form - Form element
+         * @param {Event} event - Form submit event
+         */
         async function changeStatusListener(form, event){
             event.preventDefault();
 
@@ -150,10 +185,16 @@ const adminDashboard = ()=>{
             }
         }
 
+        // Role change functionality
         changeRoleForms.forEach(form => {
             form.addEventListener("submit", async (event)=> {await changeRoleListener(form, event)});
         });
 
+        /**
+         * Handles role change for users
+         * @param {HTMLFormElement} form - Form element
+         * @param {Event} event - Form submit event
+         */
         async function changeRoleListener(form, event){
             event.preventDefault();
 
@@ -173,6 +214,10 @@ const adminDashboard = ()=>{
             }
         }
 
+        /**
+         * Updates permission table with user data
+         * @param {Object} user - User data object
+         */
         function updatePermissionTable(user) {
             const row = permissionTable.querySelector(`tr[data-username="${user.username}"]`);
             if (row) {
@@ -235,6 +280,12 @@ const adminDashboard = ()=>{
             }
         }
 
+        /**
+         * Changes user status via API
+         * @param {string} userId - User ID to change status for
+         * @param {string} status - New status value
+         * @returns {Object|null} Updated user data or null if failed
+         */
         async function changeUserStatus(userId, status){
             try {
 
@@ -268,6 +319,12 @@ const adminDashboard = ()=>{
 
         }
 
+        /**
+         * Changes user role via API
+         * @param {string} userId - User ID to change role for
+         * @param {string} role - New role value
+         * @returns {Object|null} Updated user data or null if failed
+         */
         async function changeUserRole(userId, role){
             try {
 
@@ -300,6 +357,10 @@ const adminDashboard = ()=>{
             }
         }
 
+        /**
+         * Fetches all users data from server
+         * @returns {Object|null} Users data or null if failed
+         */
         async function fetchAllUsers(){
             try {
                 const response = await fetch('/restapi/admin/allUsers', {
@@ -322,6 +383,10 @@ const adminDashboard = ()=>{
             }
         }
 
+        /**
+         * Updates pending accounts table with user data
+         * @param {Object} user - User data object
+         */
         function updatePendingTable(user) {
             const row = newAccountsTable.querySelector(`tr[data-username="${user.username}"]`);
             if (!row && user.registrationStatus === "PENDING") {
@@ -373,6 +438,9 @@ const adminDashboard = ()=>{
             }
         }
 
+        /**
+         * Refreshes all admin dashboard data from server
+         */
         async function refreshData() {
             try {
                 const data = await fetchAllUsers();

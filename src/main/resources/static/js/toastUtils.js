@@ -1,3 +1,12 @@
+/**
+ * Toast utilities module for displaying notification messages
+ * @module toastUtils
+ */
+
+/**
+ * Initializes toast functionality when DOM is loaded
+ * Shows any existing toast elements on page load
+ */
 const toastUtils = () => {
     document.addEventListener("DOMContentLoaded", ()=>{
         const toastEl = document.getElementById('actionToast');
@@ -8,7 +17,11 @@ const toastUtils = () => {
     });
 };
 
-// Export the showToast function for use in other modules
+/**
+ * Displays a toast notification message
+ * @param {string} message - The message to display in the toast
+ * @param {string} type - The type of toast (success, danger, warning, info). Defaults to "success"
+ */
 export function showToast(message, type = "success") {
     const toastContainerId = "globalToastContainer";
 

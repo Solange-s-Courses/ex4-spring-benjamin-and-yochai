@@ -19,6 +19,9 @@ const positionsPageDom = ()=>{
         const searchButton = document.getElementById("searchButton");
         const recentSearchButtons = document.querySelectorAll(".recentSearchBtn");
 
+        /**
+         * Filters job cards based on selected location and service type
+         */
         function filterJobs(){
             const selectedLocation = locationSelector.value;
             const selectedType = assigmentTypeSelector.value;
@@ -49,6 +52,12 @@ const positionsPageDom = ()=>{
 
         filterJobs();
 
+        /**
+         * Updates select options with new data while preserving current selection
+         * @param {HTMLSelectElement} selector - The select element to update
+         * @param {string[]} options - Array of option values
+         * @param {string} selectedValue - Currently selected value to preserve
+         */
         function updateSelectOptions(selector, options, selectedValue) {
             const firstOption = selector.firstElementChild;
             selector.innerHTML = '';
@@ -64,6 +73,10 @@ const positionsPageDom = ()=>{
             });
         }
 
+        /**
+         * Updates recent searches display with new search terms
+         * @param {string[]} searches - Array of recent search terms
+         */
         function updateRecentSearches(searches) {
             recentSearchesContainer.innerHTML = "";
             searches.forEach(search => {
@@ -79,6 +92,7 @@ const positionsPageDom = ()=>{
             })
         }
 
+        // Recent search button handlers
         recentSearchButtons.forEach(button => {
             button.addEventListener("click", async () => {
                 searchBox.value = button.textContent.trim();
@@ -87,6 +101,10 @@ const positionsPageDom = ()=>{
             });
         });
 
+        /**
+         * Fetches positions data from the server
+         * @returns {Object|null} Positions data or null if failed
+         */
         async function fetchPositionsData() {
             try {
                 const response = await fetch('/restapi/positions/active?' + params.toString(), {
@@ -108,6 +126,10 @@ const positionsPageDom = ()=>{
             }
         }
 
+        /**
+         * Updates job cards display with new data
+         * @param {Array} jobs - Array of job objects
+         */
         function updateJobCards(jobs) {
             jobCardsDiv.innerHTML = '';
 
@@ -140,6 +162,9 @@ const positionsPageDom = ()=>{
             });
         }
 
+        /**
+         * Refreshes all data from server and updates UI
+         */
         async function refreshData() {
             try {
                 currentFilters.location = locationSelector.value;
@@ -168,11 +193,15 @@ const positionsPageDom = ()=>{
             }
         }
 
+        /**
+         * Triggers search with current search box value
+         */
         async function triggerSearch() {
             params.set("search", searchBox.value.trim());
             await refreshData();
         }
 
+        // Event listeners
         locationSelector.addEventListener("change", function() {
             filterJobs();
         });

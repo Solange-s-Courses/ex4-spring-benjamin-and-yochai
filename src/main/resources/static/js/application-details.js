@@ -1,7 +1,15 @@
+/**
+ * Application details page functionality module
+ * @module applicationDetails
+ */
+
 import {showToast} from "./toastUtils.js";
 import {formatDate, formatTime, getApplicationStatusInfo, getInterviewStatusInfo} from "./textUtils.js";
 import {genericSortingFunc, sortRowsByDate} from "./sortingFuncs.js";
 
+/**
+ * Initializes application details page functionality including interview management
+ */
 const applicationDetailsDom = function() {
     const POLLING = 5000;
 
@@ -11,6 +19,10 @@ const applicationDetailsDom = function() {
         const interviewsTable = document.getElementById("interviews-table")
         const applicationId = document.getElementById("applicationId").dataset.id;
         
+        /**
+         * Completes an interview by sending request to server
+         * @param {string} interviewId - Interview ID to complete
+         */
         async function completeInterview(interviewId) {
             try {
                 const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
@@ -41,6 +53,11 @@ const applicationDetailsDom = function() {
             }
         }
 
+        /**
+         * Updates interview summary by sending request to server
+         * @param {string} interviewId - Interview ID to update summary for
+         * @param {string} summary - New summary text
+         */
         async function updateInterviewSummary(interviewId, summary) {
             try {
                 const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
@@ -72,12 +89,22 @@ const applicationDetailsDom = function() {
             }
         }
 
+        /**
+         * Sets up complete interview form listener
+         * @param {HTMLFormElement} form - Form element
+         * @param {Event} event - Form submit event
+         */
         async function setCompleteInterviewListener(form, event) {
             event.preventDefault();
             const interviewId = form.dataset.interviewId;
             await completeInterview(interviewId);
         }
 
+        /**
+         * Sets up update summary form listener
+         * @param {HTMLFormElement} form - Form element
+         * @param {Event} event - Form submit event
+         */
         async function setUpdateSummaryListener(form, event) {
             event.preventDefault();
             const interviewId = form.dataset.interviewId;
@@ -90,6 +117,7 @@ const applicationDetailsDom = function() {
             await updateInterviewSummary(interviewId, summary);
         }
 
+        // Set up event listeners for existing forms
         const completeForms = document.querySelectorAll('.complete-interview-form');
         completeForms.forEach(form => {
             form.addEventListener('submit', async (event) => {
@@ -104,6 +132,9 @@ const applicationDetailsDom = function() {
             });
         });
 
+        /**
+         * Reloads application and interview data from server
+         */
         async function reload(){
             try{
                 const response = await fetch(`/restapi/applications/${applicationId}/poll`, {
@@ -282,6 +313,12 @@ const applicationDetailsDom = function() {
             clearInterval(pollingInterval);
         })
 
+        /**
+         * Toggles location field between virtual and physical meeting types
+         * @param {boolean} isVirtual - Whether the meeting is virtual
+         * @param {string} locationLabelId - ID of location label element
+         * @param {string} locationInputId - ID of location input element
+         */
         const toggleLocationField = (isVirtual, locationLabelId, locationInputId) => {
             const locationLabel = document.getElementById(locationLabelId);
             const locationInput = document.getElementById(locationInputId);
@@ -300,18 +337,32 @@ const applicationDetailsDom = function() {
             }
         };
 
+        /**
+         * Toggles meeting type for new interview form
+         */
         const toggleMeetingType = () => {
             const isVirtual = document.getElementById('meetingTypeSwitch').checked;
             toggleLocationField(isVirtual, 'locationLabel', 'locationInput');
             clearFieldError('locationInput');
         };
 
+        /**
+         * Toggles meeting type for edit interview form
+         */
         const toggleEditMeetingType = () => {
             const isVirtual = document.getElementById('editMeetingTypeSwitch').checked;
             toggleLocationField(isVirtual, 'editLocationLabel', 'editLocationInput');
             clearFieldError('editLocationInput');
         };
 
+        /**
+         * Opens edit interview modal with interview data
+         * @param {string} interviewId - Interview ID
+         * @param {string} date - Interview date
+         * @param {string} location - Interview location
+         * @param {string} notes - Interview notes
+         * @param {boolean} isVirtual - Whether interview is virtual
+         */
         const editInterview = (interviewId, date, location, notes, isVirtual) => {
             const form = document.getElementById('editInterviewForm');
             form.setAttribute('data-interview-id', interviewId);
@@ -327,6 +378,12 @@ const applicationDetailsDom = function() {
             modal.show();
         };
 
+        /**
+         * Shows field error message
+         * @param {HTMLFormElement} form - Form element
+         * @param {string} fieldName - Name of the field with error
+         * @param {string} message - Error message to display
+         */
         const showFieldError = (form, fieldName, message) => {
             const field = form.querySelector(`[name="${fieldName}"]`);
             const errorDiv = form.querySelector(`#${field.id}-error`);
@@ -337,6 +394,10 @@ const applicationDetailsDom = function() {
             }
         };
 
+        /**
+         * Clears field error message
+         * @param {string} fieldId - ID of the field to clear error for
+         */
         const clearFieldError = (fieldId) => {
             const field = document.getElementById(fieldId);
             const errorDiv = document.getElementById(`${fieldId}-error`);
@@ -349,6 +410,10 @@ const applicationDetailsDom = function() {
             }
         };
 
+        /**
+         * Clears all field errors in a form
+         * @param {HTMLFormElement} form - Form element to clear errors from
+         */
         const clearAllErrors = (form) => {
             if (!form) return;
 
@@ -363,6 +428,12 @@ const applicationDetailsDom = function() {
             });
         };
 
+        /**
+         * Validates interview form data
+         * @param {FormData} data - Form data to validate
+         * @param {string} formId - ID of the form being validated
+         * @returns {boolean} True if validation passes, false otherwise
+         */
         const validateInterviewForm = (data, formId) => {
             let isValid = true;
             const form = document.getElementById(formId);
@@ -385,6 +456,7 @@ const applicationDetailsDom = function() {
             return isValid;
         };
 
+        // Set minimum date for date inputs
         const now = new Date();
         const nowString = now.toISOString().slice(0, 16);
 
@@ -393,6 +465,7 @@ const applicationDetailsDom = function() {
             input.min = nowString;
         });
 
+        // Meeting type switch event listeners
         const meetingTypeSwitch = document.getElementById('meetingTypeSwitch');
         if (meetingTypeSwitch) {
             meetingTypeSwitch.addEventListener('change', toggleMeetingType);
@@ -403,6 +476,7 @@ const applicationDetailsDom = function() {
             editMeetingTypeSwitch.addEventListener('change', toggleEditMeetingType);
         }
 
+        // Schedule interview form handler
         const scheduleForm = document.querySelector('form[action="/interviews/schedule"]');
         if (scheduleForm) {
             scheduleForm.addEventListener('submit', async function(e) {
@@ -454,6 +528,7 @@ const applicationDetailsDom = function() {
             });
         }
 
+        // Edit interview form handler
         const editForm = document.getElementById('editInterviewForm');
         if (editForm) {
             editForm.addEventListener('submit', async function(e) {
@@ -505,6 +580,10 @@ const applicationDetailsDom = function() {
             });
         }
 
+        /**
+         * Opens edit interview modal with button data
+         * @param {HTMLButtonElement} btn - Button element with interview data
+         */
         function openEditModal(btn){
             const id = btn.getAttribute('data-id');
             const date = btn.getAttribute('data-date');
@@ -514,6 +593,7 @@ const applicationDetailsDom = function() {
             editInterview(id, date, location, notes, isVirtual);
         }
 
+        // Edit interview button handlers
         const editInterviewBtns = document.querySelectorAll(".edit-interview-btn");
         editInterviewBtns.forEach(btn =>{
             btn.addEventListener("click", ()=>{
@@ -521,6 +601,11 @@ const applicationDetailsDom = function() {
             })
         })
 
+        /**
+         * Makes application decision (approve/reject) by sending request to server
+         * @param {string} applicationId - Application ID
+         * @param {string} action - Action to perform ('approve' or 'reject')
+         */
         async function applicationDecision(applicationId, action){
             try {
                 const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
@@ -548,6 +633,7 @@ const applicationDetailsDom = function() {
             }
         }
 
+        // Application decision form handlers
         const approveForm = document.querySelector('.approve-application-form');
         if (approveForm) {
             approveForm.addEventListener('submit', async (e) => {
@@ -567,6 +653,10 @@ const applicationDetailsDom = function() {
             });
         }
 
+        /**
+         * Cancels an interview by sending request to server
+         * @param {string} id - Interview ID to cancel
+         */
         async function cancelInterview(id){
             try {
                 const response = await fetch(`/restapi/interviews/${id}/cancel`, {
@@ -590,6 +680,7 @@ const applicationDetailsDom = function() {
             }
         }
 
+        // Cancel interview form handlers
         const cancelForms = document.querySelectorAll('.cancel-interview-form');
         cancelForms.forEach(form => {
             form.addEventListener('submit', async function(e) {
