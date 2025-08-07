@@ -1,7 +1,15 @@
+/**
+ * Dashboard functionality module for user dashboard
+ * @module dashboard
+ */
+
 import {showToast} from "./toastUtils.js";
 import {genericSortingFunc, sortRowsByDate, sortRowsByText} from "./sortingFuncs.js";
 import {formatDate, formatTime, getPositionStatusInfo, getInterviewStatusInfo, getApplicationStatusInfo, locationEnumToHebrew} from "./textUtils.js"
 
+/**
+ * Initializes dashboard functionality including data polling and table management
+ */
 const dashboardDom = function (){
     const POLLING = 5000;
 
@@ -18,7 +26,13 @@ const dashboardDom = function (){
         const modalInstance = new bootstrap.Modal(modal);
         const rejectionReasonTextArea = document.getElementById('rejectionReason');
 
-
+        /**
+         * Reloads table data by comparing existing rows with new data
+         * @param {Array} data - New data array
+         * @param {HTMLTableSectionElement} tbody - Table body element
+         * @param {Function} compareRows - Function to compare and update existing rows
+         * @param {Function} addRow - Function to add new rows
+         */
         function reloadTable(data, tbody, compareRows, addRow){
             if(!tbody) return;
 
@@ -43,15 +57,25 @@ const dashboardDom = function (){
             });
         }
 
+        /**
+         * Compares and updates position row data
+         * @param {Object} data - Position data object
+         * @param {HTMLTableRowElement} row - Table row element to update
+         */
         function comparePositionRows(data, row){
             const cols = row.querySelectorAll('td');
             cols[0].querySelector("a").textContent = data.position.jobTitle;
-            cols[1].textContent = locationEnumToHebrew(data.position.location); //refactor to hebrew
+            cols[1].textContent = locationEnumToHebrew(data.position.location);
             cols[2].textContent = data.position.assignmentType;
             cols[3].innerHTML = `<span class="badge ${getPositionStatusInfo(data.position.status).cssClass}">${getPositionStatusInfo(data.position.status).text}</span>`
             cols[4].textContent = data.activeApplications;
         }
 
+        /**
+         * Adds new position row to table
+         * @param {Object} data - Position data object
+         * @param {HTMLTableSectionElement} tbody - Table body element
+         */
         function addPositionRow(data, tbody){
             const row = document.createElement("tr");
             row.setAttribute("data-id", data.position.id);
@@ -87,6 +111,11 @@ const dashboardDom = function (){
             tbody.appendChild(row);
         }
 
+        /**
+         * Compares and updates application row data
+         * @param {Object} application - Application data object
+         * @param {HTMLTableRowElement} row - Table row element to update
+         */
         function compareApplicationRows(application, row){
             const cols = row.querySelectorAll('td');
             cols[0].querySelector("a").textContent = application.position.jobTitle;
@@ -96,6 +125,11 @@ const dashboardDom = function (){
             cols[4].innerHTML = `<span class="badge ${getApplicationStatusInfo(application.status).cssClass}">${getApplicationStatusInfo(application.status).text}</span>`
         }
 
+        /**
+         * Adds new application row to table
+         * @param {Object} application - Application data object
+         * @param {HTMLTableSectionElement} tbody - Table body element
+         */
         function addApplicationRow(application, tbody){
             const row = document.createElement("tr");
             row.setAttribute("data-id", application.id);
@@ -131,6 +165,11 @@ const dashboardDom = function (){
             tbody.appendChild(row);
         }
 
+        /**
+         * Compares and updates interview row data
+         * @param {Object} interview - Interview data object
+         * @param {HTMLTableRowElement} row - Table row element to update
+         */
         function compareInterviewRows(interview, row){
             const cols = row.querySelectorAll('td');
 
@@ -155,7 +194,6 @@ const dashboardDom = function (){
                     <div class="d-flex gap-2 justify-content-center align-items-center">
                     
                     <form method="post" class="mb-0 confirm-interview-form d-inline" data-interview-id="${interview.id}">
-                        <!--input type="hidden" th:name="$ {_csrf.parameterName}" th:value="$ {_csrf.token}" /-->
                         <button type="submit" class="btn btn-success btn-sm">אשר</button>
                     </form>
 
@@ -189,6 +227,11 @@ const dashboardDom = function (){
 
         }
 
+        /**
+         * Adds new interview row to table
+         * @param {Object} interview - Interview data object
+         * @param {HTMLTableSectionElement} tbody - Table body element
+         */
         function addInterviewRow(interview, tbody){
             const row = document.createElement("tr");
             row.setAttribute("data-id", interview.id);
@@ -243,6 +286,10 @@ const dashboardDom = function (){
             tbody.appendChild(row);
         }
 
+        /**
+         * Confirms an interview by sending request to server
+         * @param {string} interviewId - Interview ID to confirm
+         */
         async function confirmInterview(interviewId) {
             try {
                 const response = await fetch(`/restapi/interviews/${interviewId}/confirm`, {
@@ -269,12 +316,21 @@ const dashboardDom = function (){
             }
         }
 
+        /**
+         * Sets up confirm interview form listener
+         * @param {HTMLFormElement} form - Form element
+         * @param {Event} event - Form submit event
+         */
         async function setConfirmInterviewListener(form, event) {
             event.preventDefault();
             const interviewId = form.dataset.interviewId;
             await confirmInterview(interviewId);
         }
 
+        /**
+         * Rejects an interview with optional reason
+         * @param {string} interviewId - Interview ID to reject
+         */
         async function rejectInterview(interviewId) {
             try {
                 rejectionReasonTextArea.value = '';
@@ -318,6 +374,7 @@ const dashboardDom = function (){
             }
         }
 
+        // Set up event listeners for existing forms
         const confirmForms = document.querySelectorAll('.confirm-interview-form');
         confirmForms.forEach(form => {
             form.addEventListener('submit', async (event) => {
@@ -334,6 +391,9 @@ const dashboardDom = function (){
             });
         });
 
+        /**
+         * Refreshes all dashboard data from server
+         */
         async function refreshData(){
             try{
                 const response = await fetch("restapi/dashboard/poll", {

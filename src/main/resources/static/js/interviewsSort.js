@@ -1,5 +1,14 @@
+/**
+ * Interview sorting functionality module
+ * @module interviewsSort
+ */
+
 import {genericSortingFunc, sortRowsByDate, sortRowsByText} from "./sortingFuncs.js";
 
+/**
+ * Initializes sorting functionality for interview tables
+ * Sets up event listeners for sort buttons with data-action="sort"
+ */
 const sortingDom = ()=>{
     document.addEventListener('DOMContentLoaded', function () {
         const sortButtons = document.querySelectorAll("[data-action = 'sort']")

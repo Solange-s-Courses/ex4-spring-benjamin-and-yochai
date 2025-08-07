@@ -1,3 +1,12 @@
+/**
+ * Position form validation and handling module
+ * @module positionForm
+ */
+
+/**
+ * Initializes position form validation and dynamic functionality
+ * Handles job title selection, requirements management, and form validation
+ */
 function positionDom(){
     document.addEventListener("DOMContentLoaded", function () {
         const jobTitleSelect = document.getElementById("jobTitle");
@@ -7,12 +16,20 @@ function positionDom(){
         const form = document.getElementById('addPositionForm');
         const requirementsContainer = document.getElementById('requirementsContainer');
 
+        /**
+         * Clears all validation errors from the form
+         */
         function clearErrors() {
             document.querySelectorAll(".client-error").forEach(div => {
                 div.textContent = "";
             });
         }
 
+        /**
+         * Shows validation error for a specific field
+         * @param {string} message - Error message to display
+         * @param {string} field - Field name to show error for
+         */
         function showError(message, field) {
             const errorDiv = document.querySelector(`[data-error="${field}"]`);
             if (errorDiv) {
@@ -20,6 +37,10 @@ function positionDom(){
             }
         }
 
+        /**
+         * Validates job title selection and "other" input
+         * @returns {boolean} True if validation passes, false otherwise
+         */
         function validateJobTitle() {
             const selectedValue = jobTitleSelect.value;
             showError('', 'jobTitle');
@@ -44,6 +65,10 @@ function positionDom(){
             return true;
         }
 
+        /**
+         * Validates location selection
+         * @returns {boolean} True if validation passes, false otherwise
+         */
         function validateLocation() {
             const selectedValue = locationSelect.value;
             showError('', 'location');
@@ -56,6 +81,10 @@ function positionDom(){
             return true;
         }
 
+        /**
+         * Validates assignment type radio button selection
+         * @returns {boolean} True if validation passes, false otherwise
+         */
         function validateAssignmentType() {
             showError("", 'assignmentType');
             const radioButtons = document.querySelectorAll('input[name="assignmentType"]');
@@ -69,6 +98,10 @@ function positionDom(){
             return true;
         }
 
+        /**
+         * Validates description text area
+         * @returns {boolean} True if validation passes, false otherwise
+         */
         function validateDescription() {
             showError('', 'description');
             const value = descriptionTextArea.value;
@@ -89,6 +122,10 @@ function positionDom(){
             return true;
         }
 
+        /**
+         * Validates requirements inputs
+         * @returns {boolean} True if validation passes, false otherwise
+         */
         function validateRequirements() {
             const requirementInputs = requirementsContainer.querySelectorAll('input');
             let isValid = true;
@@ -112,6 +149,10 @@ function positionDom(){
             return isValid;
         }
 
+        /**
+         * Validates the entire form
+         * @returns {boolean} True if all validations pass, false otherwise
+         */
         function validateForm() {
             clearErrors();
             
@@ -125,6 +166,7 @@ function positionDom(){
                    isDescriptionValid && isRequirementsValid;
         }
 
+        // Event listeners for real-time validation
         jobTitleSelect.addEventListener('change', function() {
             validateJobTitle();
             toggleOtherInput();
@@ -139,8 +181,8 @@ function positionDom(){
         
         descriptionTextArea.addEventListener('input', validateDescription);
 
-
-        form.addEventListener('submit',  function(e) {
+        // Form submission handler
+        form.addEventListener("submit",  function(e) {
             if (!validateForm()) {
                 e.preventDefault();
                 
@@ -151,6 +193,9 @@ function positionDom(){
             }
         });
 
+        /**
+         * Toggles visibility of "other" job title input based on selection
+         */
         function toggleOtherInput() {
             if (jobTitleSelect.value === "אחר") {
                 otherJobTitleInput.classList.remove("d-none");
@@ -163,7 +208,9 @@ function positionDom(){
 
         toggleOtherInput();
 
-
+        /**
+         * Updates the name attributes of requirement inputs to maintain proper indexing
+         */
         function updateRequirementsInputNames() {
             const inputs = requirementsContainer.querySelectorAll('.input-group');
             inputs.forEach((input, index) => {
@@ -180,6 +227,7 @@ function positionDom(){
             });
         }
 
+        // Add requirement button handler
         document.getElementById('addRequirementBtn').addEventListener('click', function () {
             const index = requirementsContainer.querySelectorAll('input').length;
             const div = document.createElement('div');
@@ -196,6 +244,7 @@ function positionDom(){
             div.querySelector("input").addEventListener("input", validateRequirements)
         });
 
+        // Remove requirement button handler
         requirementsContainer.addEventListener('click', function (e) {
             if (e.target.closest('.remove-requirement')) {
                 const inputGroup = e.target.closest('.input-group');

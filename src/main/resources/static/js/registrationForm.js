@@ -1,3 +1,12 @@
+/**
+ * Registration form validation and handling module
+ * @module registrationForm
+ */
+
+/**
+ * Initializes registration form validation and event handling
+ * Sets up comprehensive form validation including file upload validation
+ */
 const registrationForm = () => {
     const usernameRegex = /^[A-Za-z0-9]{3,20}$/;
     const hebrewNameRegex = /^[\u05D0-\u05EA]{3,20}$/;
@@ -6,6 +15,11 @@ const registrationForm = () => {
     const allowedTypes = ["application/pdf"];
     let valid = true;
 
+    /**
+     * Parses file size string to bytes
+     * @param {string|number} size - File size (can be "1MB", "500KB", or number)
+     * @returns {number} Size in bytes
+     */
     const parseFileSize = (size) => {
         if (typeof size === "number") return size;
         if (size.endsWith("MB")) {
@@ -17,6 +31,11 @@ const registrationForm = () => {
         }
     };
 
+    /**
+     * Formats bytes to human readable format
+     * @param {number} bytes - Size in bytes
+     * @returns {string} Formatted size string (e.g., "1MB", "500KB")
+     */
     const formatFileSize = (bytes) => {
         if (bytes >= 1024 * 1024) {
             return (bytes / (1024 * 1024)) + "MB";
@@ -40,12 +59,20 @@ const registrationForm = () => {
         const aboutTextarea = document.getElementById('about');
         const charCount = document.getElementById('charCount');
 
+        /**
+         * Clears all validation errors from the form
+         */
         const clearErrors = () => {
             document.querySelectorAll(".client-error, .server-error").forEach(div=>{
                 div.textContent = "";
             });
         };
 
+        /**
+         * Shows validation error for a specific field
+         * @param {string} message - Error message to display
+         * @param {string} field - Field name to show error for
+         */
         const showError = (message, field) => {
             const errorDiv = document.querySelector(`[data-error="${field}"]`);
             if (errorDiv) {
@@ -58,6 +85,7 @@ const registrationForm = () => {
                 valid = true;
                 clearErrors();
 
+                // Username validation
                 if (!username.value || username.value.trim().length === 0) {
                     showError("יש להזין שם משתמש", "username");
                     valid = false;
@@ -67,6 +95,7 @@ const registrationForm = () => {
                     valid = false;
                 }
 
+                // First name validation
                 if (!firstName.value || firstName.value.trim().length === 0) {
                     showError("יש להזין שם פרטי", "firstName");
                     valid = false;
@@ -76,6 +105,7 @@ const registrationForm = () => {
                     valid = false;
                 }
 
+                // Last name validation
                 if (!lastName.value || lastName.value.trim().length === 0) {
                     showError("יש להזין שם משפחה", "lastName");
                     valid = false;
@@ -85,6 +115,7 @@ const registrationForm = () => {
                     valid = false;
                 }
 
+                // Email validation
                 if (!email.value || email.value.trim().length === 0) {
                     showError("יש להזין כתובת מייל", "email");
                     valid = false;
@@ -94,6 +125,7 @@ const registrationForm = () => {
                     valid = false;
                 }
 
+                // Password validation
                 if (!password.value || password.value.trim().length === 0) {
                     showError("יש להזין סיסמה", "password");
                     valid = false;
@@ -103,6 +135,7 @@ const registrationForm = () => {
                     valid = false;
                 }
 
+                // File validation
                 const file = militaryIdDoc.files[0];
 
                 if (!file) {
@@ -118,6 +151,7 @@ const registrationForm = () => {
                     valid = false;
                 }
 
+                // About validation
                 if (!aboutTextarea.value || aboutTextarea.value.trim().length === 0) {
                     showError("חובה לספר על עצמך", "about");
                     valid = false;
@@ -129,6 +163,7 @@ const registrationForm = () => {
             });
         }
 
+        // Character count for about textarea
         if (aboutTextarea && charCount) {
             aboutTextarea.addEventListener('input', function() {
                 const currentLength = this.value.length;

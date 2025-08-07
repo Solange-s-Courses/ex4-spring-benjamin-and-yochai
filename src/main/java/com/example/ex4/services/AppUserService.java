@@ -197,7 +197,8 @@ public class AppUserService implements UserDetailsService {
      * 
      * @param user The user whose applications should be canceled
      */
-    private void cancelUserApplications(AppUser user) {
+    @Transactional
+    public void cancelUserApplications(AppUser user) {
         List<Application> userApplications = applicationRepository.findByApplicant(user);
         for (Application application : userApplications) {
             if (application.getStatus() == ApplicationStatus.PENDING) {

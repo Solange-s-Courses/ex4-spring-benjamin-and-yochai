@@ -1,6 +1,14 @@
+/**
+ * Position details page functionality module
+ * @module position
+ */
+
 import {showToast} from "./toastUtils.js";
 import {getApplicationStatusInfo, formatDateTime} from "./textUtils.js";
 
+/**
+ * Initializes position page functionality including application management and status updates
+ */
 function positionDom() {
     const POLLING = 5000;
 
@@ -15,6 +23,12 @@ function positionDom() {
         const applicantTable = document.getElementById("applicantTable");
         let pollingInterval = null;
 
+        /**
+         * Sends application request (apply/cancel) to the server
+         * @param {HTMLButtonElement} btn - The button that triggered the request
+         * @param {HTMLElement} divToHide - Element to hide on success
+         * @param {HTMLElement} divToShow - Element to show on success
+         */
         const sendReq = async (btn, divToHide, divToShow) => {
             try {
                 btn.disabled = true;
@@ -52,6 +66,7 @@ function positionDom() {
             }
         }
 
+        // Apply/Cancel application button handlers
         if (cancelApplicationBtn) {
             cancelApplicationBtn.addEventListener("click", async () => {
                 await sendReq(cancelApplicationBtn, applicationPendingStatus, noApplicationStatus);
@@ -64,6 +79,10 @@ function positionDom() {
             })
         }
 
+        /**
+         * Gets CSRF headers for API requests
+         * @returns {Object} Headers object with CSRF token
+         */
         const getCSRFHeaders = () => {
             const csrfMeta = document.querySelector('meta[name="_csrf"]');
             const headers = {'Content-Type': 'application/json'};
@@ -77,6 +96,7 @@ function positionDom() {
             return headers;
         };
 
+        // Position status change functionality (for commanders)
         if (changeStatusForm) {
             const selector = changeStatusForm.querySelector("select");
             const positionId = selector.dataset.positionId;
@@ -109,6 +129,9 @@ function positionDom() {
                 }
             })
 
+            /**
+             * Reloads applicant table data from server
+             */
             async function reload() {
                 try {
                     const response = await fetch(`/restapi/positions/${positionId}/poll`, {
@@ -167,6 +190,10 @@ function positionDom() {
             })
         }
 
+        /**
+         * Initializes share button functionality
+         * Uses Web Share API if available, falls back to clipboard copy
+         */
         const initShareButton = () => {
             const shareBtn = document.getElementById("shareBtn");
             if (!shareBtn) return;
