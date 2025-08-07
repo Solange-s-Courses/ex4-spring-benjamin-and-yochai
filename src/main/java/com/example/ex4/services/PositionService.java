@@ -283,29 +283,32 @@ public class PositionService {
             position.setStatus(Enum.valueOf(PositionStatus.class, status));
             save(position);
 
-            List<Application>applications = applicationRepository.getApplicationsByPosition(position);
-            for (Application application : applications) {
-                if (application.getStatus() == ApplicationStatus.PENDING) {
-                    application.setStatus(ApplicationStatus.CANCELED);
+            if (!status.equals(PositionStatus.ACTIVE.name())){
 
-                    List<Interview>interviews = interviewRepository.findByApplication(application);
-                    for (Interview interview : interviews) {
-                        if (interview.getStatus() == InterviewStatus.SCHEDULED ||
-                            interview.getStatus() == InterviewStatus.CONFIRMED)
-                        {
-                            interview.setStatus(InterviewStatus.CANCELED);
-                            interview.setRejectionReason("המשרה לא רלוונטית");
+                List<Application>applications = applicationRepository.getApplicationsByPosition(position);
+                for (Application application : applications) {
+                    if (application.getStatus() == ApplicationStatus.PENDING) {
+                        application.setStatus(ApplicationStatus.CANCELED);
+
+                        List<Interview>interviews = interviewRepository.findByApplication(application);
+                        for (Interview interview : interviews) {
+                            if (interview.getStatus() == InterviewStatus.SCHEDULED ||
+                                    interview.getStatus() == InterviewStatus.CONFIRMED)
+                            {
+                                interview.setStatus(InterviewStatus.CANCELED);
+                                interview.setRejectionReason("המשרה לא רלוונטית");
+                            }
                         }
+                        interviewRepository.saveAll(interviews);
                     }
-                    interviewRepository.saveAll(interviews);
+
                 }
-
+                applicationRepository.saveAll(applications);
+                response.put("message", "סטטוס המשרה עודכן בהצלחה! כל המועמדויות והראיונות בוטלו.");
             }
-            applicationRepository.saveAll(applications);
-
-
-
-            response.put("message", "סטטוס המשרה עודכן בהצלחה! כל המועמדויות בוטלו.");
+            else{
+                response.put("message", "סטטוס המשרה עודכן בהצלחה! המשרה כעת פעילה!");
+            }
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("message", "אירעה שגיאה בעדכון סטטוס המשרה.");
