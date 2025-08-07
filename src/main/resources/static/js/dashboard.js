@@ -190,7 +190,7 @@ const dashboardDom = function (){
             }
 
             if (username === interview.application.applicant.username && interview.status === "SCHEDULED") {
-                cols[4].innerHTML = `
+                cols[4+commanderOffset].innerHTML = `
                     <div class="d-flex gap-2 justify-content-center align-items-center">
                     
                     <form method="post" class="mb-0 confirm-interview-form d-inline" data-interview-id="${interview.id}">

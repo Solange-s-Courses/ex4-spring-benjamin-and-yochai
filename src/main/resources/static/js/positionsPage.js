@@ -147,10 +147,10 @@ const positionsPageDom = ()=>{
                             <p class="mb-1"><strong>סוג שירות:</strong> <span>${job.assignmentType || ''}</span></p>
                             <p class="mb-1">
                                 <strong>דרישות:</strong>
-                                <span>${job.requirements ? (job.requirements.length > 50 ? job.requirements.substring(0, 50) + '...' : job.requirements) : ''}</span>
+                                <span>${job.requirements ? (job.requirements.length > 47 ? job.requirements.substring(0, 47) + '...' : job.requirements) : ''}</span>
                             </p>
                             <p class="card-text text-muted flex-grow-1">
-                                ${job.description ? (job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description) : ''}
+                                ${job.description ? (job.description.length > 97 ? job.description.substring(0, 97) + '...' : job.description) : ''}
                             </p>
                             <p class="mb-1"><strong>מפורסם ע"י:</strong> <span>${job.publisher.username || ''}</span></p>
                             <a href="/positions/${job.id}" class="btn btn-outline-primary mt-3 rounded-3">לפרטי המשרה</a>
