@@ -152,7 +152,7 @@ const positionsPageDom = ()=>{
                             <p class="card-text text-muted flex-grow-1">
                                 ${job.description ? (job.description.length > 97 ? job.description.substring(0, 97) + '...' : job.description) : ''}
                             </p>
-                            <p class="mb-1"><strong>מפורסם ע"י:</strong> <span>${job.publisher.username || ''}</span></p>
+                            <p class="mb-1"><strong>מפורסם ע"י:</strong> <span>${job.publisher.firstName + ' ' + job.publisher.lastName || ''}</span></p>
                             <a href="/positions/${job.id}" class="btn btn-outline-primary mt-3 rounded-3">לפרטי המשרה</a>
                         </div>
                     </div>

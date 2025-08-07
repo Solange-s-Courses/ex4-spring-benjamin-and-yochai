@@ -80,7 +80,7 @@
                         </p>
                         <p class="card-text text-muted flex-grow-1"
                            th:text="${#strings.abbreviate(job.description, 100)}"></p>
-                        <p class="mb-1"><strong>מפורסם ע"י:</strong> <span th:text="${job.publisher.username}"></span></p>
+                        <p class="mb-1"><strong>מפורסם ע"י:</strong> <span th:text="${job.publisher.firstName + ' ' + job.publisher.lastName}"></span></p>
                         <a th:href="@{'/positions/' + ${job.id}}" class="btn btn-outline-primary mt-3 rounded-3">לפרטי המשרה</a>
                     </div>
                 </div>
