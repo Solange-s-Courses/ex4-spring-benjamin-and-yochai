@@ -81,7 +81,12 @@ const applicationDetailsDom = function() {
         async function setUpdateSummaryListener(form, event) {
             event.preventDefault();
             const interviewId = form.dataset.interviewId;
-            const summary = form.querySelector('textarea[name="summary"]').value;
+            const textArea = form.querySelector('textarea[name="summary"]');
+            const summary = textArea.value;
+            const oldSummary = textArea.dataset.summary;
+
+            if (summary===oldSummary)return;
+
             await updateInterviewSummary(interviewId, summary);
         }
 
@@ -151,6 +156,14 @@ const applicationDetailsDom = function() {
 
                         cols[4].textContent = interview.notes;
 
+                        cols[5].querySelector("textarea").dataset.summary = interview.interviewSummary;
+
+                        const editBtn = existingRow.querySelector(".edit-interview-btn");
+                        editBtn.dataset.date = interview.interviewDate;
+                        editBtn.dataset.location = interview.location;
+                        editBtn.dataset.virtual = interview.isVirtual;
+                        editBtn.dataset.notes = interview.notes;
+
                     }
                     else {
                         existingRow = document.createElement("tr");
@@ -170,6 +183,7 @@ const applicationDetailsDom = function() {
                                 <form class="mt-2 update-summary-form" data-interview-id=${interview.id}>
                                     <div class="input-group input-group-sm">
                                         <textarea name="summary" class="form-control form-control-sm" rows="2" 
+                                            data-summary="${interview.interviewSummary}"
                                             placeholder='כתוב סיכום ראיון...'>${interview.interviewSummary || ""}</textarea>
                                         <button type="submit" class="btn btn-outline-primary btn-sm">שמור</button>
                                     </div>

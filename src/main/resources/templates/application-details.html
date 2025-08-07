@@ -189,6 +189,7 @@
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                 <div class="input-group input-group-sm">
                                 <textarea name="summary" class="form-control form-control-sm" rows="2"
+                                    th:attr="data-summary=${interview.interviewSummary}"
                                     th:placeholder="'כתוב סיכום ראיון...'"
                                     th:text="${interview.interviewSummary}"></textarea>
                                     <button type="submit" class="btn btn-outline-primary btn-sm">שמור</button>
