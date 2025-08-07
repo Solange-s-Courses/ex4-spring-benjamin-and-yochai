@@ -169,7 +169,7 @@ const applicationDetailsDom = function() {
                                 <form class="mt-2 update-summary-form" data-interview-id=${interview.id}>
                                     <div class="input-group input-group-sm">
                                         <textarea name="summary" class="form-control form-control-sm" rows="2" 
-                                            placeholder='כתוב סיכום ראיון...'>${interview.interviewSummary}</textarea>
+                                            placeholder='כתוב סיכום ראיון...'>${interview.interviewSummary || ""}</textarea>
                                         <button type="submit" class="btn btn-outline-primary btn-sm">שמור</button>
                                     </div>
                                 </form>
@@ -188,7 +188,8 @@ const applicationDetailsDom = function() {
                 
                                     <form action="@{'/interviews/' + ${interview.id} + '/cancel'}"
                                         method="post" 
-                                        class="d-inline cancel-interview-form">
+                                        class="d-inline cancel-interview-form"
+                                        data-interview-id=${interview.id}>
                                         <button type="submit" class="btn btn-outline-danger btn-sm mb-1 w-100">
                                             <i class="bi bi-x-circle"></i> בטל
                                         </button>
@@ -617,6 +618,36 @@ const applicationDetailsDom = function() {
                 }
             });
         }
+
+        const cancelForms = document.querySelectorAll('.cancel-interview-form');
+        cancelForms.forEach(form => {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const interviewId = this.getAttribute('data-interview-id');
+                
+                try {
+                    const response = await fetch(`/restapi/interviews/${interviewId}/cancel`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
+                        }
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(result.message || 'אירעה שגיאה בביטול הראיון');
+                    }
+                    
+                    showToast(result.message);
+                    await reload();
+                    
+                } catch (error) {
+                    showToast(error.message || 'אירעה שגיאה בביטול הראיון', "danger");
+                }
+            });
+        });
 
     });
 };

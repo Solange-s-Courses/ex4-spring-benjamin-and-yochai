@@ -497,4 +497,36 @@ public class InterviewService {
     public List<Interview> findByApplication(Application application) {
         return interviewRepository.findByApplication(application);
     }
+
+    /**
+     * Cancels an interview via API
+     * 
+     * @param interviewId Interview ID
+     * @param username Username of the canceller
+     * @return ResponseEntity containing cancellation result
+     */
+    @Transactional
+    public ResponseEntity<Map<String, Object>> cancelInterviewApi(Long interviewId, String username) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Interview interview = getInterviewById(interviewId);
+            if (interview == null) {
+                response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+            
+            if (!interview.getApplication().getPosition().getPublisher().getUsername().equals(username)) {
+                response.put("message", "אין לך הרשאה לבטל ראיון זה");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            cancelInterview(interview);
+            response.put("message", "הראיון בוטל בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בביטול הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }

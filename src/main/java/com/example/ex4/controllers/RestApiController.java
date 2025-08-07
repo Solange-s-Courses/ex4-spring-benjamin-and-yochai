@@ -115,7 +115,7 @@ public class RestApiController {
      * @param principal Current authenticated user
      * @return ResponseEntity containing application result
      */
-    @GetMapping("/applications/{id}/apply")
+    @PostMapping("/applications/{id}/apply")
     public ResponseEntity<Map<String, Object>> applyForPosition(@PathVariable Long id,
                                    Principal principal) {
         return applicationService.submitApplication(id, principal.getName());
@@ -128,7 +128,7 @@ public class RestApiController {
      * @param principal Current authenticated user
      * @return ResponseEntity containing cancellation result
      */
-    @GetMapping("/applications/{id}/cancel")
+    @PostMapping("/applications/{id}/cancel")
     public ResponseEntity<Map<String, Object>> cancelApplication(@PathVariable Long id,
                                 Principal principal) {
         return applicationService.cancelApplication(id, principal.getName());
@@ -320,5 +320,11 @@ public class RestApiController {
     public ResponseEntity<Map<String, Object>> pollApplicationCommander(@PathVariable Long applicationId, Principal principal) {
         return applicationService.pollApplicantsCommander(applicationId, principal);
     }
+
+    @PostMapping("/interviews/{id}/cancel")
+    public ResponseEntity<Map<String, Object>> cancelInterviews(@PathVariable Long id, Principal principal) {
+        return interviewService.cancelInterviewApi(id, principal.getName());
+    }
+
 }
 
