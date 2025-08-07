@@ -136,7 +136,7 @@ const positionsPageDom = ()=>{
             jobs.forEach(job => {
                 const jobCard = document.createElement('div');
                 jobCard.className = 'col';
-                jobCard.setAttribute('data-location', job.location);
+                jobCard.setAttribute('data-location', locationEnumToHebrew(job.location));
                 jobCard.setAttribute('data-assignment-type', job.assignmentType);
 
                 jobCard.innerHTML = `
