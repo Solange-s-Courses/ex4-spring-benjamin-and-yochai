@@ -1,11 +1,6 @@
 package com.example.ex4.services;
 
-import com.example.ex4.models.Application;
-import com.example.ex4.models.ApplicationStatus;
-import com.example.ex4.models.AppUser;
-import com.example.ex4.models.Position;
-import com.example.ex4.models.Interview;
-import com.example.ex4.models.InterviewStatus;
+import com.example.ex4.models.*;
 import com.example.ex4.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,8 +50,13 @@ public class ApplicationService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
             if (applicant == position.getPublisher()){
-                response.put("message", "לא ניתן להגיש מועמדות למשרה שלך.");
+                response.put("message", "לא ניתן להגיש מועמדות למשרה שאתה פרסמת.");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
+
+            if (position.getStatus() != PositionStatus.ACTIVE){
+                response.put("message", "לא ניתן להגיש מועמדות למשרה שאינה פעילה.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
             
             Optional<Application> existingApplication =
