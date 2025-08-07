@@ -4,6 +4,7 @@ import com.example.ex4.dto.PositionForm;
 import com.example.ex4.models.*;
 import com.example.ex4.repositories.ApplicationRepository;
 import com.example.ex4.repositories.InterviewRepository;
+import com.example.ex4.repositories.AppUserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class PositionService {
     @Autowired
     private PositionRepository positionRepository;
     @Autowired
-    private AppUserService appUserService;
+    private AppUserRepository appUserRepository;
     @Autowired
     private ApplicationRepository applicationRepository;
     @Autowired
@@ -182,13 +183,14 @@ public class PositionService {
             return "add-position";
         }
 
-        AppUser publisher = appUserService.getUserByUsername(username);
+        AppUser publisher = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         Position position = new Position(form, publisher);
 
         try{
             save(position);
             redirectAttributes.addFlashAttribute("successMessage", "המשרה הוספה בהצלחה!");
-            return "redirect:/positions";
+            return "redirect:/positions/" + position.getId();
         } catch (Exception e){
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך השמירה, אנא נסו שנית במועד מאוחר יותר.");
             return "add-position";
@@ -221,7 +223,8 @@ public class PositionService {
      * @return List of maps containing position data and application counts
      */
     public List<Map<String, Object>> getPositionsWithActiveApplicationCounts(String username) {
-        AppUser user = appUserService.getUserByUsername(username);
+        AppUser user = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         List<Position> positions = positionRepository.findByPublisher(user);
 
         return positions.stream().map(position -> {
@@ -283,29 +286,32 @@ public class PositionService {
             position.setStatus(Enum.valueOf(PositionStatus.class, status));
             save(position);
 
-            List<Application>applications = applicationRepository.getApplicationsByPosition(position);
-            for (Application application : applications) {
-                if (application.getStatus() == ApplicationStatus.PENDING) {
-                    application.setStatus(ApplicationStatus.CANCELED);
+            if (!status.equals(PositionStatus.ACTIVE.name())){
 
-                    List<Interview>interviews = interviewRepository.findByApplication(application);
-                    for (Interview interview : interviews) {
-                        if (interview.getStatus() == InterviewStatus.SCHEDULED ||
-                            interview.getStatus() == InterviewStatus.CONFIRMED)
-                        {
-                            interview.setStatus(InterviewStatus.CANCELED);
-                            interview.setRejectionReason("המשרה לא רלוונטית");
+                List<Application>applications = applicationRepository.getApplicationsByPosition(position);
+                for (Application application : applications) {
+                    if (application.getStatus() == ApplicationStatus.PENDING) {
+                        application.setStatus(ApplicationStatus.CANCELED);
+
+                        List<Interview>interviews = interviewRepository.findByApplication(application);
+                        for (Interview interview : interviews) {
+                            if (interview.getStatus() == InterviewStatus.SCHEDULED ||
+                                    interview.getStatus() == InterviewStatus.CONFIRMED)
+                            {
+                                interview.setStatus(InterviewStatus.CANCELED);
+                                interview.setRejectionReason("המשרה לא רלוונטית");
+                            }
                         }
+                        interviewRepository.saveAll(interviews);
                     }
-                    interviewRepository.saveAll(interviews);
+
                 }
-
+                applicationRepository.saveAll(applications);
+                response.put("message", "סטטוס המשרה עודכן בהצלחה! כל המועמדויות והראיונות בוטלו.");
             }
-            applicationRepository.saveAll(applications);
-
-
-
-            response.put("message", "סטטוס המשרה עודכן בהצלחה! כל המועמדויות בוטלו.");
+            else{
+                response.put("message", "סטטוס המשרה עודכן בהצלחה! המשרה כעת פעילה!");
+            }
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("message", "אירעה שגיאה בעדכון סטטוס המשרה.");
@@ -357,7 +363,8 @@ public class PositionService {
             return "add-position";
         }
 
-        AppUser publisher = appUserService.getUserByUsername(username);
+        AppUser publisher = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         Position position = new Position(positionForm, publisher);
 
         position.setId(id);
@@ -365,7 +372,8 @@ public class PositionService {
         try{
             save(position);
             redirectAttributes.addFlashAttribute("successMessage", "המשרה עודכנה בהצלחה!");
-            return "redirect:/positions/" + id;
+            return "redirect:/positions/" + position.getId();
+
         } catch (Exception e){
             redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך השמירה, אנא נסו שנית במועד מאוחר יותר.");
             return "add-position";
