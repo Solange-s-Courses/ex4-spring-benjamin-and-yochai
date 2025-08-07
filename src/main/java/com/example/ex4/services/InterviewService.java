@@ -233,6 +233,10 @@ public class InterviewService {
         interview.setLocation(location);
         interview.setNotes(notes);
         interview.setIsVirtual(isVirtual);
+
+        if (isVirtual) {
+            interview.setJitsiLink(generateJitsiLink(interview));
+        }
         
         if (dateChanged) {
             interview.setStatus(InterviewStatus.SCHEDULED);

@@ -50,39 +50,6 @@ public class RegistrationController {
     @PostMapping("/register")
     public String registerUser(@Valid @ModelAttribute("user") RegistrationForm form, BindingResult result,
                                RedirectAttributes redirectAttributes){
-
-        if (form.getMilitaryIdDoc() == null || form.getMilitaryIdDoc().isEmpty()) {
-            result.rejectValue("militaryIdDoc", "error.militaryIdDoc", "חובה להעלות תעודת משרת מילואים!");
-        }
-        else {
-            String contentType = form.getMilitaryIdDoc().getContentType();
-            String fileName = form.getMilitaryIdDoc().getOriginalFilename();
-            if (contentType == null || !contentType.equalsIgnoreCase("application/pdf") || fileName == null || !fileName.toLowerCase().endsWith(".pdf")) {
-                result.rejectValue("militaryIdDoc", "error.militaryIdDoc", "יש להעלות קובץ PDF בלבד");
-            }
-        }
-
-        if (result.hasErrors()) {
-            return "register";
-        }
-
-        if (appUserService.existsByUsername(form.getUsername())) {
-            result.rejectValue("username", "error.appUser", "שם המשתמש כבר קיים");
-            return "register";
-        }
-
-        if (appUserService.existsByEmail(form.getEmail())) {
-            result.rejectValue("email", "error.appUser", "האימייל כבר קיים");
-            return "register";
-        }
-
-        try{
-            appUserService.saveUser(form);
-            redirectAttributes.addFlashAttribute("successMessage", "ההרשמה נקלטה בהצלחה! יש להמתין לקבלת אישור ממנהל המערכת.");
-            return "redirect:/login";
-        } catch (Exception e){
-            redirectAttributes.addFlashAttribute("errorMessage", "אירעה שגיאה בתהליך ההרשמה, אנא נסו שנית במועד מאוחר יותר.");
-            return "redirect:/register";
-        }
+        return appUserService.registerUser(form, result, redirectAttributes);
     }
 } 
