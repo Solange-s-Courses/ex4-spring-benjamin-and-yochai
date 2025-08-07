@@ -18,7 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.disabled = true;
             const response = await fetch(`/restapi/applications/${btn.dataset.positionId}/${btn.dataset.action}`,
                 {
-                    method: "GET"
+                    method: "POST",
+                    headers: getCSRFHeaders()
                 });
 
             let data;

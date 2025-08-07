@@ -194,14 +194,16 @@
                         th:data-location="${interview.location}" 
                         th:data-notes="${interview.notes != null ? interview.notes : ''}"
                         th:data-virtual="${interview.isVirtual != null ? interview.isVirtual : false}"
-                        th:classappend="${app.status.name() == 'REJECTED' or app.status.name() == 'CANCELED' ? 'd-none' : ''}">
+                        th:classappend="${app.status.name() != 'PENDING' or
+                        interview.status.name() == 'COMPLETED' or interview.status.name() == 'CANCELED' or interview.status.name() == 'REJECTED' ? 'd-none' : ''}">
                   <i class="bi bi-pencil"></i> ערוך
                 </button>
                 
                 <form th:action="@{'/interviews/' + ${interview.id} + '/cancel'}"
                       method="post"
                       th:classappend="${interview.status.name() != 'CANCELED' && interview.status.name() != 'COMPLETED' && interview.status.name() != 'REJECTED'}? '':'d-none'"
-                      class="d-inline cancel-interview-form">
+                      class="d-inline cancel-interview-form"
+                      th:attr="data-interview-id=${interview.id}">
                   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                   <button type="submit" class="btn btn-outline-danger btn-sm mb-1 w-100">
                     <i class="bi bi-x-circle"></i> בטל

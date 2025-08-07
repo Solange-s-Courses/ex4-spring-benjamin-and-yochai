@@ -223,12 +223,14 @@
                                       class="badge bg-danger">נדחה</span>
                                 <span th:if="${interview.status.name() == 'CANCELED'}"
                                       class="badge bg-secondary">מבוטל</span>
+                                <span th:if="${interview.status.name() == 'COMPLETED'}"
+                                      class="badge bg-primary">הושלם</span>
                             </span>
                             <span th:if="${interview.application.applicant.username != #authentication.name}">
                                 <div class="text-center">
                                     <span class="badge"
                                           th:classappend="${interview.status.name() == 'SCHEDULED' ? 'bg-warning' : (interview.status.name() == 'CONFIRMED' ? 'bg-success' : (interview.status.name() == 'REJECTED' ? 'bg-danger' : (interview.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary')))}"
-                                          th:text="${interview.status.name() == 'SCHEDULED' ? 'ממתין לאישור' : (interview.status.name() == 'CONFIRMED' ? 'מאושר' : (interview.status.name() == 'REJECTED' ? 'נדחה' : (interview.status.name() == 'COMPLETED' ? 'אושר' : 'מבוטל')))}">
+                                          th:text="${interview.status.name() == 'SCHEDULED' ? 'ממתין לאישור' : (interview.status.name() == 'CONFIRMED' ? 'מאושר' : (interview.status.name() == 'REJECTED' ? 'נדחה' : (interview.status.name() == 'COMPLETED' ? 'הושלם' : 'מבוטל')))}">
                                     </span>
                                     <!-- הצגת סיבת הדחייה אם קיימת -->
                                     <div th:if="${interview.status.name() == 'REJECTED' && interview.rejectionReason != null && !#strings.isEmpty(interview.rejectionReason)}"

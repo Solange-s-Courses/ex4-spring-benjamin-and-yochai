@@ -276,6 +276,13 @@ public class InterviewService {
         
         try {
             Application application = applicationRepository.findById(form.getApplicationId()).orElseThrow();
+
+            if (application.getStatus() != ApplicationStatus.PENDING) {
+                response.put("success", false);
+                response.put("message", "לא ניתן לקבוע ראיון למועמדות לא פעילה");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
             scheduleInterview(
                 application,
                 LocalDateTime.parse(form.getInterviewDate()),
@@ -323,10 +330,19 @@ public class InterviewService {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
             }
             
-            Application application = originalInterview.getApplication();
-            if (application.getStatus() == ApplicationStatus.REJECTED || application.getStatus() == ApplicationStatus.CANCELED) {
+            if (originalInterview.getStatus() == InterviewStatus.COMPLETED ||
+                originalInterview.getStatus() == InterviewStatus.CANCELED || 
+                originalInterview.getStatus() == InterviewStatus.REJECTED) {
                 response.put("success", false);
-                response.put("message", "לא ניתן לערוך ראיון כאשר המועמדות נדחתה או בוטלה");
+                response.put("message", "לא ניתן לערוך ראיון שכבר הושלם, בוטל או נדחה");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            
+            Application application = originalInterview.getApplication();
+
+            if (application.getStatus() != ApplicationStatus.PENDING) {
+                response.put("success", false);
+                response.put("message", "לא ניתן לערוך ראיון למועמדות שלא במצב ממתין להחלטה");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
             
@@ -496,5 +512,44 @@ public class InterviewService {
      */
     public List<Interview> findByApplication(Application application) {
         return interviewRepository.findByApplication(application);
+    }
+
+    /**
+     * Cancels an interview via API
+     * 
+     * @param interviewId Interview ID
+     * @param username Username of the canceller
+     * @return ResponseEntity containing cancellation result
+     */
+    @Transactional
+    public ResponseEntity<Map<String, Object>> cancelInterviewApi(Long interviewId, String username) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Interview interview = getInterviewById(interviewId);
+            if (interview == null) {
+                response.put("message", "הראיון לא נמצא");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            if (interview.getStatus() == InterviewStatus.COMPLETED ||
+                    interview.getStatus() == InterviewStatus.CANCELED ||
+                    interview.getStatus() == InterviewStatus.REJECTED) {
+                response.put("message", "לא ניתן לבטל ראיון שכבר הושלם, בוטל או נדחה");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            if (!interview.getApplication().getPosition().getPublisher().getUsername().equals(username)) {
+                response.put("message", "אין לך הרשאה לבטל ראיון זה");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            cancelInterview(interview);
+            response.put("message", "הראיון בוטל בהצלחה!");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "אירעה שגיאה בביטול הראיון.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }
