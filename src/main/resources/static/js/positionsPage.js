@@ -1,3 +1,5 @@
+import {locationEnumToHebrew} from "./textUtils.js";
+
 const positionsPageDom = ()=>{
     const params = new URLSearchParams();
     let pollingInterval = null;
@@ -191,7 +193,7 @@ const positionsPageDom = ()=>{
                     <div class="card h-100 shadow-sm rounded-4">
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title fw-bold">${job.jobTitle || 'שם משרה'}</h5>
-                            <p class="mb-1"><strong>מיקום:</strong> <span>${job.location || ''}</span></p>
+                            <p class="mb-1"><strong>מיקום:</strong> <span>${locationEnumToHebrew(job.location) || job.location}</span></p>
                             <p class="mb-1"><strong>סוג שירות:</strong> <span>${job.assignmentType || ''}</span></p>
                             <p class="mb-1">
                                 <strong>דרישות:</strong>
