@@ -170,7 +170,8 @@ public class RestApiController {
      * @param principal Current authenticated user
      * @return ResponseEntity containing edit result
      */
-    @PostMapping("/interviews/{id}/edit")
+    //@PostMapping("/interviews/{id}/edit")
+    @PutMapping("/interviews/{id}/edit")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> editInterview(@PathVariable Long id, @RequestBody InterviewForm form, Principal principal) {
         return interviewService.editInterviewApi(id, form, principal.getName());

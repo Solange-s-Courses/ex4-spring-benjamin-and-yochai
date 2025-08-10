@@ -550,7 +550,7 @@ const applicationDetailsDom = function() {
 
                 try {
                     const response = await fetch(`/restapi/interviews/${interviewId}/edit`, {
-                        method: 'POST',
+                        method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
