@@ -6,7 +6,7 @@
 <li><b>Benjamin Rosin-</b> benjaminro@edu.jmc.ac.il</li>
 </ul>
 
-<h3>[check the video](https://drive.google.com/file/d/1gjO5F0n2UB10wzytdplqQxuovcHlqikq/view?usp=sharing)</h3>
+### [check the video](https://drive.google.com/file/d/1gjO5F0n2UB10wzytdplqQxuovcHlqikq/view?usp=sharing)
 
 
 ## General Functionality
